@@ -49,5 +49,6 @@
 
 	h1 {
 		width: 100%;
+		font-family: Circuit, monospace;
 	}
 </style>

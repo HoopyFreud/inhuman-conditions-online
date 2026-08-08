@@ -1,39 +1,25 @@
 <script lang="ts">
-	import Header from './Header.svelte';
 	import './layout.css';
-	import CClogo from '$lib/images/Cc.svg'
+    import '/styles/fonts.css';
 
 	let { children } = $props();
 </script>
 
 <div id="app" class="h-dvh">
-	<Header />
 	<main>{@render children()}</main>
 
 	<footer>
 		<h2>
-			This is an online game based on Inhuman COnditions, available at <a href="https://robots.management/">https://robots.management/</a>
+			This is an online game based on Inhuman Conditions, available at <a href="https://robots.management/">https://robots.management/</a>
 		</h2>
 		<p>
 			Inhuman Conditions is available for free under Creative Commons license BY—NC—SA 4.0.
 		</p>
-		<img class="cc" src={CClogo} alt="Creative Commons BY—NC—SA 4.0">
+		<img class="cc" src="/images/Cc.svg" alt="Creative Commons BY—NC—SA 4.0">
 	</footer>
 </div>
 
 <style>
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
 	footer {
 		display: flex;
 		flex-direction: column;
@@ -46,9 +32,8 @@
 		font-weight: bold;
 	}
 
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
+	.cc {
+		max-width: 300px;
+		margin: 0 auto 2em;
 	}
 </style>

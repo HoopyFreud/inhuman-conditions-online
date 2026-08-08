@@ -1,0 +1,5 @@
+@font-face {
+    font-family: 'Circuit';
+    font-style: normal;
+    src: local(''), url('/fonts/CircuitForemRegular.woff2') format('woff2'),
+}
