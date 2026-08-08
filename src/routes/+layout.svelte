@@ -16,7 +16,7 @@
 		<p>
 			Inhuman Conditions is available for free under Creative Commons license BY—NC—SA 4.0.
 		</p>
-		<img class="cc" src="./src/lib/images/Cc.svg" alt="Creative Commons BY—NC—SA 4.0">
+		<img class="cc" src="/src/lib/images/Cc.svg" alt="Creative Commons BY—NC—SA 4.0">
 	</footer>
 </div>
 
