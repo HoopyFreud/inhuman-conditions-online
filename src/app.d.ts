@@ -1,12 +1,22 @@
+import { DurableObjectNamespace } from '@cloudflare/workers-types';
+
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
 	namespace App {
+		interface Platform {
+			env: {
+				IHC_SERVER_NAMESPACE: DurableObjectNamespace;
+			};
+			ctx: ExecutionContext;
+			caches: CacheStorage;
+			cf?: IncomingRequestCfProperties
+		}
+
 		// interface Error {}
 		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}
-		// interface Platform {}
 	}
 }
 
