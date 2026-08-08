@@ -1,8 +1,10 @@
 <script lang="ts">
-	import welcomeFallback from '$lib/images/svelte-welcome.png';
-	import welcome from '$lib/images/svelte-welcome.webp';
+  import * as Field from "$lib/components/ui/field/index.js";
+  import * as Select from "$lib/components/ui/select/index.js";
+  import { Button } from "$lib/components/ui/button/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
+  import { Textarea } from "$lib/components/ui/textarea/index.js";
 
-	import Counter from './Counter.svelte';
 </script>
 
 <svelte:head>
@@ -12,21 +14,30 @@
 
 <section>
 	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcomeFallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
+		Identity Crisis
 	</h1>
 
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
+	<div class="w-full max-w-md">
+  <form>
+    <Field.Group>
+        <Field.Legend>Begin Interrogation</Field.Legend>
+          <Field.Field>
+            <Field.Label for="session-id"
+              >Room Number</Field.Label
+            >
+            <Input
+              id="session-id"
+              required
+            />
+          </Field.Field>
+      <Field.Field orientation="horizontal">
+        <Button type="submit">Set Up Room</Button>
+        <Button type="submit">Join Room</Button>
+      </Field.Field>
+    </Field.Group>
+  </form>
+</div>
+          
 </section>
 
 <style>
@@ -40,21 +51,5 @@
 
 	h1 {
 		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
 	}
 </style>
