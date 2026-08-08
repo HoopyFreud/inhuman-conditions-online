@@ -5,7 +5,7 @@
 	let { children } = $props();
 </script>
 
-<div class="app">
+<div id="app" class="h-dvh">
 	<Header />
 	<main>{@render children()}</main>
 
