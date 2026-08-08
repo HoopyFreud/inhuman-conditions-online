@@ -1,7 +1,4 @@
 <script lang="ts">
-	import './layout.css';
-    import '/fonts/fonts.css';
-
 	let { children } = $props();
 </script>
 
