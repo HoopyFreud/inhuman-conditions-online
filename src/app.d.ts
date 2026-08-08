@@ -5,9 +5,7 @@ import { DurableObjectNamespace } from '@cloudflare/workers-types';
 declare global {
 	namespace App {
 		interface Platform {
-			env: {
-				IHC_SERVER_NAMESPACE: DurableObjectNamespace;
-			};
+			env: Env;
 			ctx: ExecutionContext;
 			caches: CacheStorage;
 			cf?: IncomingRequestCfProperties

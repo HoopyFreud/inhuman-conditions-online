@@ -5,5 +5,13 @@
 	"compatibility_flags": [
 		"nodejs_als"
 	],
-	"pages_build_output_dir": ".svelte-kit/cloudflare"
+	"pages_build_output_dir": ".svelte-kit/cloudflare",
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "IHC_SERVER_NAMESPACE",
+				"class_name": "inhuman-conditions-session-worker_IHCGameServer"
+			}
+		]
+	}
 }
