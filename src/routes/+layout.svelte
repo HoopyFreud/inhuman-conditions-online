@@ -4,15 +4,18 @@
 	let { children } = $props();
 </script>
 
-<div id="app" class="h-dvh">
+<div id="app" class="relative h-dvh">
 	<main>{@render children()}</main>
 
-	<footer>
-		<h2>
-			This is an online game based on Inhuman Conditions, available at <a href="https://robots.management/">https://robots.management/</a>
-		</h2>
+	<footer class="bottom-0 mt-auto">
 		<p>
-			Inhuman Conditions is available for free under Creative Commons license BY—NC—SA 4.0.
+			This is an online game based on Inhuman Conditions, available at <a href="https://robots.management/">https://robots.management/</a>
+		</p>
+		<p>
+			Inhuman Conditions and Identity Crisis are available for free under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">Creative Commons license BY—NC—SA 4.0</a>.
+		</p>
+		<p>
+			You can share or change it all you want, but you must give credit, include this license, and you can't sell it.
 		</p>
 		<img class="cc" src="/images/Cc.svg" alt="Creative Commons BY—NC—SA 4.0">
 	</footer>
@@ -25,6 +28,7 @@
 		justify-content: center;
 		align-items: center;
 		padding: 12px;
+		margin: auto auto 1em;
 	}
 
 	footer a {
@@ -32,7 +36,7 @@
 	}
 
 	.cc {
-		max-width: 300px;
-		margin: 0 auto 2em;
+		max-width: 200px;
+		margin: 2em auto 2em;
 	}
 </style>
