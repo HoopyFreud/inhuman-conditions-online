@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { env } from "cloudflare:workers";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -13,26 +12,17 @@ export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, "childre
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
 
-export function getStub(sessionID: string) {
-	return env.IHC_GAME_SERVER.getByName(sessionID);
-}
+export async function joinGame(sessionID:string, joinType:string) {
+	let url = new URL('https://ihc-server.mechanist.net/ihc-gameserver')
+	url.searchParams.append('sessionID',sessionID)
+	url.searchParams.append('joinType',joinType)
 
-export async function newSession(stub: DurableObjectStub, sessionID: string) {
-	const headersObject = {
-		"Join-Type": "new",
-		"method": "GET",
-		"Session-ID": sessionID
-	}
-	const request: Request = new Request('do://mechanist.net/ihc-gameserver',{"headers": headersObject})
-	return await stub.fetch(request);
-}
+	let header = new Headers()
+	header.append("Upgrade","websocket")
 
-export async function joinSession(stub: DurableObjectStub, sessionID: string) {
-	const headersObject = {
-		"Join-Type": "existing",
-		"method": "GET",
-		"Session-ID": sessionID
-	}
-	const request: Request = new Request('do://mechanist.net/ihc-gameserver',{"headers": headersObject})
-	return await stub.fetch(request);
+	const response = await fetch(url, {
+		method: "GET",
+		headers: header
+  	});
+	return response.webSocket;
 }

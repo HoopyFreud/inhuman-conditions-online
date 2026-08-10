@@ -6,7 +6,7 @@
 	import Shuffle from '@lucide/svelte/icons/shuffle';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { getStub } from "$lib/utils";
+	import { joinGame } from "$lib/utils";
 
 	let sessionID = $state("")
 
@@ -29,12 +29,11 @@
   		invalidInputError = /[^A-Z0-9]/.test(sessionID);
 	}
 
-	async function setupRoomFunc() {
-		await getStub(sessionID)
-	}
-
-	async function joinRoomFunc() {
-		await getStub(sessionID)
+	async function getSessionWebocket(joinType:string) {
+		const ws = await joinGame(sessionID,joinType)
+		if (ws) {
+			console.log("websocket established")
+		}
 	}
 
 </script>
@@ -86,8 +85,8 @@
 		{/if}
 	</div>
 	<div class="flex flex-row justify-evenly w-100 mt-4">
-		<Button variant="outline" type="submit" onclick={() => setupRoomFunc()}><h3>Set Up Room</h3></Button>
-		<Button variant="outline" type="submit" onclick={() => joinRoomFunc()}><h3>Join Room</h3></Button>
+		<Button variant="outline" type="submit" onclick={() => getSessionWebocket("new")}><h3>Set Up Room</h3></Button>
+		<Button variant="outline" type="submit" onclick={() => getSessionWebocket("existing")}><h3>Join Room</h3></Button>
 	</div>
 </section>
 
