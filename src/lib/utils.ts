@@ -20,9 +20,11 @@ export async function joinGame(sessionID:string, joinType:string) {
 	let header = new Headers()
 	header.append("Upgrade","websocket")
 
-	const response = await fetch(url, {
-		method: "GET",
+	let request = new Request(url, {
+		method:"GET",
 		headers: header
-  	});
+	})
+
+	const response = await fetch(request);
 	return response.webSocket;
 }
