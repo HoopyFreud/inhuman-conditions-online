@@ -26,11 +26,11 @@
 
 	function validate_room_number() {
 		sessionID = sessionID.toUpperCase()
-  		invalidInputError = /[^A-Z0-9]/.test(sessionID);
+  		invalidInputError = /[^A-Z0-9]/.test(sessionID)
 	}
 
 	async function getSessionWebocket(joinType:string) {
-		const ws = await joinGame(sessionID,joinType)
+		const ws: WebSocket | null = await joinGame(sessionID,joinType)
 		if (ws) {
 			console.log("websocket established")
 		}
@@ -51,7 +51,7 @@
 	<h2>Room Number</h2>
 	<div class="w-60">
 		<ButtonGroup.Root class="justify-center w-full">
-			<Input bind:value={sessionID} oninput={() => validate_room_number()}/>
+			<Input type="text" bind:value={sessionID} oninput={() => validate_room_number()}/>
 			<Button variant="outline" size="icon" aria-label="Random" title="Random" onclick={() => randomize_room()}>
 				<Shuffle />
 			</Button>
