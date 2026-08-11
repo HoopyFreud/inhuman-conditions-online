@@ -6,16 +6,16 @@
 	import Shuffle from '@lucide/svelte/icons/shuffle';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { joinGame } from "$lib/utils";
-
-	let sessionID = $state("")
-	let ws: WebSocket | null = $state(null)
+	import { clientLastStatusCode, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { joinGame, updateGameState } from "$lib/stateHandler.svelte";
+    import { goto } from '$app/navigation';
 
 	let invalidInputError = $state(false)
+	let roomIsFullError = $state(false)
 	let roomDoesNotExistError = $state(false)
 	let roomAlreadyExistsError = $state(false)
 
-	let disableRoomCreation = $derived(invalidInputError || roomDoesNotExistError || roomAlreadyExistsError || sessionID === "")
+	let disableRoomCreation = $derived(invalidInputError || roomDoesNotExistError || roomAlreadyExistsError || roomIsFullError || sessionIDObject.ID === "")
 
 	const characters = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -24,21 +24,31 @@
 		for(let i=0;i<8;i++){
 			sessionStr += characters[Math.floor(Math.random()*36)]
 		}
-		sessionID = sessionStr
+		sessionIDObject.ID = sessionStr
 	}
 
 	function validate_room_number() {
-		sessionID = sessionID.toUpperCase()
-  		invalidInputError = /[^A-Z0-9]/.test(sessionID)
+		sessionIDObject.ID = sessionIDObject.ID.toUpperCase()
+  		invalidInputError = /[^A-Z0-9]/.test(sessionIDObject.ID)
 	}
 
 	async function getSessionWebsocket(joinType:string) {
-		ws = await joinGame(sessionID,joinType)
-		if (ws) {
-			console.log("websocket established")
+		webSocketObject.websocket = await joinGame(sessionIDObject.ID,joinType)
+		console.log(webSocketObject)
+		if (webSocketObject.websocket && joinType === "new") {
+			console.log("websocket established, creating new room")
+			updateGameState({gameState: "select-role"})
+			goto("/play/slect-role")
+		}
+		else if (webSocketObject.websocket && joinType === "existing") {
+			console.log("websocket established, joining existing room")
+			goto("/play/await-select-role")
 		}
 		else {
 			console.log("websocket initialization failed")
+			roomIsFullError = (clientLastStatusCode.code === 4001)
+			roomDoesNotExistError = (clientLastStatusCode.code === 4002)
+			roomAlreadyExistsError = (clientLastStatusCode.code === 4003)
 		}
 	}
 
@@ -57,7 +67,7 @@
 	<h2>Room Number</h2>
 	<div class="w-60">
 		<ButtonGroup.Root class="justify-center w-full">
-			<Input type="text" bind:value={sessionID} oninput={() => validate_room_number()}/>
+			<Input type="text" bind:value={sessionIDObject.ID} oninput={() => validate_room_number()}/>
 			<Button variant="outline" size="icon" aria-label="Random" title="Random" onclick={() => randomize_room()}>
 				<Shuffle />
 			</Button>
@@ -68,6 +78,15 @@
 			<Alert.Title>Invalid room number</Alert.Title>
 			<Alert.Description>
 			<p>Room number should contain only numbers and letters.</p>
+			</Alert.Description>
+		</Alert.Root>
+		{/if}
+		{#if roomIsFullError}
+		<Alert.Root variant="destructive">
+			<AlertCircleIcon />
+			<Alert.Title>Room is full</Alert.Title>
+			<Alert.Description>
+			<p>Choose a different room number.</p>
 			</Alert.Description>
 		</Alert.Root>
 		{/if}

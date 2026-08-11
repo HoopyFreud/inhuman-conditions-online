@@ -1,19 +1,18 @@
 
 <script lang="ts">
-    import { getContext } from 'svelte';
 	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 
-	const sessionID = getContext<string>('sessionID');
+	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
 </script>
 
 <svelte:head>
 	<title>Identity Crisis - Play</title>
-	<meta name="description" content="Identity Crisis play page" />
+	<meta name="description" content="Play Identity Crisis" />
 </svelte:head>
 
-<h2>Role</h2>
+<h2>Select Role</h2>
 <ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto">
     <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
         <h3 class="m-0!">Detective</h3>
