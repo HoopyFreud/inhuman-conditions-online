@@ -9,10 +9,13 @@
 	import { joinGame } from "$lib/utils";
 
 	let sessionID = $state("")
+	let ws: WebSocket | null = $state(null)
 
 	let invalidInputError = $state(false)
 	let roomDoesNotExistError = $state(false)
 	let roomAlreadyExistsError = $state(false)
+
+	let disableRoomCreation = $derived(invalidInputError || roomDoesNotExistError || roomAlreadyExistsError || sessionID === "")
 
 	const characters = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -29,10 +32,13 @@
   		invalidInputError = /[^A-Z0-9]/.test(sessionID)
 	}
 
-	async function getSessionWebocket(joinType:string) {
-		const ws: WebSocket | null = await joinGame(sessionID,joinType)
+	async function getSessionWebsocket(joinType:string) {
+		ws = await joinGame(sessionID,joinType)
 		if (ws) {
 			console.log("websocket established")
+		}
+		else {
+			console.log("websocket initialization failed")
 		}
 	}
 
@@ -85,8 +91,8 @@
 		{/if}
 	</div>
 	<div class="flex flex-row justify-evenly w-100 mt-4">
-		<Button variant="outline" type="submit" onclick={() => getSessionWebocket("new")}><h3>Set Up Room</h3></Button>
-		<Button variant="outline" type="submit" onclick={() => getSessionWebocket("existing")}><h3>Join Room</h3></Button>
+		<Button variant="outline" type="submit" onclick={() => getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
+		<Button variant="outline" type="submit" onclick={() => getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
 	</div>
 </section>
 
