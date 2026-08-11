@@ -32,33 +32,46 @@ interface IHCQuery {
 }
 
 interface IHCStateUpdate {
-	type: "state-response";
+	type: "state-update";
 	data: Partial<IHCStateData>
 }
 
 interface IHCRoleUpdate {
-	type: "role-response";
+	type: "role-update";
 	data: IHCRoleData
 }
 
-type IHCMessageData = (IHCIntroductionData | IHCQuery | IHCStateUpdate)
+type IHCMessageData = (IHCIntroductionData | IHCQuery | IHCStateUpdate | IHCRoleUpdate)
 
 interface IHCStateResponse {
 	type: "state-response";
-	data: Partial<IHCStateData>
+	state: Partial<IHCStateData>
+	role: null
+	string: null
 }
 
 interface IHCRoleResponse {
 	type: "role-response";
-	data: IHCRole | null
+	state: null
+	role: IHCRole
+	string: null
 }
 
 interface IHCStringResponse {
 	type: "string-response";
-	data: string
+	state: null
+	role: null
+	string: null
 }
 
-type IHCResponse = (IHCStateResponse | IHCRoleResponse | IHCStringResponse)
+interface IHCCombinedResponse {
+	type: "combined-response";
+	state: Partial<IHCStateData> | null
+	role: IHCRole | null
+	string: string | null
+}
+
+type IHCResponse = (IHCStateResponse | IHCRoleResponse | IHCStringResponse | IHCCombinedResponse)
 
 export const clientLastMessageObject: {message: string} = $state({message: ""})
 export const clientLastStatusCode: {code: number | null} = $state({code: null})
@@ -96,15 +109,17 @@ export async function joinGame(sessionID:string, joinType:string) {
 	
 	socket.addEventListener("message", (event) => {
 		const response: IHCResponse = JSON.parse(event.data)
-		console.log(response.data)
-		if (response.type == "state-response") {
-			clientStateObject.state = {...clientStateObject.state, ...response.data};
+		console.log(response.state)
+		console.log(response.role)
+		console.log(response.string)
+		if (response.type == "state-response" || response.type == "combined-response") {
+			clientStateObject.state = {...clientStateObject.state, ...response.state};
 		}
-		else if (response.type == "role-response") {
-			clientRoleObject.role = response.data;
+		if (response.type == "role-response" || response.type == "combined-response") {
+			clientRoleObject.role = response.role;
 		}
-		else {
-			clientLastMessageObject.message = response.data;
+		if (response.string !== null) {
+			clientLastMessageObject.message = response.string;
 		}
 	});
 	// Handle errors
@@ -137,14 +152,14 @@ export async function queryGameState() {
 
 export async function updateGameState(stateUpdateData: Partial<IHCStateData>) {
 	if (webSocketObject.websocket) {
-		const stateUpdate: IHCStateUpdate = {type: "state-response", data: stateUpdateData}
+		const stateUpdate: IHCStateUpdate = {type: "state-update", data: stateUpdateData}
 		webSocketObject.websocket.send(JSON.stringify(stateUpdate))
 	}
 }
 
 export async function assignRoles(roleData: IHCRoleData) {
 	if (webSocketObject.websocket) {
-		const roleUpdate: IHCRoleUpdate = {type: "role-response", data: roleData}
+		const roleUpdate: IHCRoleUpdate = {type: "role-update", data: roleData}
 		webSocketObject.websocket.send(JSON.stringify(roleUpdate))
 	}
 }
@@ -158,9 +173,9 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 		},1000)
 
 		socket.addEventListener("message", (event) => {
-			const response: IHCResponse = JSON.parse(event.data)
+			const response: IHCCombinedResponse = JSON.parse(event.data)
 			clearTimeout(timeoutID)
-			if (response.data === "success") {
+			if (response.string === "success") {
 				resolve(socket);
 			}
 			else {

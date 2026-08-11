@@ -38,11 +38,11 @@
 		if (webSocketObject.websocket && joinType === "new") {
 			console.log("websocket established, creating new room")
 			updateGameState({gameState: "select-role"})
-			goto("/play/slect-role")
+			goto("/play/slect-role?"+sessionIDObject.ID)
 		}
 		else if (webSocketObject.websocket && joinType === "existing") {
 			console.log("websocket established, joining existing room")
-			goto("/play/await-select-role")
+			goto("/play/await-select-role?"+sessionIDObject.ID)
 		}
 		else {
 			console.log("websocket initialization failed")

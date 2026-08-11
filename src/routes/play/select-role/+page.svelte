@@ -7,8 +7,17 @@
 	import { clientRoleObject } from "$lib/stateHandler.svelte"
     import { updateGameState, assignRoles } from "$lib/stateHandler.svelte"
 
-    function setToggleValue(newValue: "detective" | "suspect") {
-        clientRoleObject.role = newValue
+    let toggleGroupValue: string | undefined = $state(undefined)
+
+    let disableSelectButton: boolean = $derived(clientRoleObject.role === null)
+
+    function setToggleValue() {
+        if (toggleGroupValue === "detective" || toggleGroupValue === "suspect") {
+            clientRoleObject.role = toggleGroupValue
+        }
+        else {
+            clientRoleObject.role = null
+        }
     }
 
     function assignPlayerRole() {
@@ -31,7 +40,7 @@
 </svelte:head>
 
 <h2>Select Role</h2>
-<ToggleGroup.Root size="lg" bind:value={null,setToggleValue} variant="outline" type="single" class="flex place-center m-auto">
+<ToggleGroup.Root size="lg" onValueChange={() => setToggleValue()} bind:value={toggleGroupValue} variant="outline" type="single" class="flex place-center m-auto">
     <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
         <h3 class="m-0!">Detective</h3>
     </ToggleGroup.Item>
@@ -40,4 +49,4 @@
     </ToggleGroup.Item>
 </ToggleGroup.Root>
     
-<Button variant="outline" type="submit" onclick={() => assignPlayerRole()} class="w-fit m-auto mt-4 "><h3>Set Up Room</h3></Button>
+<Button disabled={disableSelectButton} variant="outline" type="submit" onclick={() => assignPlayerRole()} class="w-fit m-auto mt-4 "><h3>Set Up Room</h3></Button>
