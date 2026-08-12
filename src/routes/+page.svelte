@@ -12,7 +12,7 @@
 	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 	import { joinGame, updateGameState, resetState } from "$lib/stateHandler.svelte";
 
-	onMount(() => resetState())
+	const characters = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 	let invalidInputError = $state(false)
 
@@ -20,14 +20,12 @@
 	let roomDoesNotExistError = $state(false)
 	let roomAlreadyExistsError = $state(false)
 	let joinGameError = $state(false)
-
-	let websocketError = $derived(roomIsFullError || roomDoesNotExistError || roomAlreadyExistsError || joinGameError)
 	
     let stateError = $state(false)
 
-	let disableRoomCreation = $derived(invalidInputError || websocketError || stateError || sessionIDObject.ID === "")
+	let websocketError = $derived(roomIsFullError || roomDoesNotExistError || roomAlreadyExistsError || joinGameError)
 
-	const characters = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	let disableRoomCreation = $derived(invalidInputError || websocketError || stateError || sessionIDObject.ID === "")
 
 	function resetErrors() {
 		roomIsFullError = false
@@ -101,6 +99,8 @@
             }
         }
 	}
+	
+	onMount(() => resetState())
 
 </script>
 
@@ -115,7 +115,7 @@
 <section class="game-area">
 	<h2 class="m-10!">Begin Interrogation</h2>
 	<h2>Room Number</h2>
-	<div class="w-60">
+	<div class="w-1/2">
 		<ButtonGroup.Root class="justify-center w-full">
 			<Input type="text" bind:value={sessionIDObject.ID} oninput={() => validateRoomNumber()}/>
 			<Button variant="outline" size="icon" aria-label="Random" title="Random" onclick={() => randomizeRoom()}>
@@ -177,7 +177,7 @@
 		</Alert.Root>
 		{/if}
 	</div>
-	<div class="flex flex-row justify-evenly w-100 mt-4">
+	<div class="flex flex-row justify-evenly w-3/4 mt-4">
 		<Button variant="outline" type="submit" onclick={async () => await getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
 		<Button variant="outline" type="submit" onclick={async() => await getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
 	</div>

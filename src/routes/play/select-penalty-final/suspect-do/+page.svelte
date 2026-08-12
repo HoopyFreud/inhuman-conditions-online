@@ -7,8 +7,6 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-    import { knuthShuffle } from 'knuth-shuffle'
-
 	import type { IHCStateData } from "$lib/stateHandler.svelte"
 	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
@@ -16,45 +14,45 @@
     import { getErrorContext } from '$lib/errorContext';
 
     import penaltyData from "$lib/gameData/penalties/penaltyData.json"
-
+    
     const gameError = getErrorContext()
 
-    let selectedPenalties: number[]= $state([])
+    let selectedPenalty: number | null= $state(null)
     let availablePenalties: IHCPenalty[]= $state([])
     let permanentPenalty: IHCPenalty | null = $state(null)
 
-    let invalidPenaltySelection = $derived(selectedPenalties.length !== 2)
+    let invalidPenaltySelection = $derived(selectedPenalty === null)
+
+    let invalidDataError = $state(false)
 
     let validState = $derived(
-        clientStateObject.state.gameState === "select-penalty-prelim" ||
-        clientStateObject.state.gameState === "select-penalty-final"
+        clientStateObject.state.gameState === "select-penalty-final" ||
+        clientStateObject.state.gameState === "calibrate-penalty"
     )
-    
+
     let stateUpdateError = $derived(!validState)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "select-penalty-final",
-        penaltyCardID: invalidPenaltySelection ? null : selectedPenalties as [number, number]
+        gameState: "calibrate-penalty",
+        penaltyCardID: selectedPenalty
     })
 
-    let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2)
-    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0)
-    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || stateUpdateError || gameError())
+    let disablePenaltyAddButton: boolean = $derived(selectedPenalty !== null)
+    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null)
+    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || invalidDataError || stateUpdateError || gameError())
 
-    function removePenalty(penalty: IHCPenalty) {
-        selectedPenalties = selectedPenalties.filter((id) => id !== penalty.id)
+    function removePenalty() {
+        selectedPenalty = null
     }
 
     function addPenalty(penalty: IHCPenalty) {
-        if (selectedPenalties.length < 2 && !selectedPenalties.includes(penalty.id)) {
-            selectedPenalties.push(penalty.id)
-        }
+        selectedPenalty = penalty.id
     }
 
-    async function submitPenalties() {
-        if (!disableSelectPenalty){
+    async function submitPenalty() {
+        if (!disableSelectPenalty) {
             await updateGameState(gameStateUpdate)
-            goto("/play/select-penalty-final/detective-await?room="+sessionIDObject.ID)
+            goto("/play/calibrate-penalty/suspect-await?room="+sessionIDObject.ID)
         }
     }
 
@@ -62,12 +60,14 @@
         availablePenalties = [...penaltyData]
         if (clientStateObject.state.permanentPenalty) {
             permanentPenalty = availablePenalties[0]
-            availablePenalties = availablePenalties.slice(1)
         }
-        if (clientStateObject.state.digitalGame) {
-            availablePenalties.filter((penalty) => penalty.digitalSafe)
+        if (Array.isArray(clientStateObject.state.penaltyCardID)) {
+            // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
+            availablePenalties.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.ID))
         }
-        availablePenalties = knuthShuffle(availablePenalties).slice(0,3)
+        else {
+            invalidDataError = true
+        }
     })
 
     $effect(() => {
@@ -78,13 +78,13 @@
     })
 </script>
 
-<h2>Select Penalties</h2>
+<h2>Select Penalty</h2>
 <p>
-    Choose two of the penalties shown below to give to the suspect. The suspect will choose the penalty for this round from among them.
+    Choose one the penalties shown below to play with this round.
 </p>
 {#if permanentPenalty !== null}
 <p>
-    The permanent penalty will be enforced in addition to the one the suspect selects.
+    The permanent penalty will be enforced in addition to the selected penalty.
 </p>
 {/if}
 
@@ -102,26 +102,35 @@
         </Card.Root>
     {/if}
     {#each availablePenalties as availablePenalty}
-        <Card.Root class="{permanentPenalty !== null ? 'w-1/4' : 'w-1/3'} {selectedPenalties.includes(availablePenalty.id)? 'light' : ''}">
+        <Card.Root class="{permanentPenalty !== null ? 'w-1/4' : 'w-1/3'} {selectedPenalty === availablePenalty.id ? 'light' : ''}">
             <Card.Header>
                 <Card.Title>{availablePenalty.text}</Card.Title>
             </Card.Header>
             <Card.Content class="mt-auto">
-                {#if selectedPenalties.includes(availablePenalty.id)}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty(availablePenalty)} class="w-fit m-auto mt-4">
+                {#if selectedPenalty === availablePenalty.id}
+                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty()} class="w-fit m-auto mt-4">
                         <h3>Deselect</h3>
                     </Button>
                 {:else}
                     <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
+                        <h3>Select</h3>
                     </Button>
                 {/if}
             </Card.Content>
         </Card.Root>
     {/each}
-    </div>
-<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto mb-2"><h3>Select Penalties</h3></Button>
+</div>
+<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalty()} class="w-fit m-auto mb-2"><h3>Select Penalty</h3></Button>
 
+{#if invalidDataError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Bad incoming penalty data</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
 {#if stateUpdateError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

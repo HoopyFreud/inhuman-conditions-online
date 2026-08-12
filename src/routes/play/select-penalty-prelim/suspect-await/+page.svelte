@@ -4,15 +4,15 @@
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
     const loadingElementTextSequence = ["",".","..","..."]
 
     let loadingElementText = $state("")
 
     let validState = $derived(
-        clientStateObject.state.gameState === "game-setup" ||
-        clientStateObject.state.gameState === "select-penalty-prelim"
+        clientStateObject.state.gameState === "select-penalty-prelim" ||
+        clientStateObject.state.gameState === "select-penalty-final"
     )
 
     let stateUpdateError = $derived(!validState)
@@ -38,18 +38,15 @@
             console.log("Failed state update, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "detective") {
-            goto("/play/select-penalty-prelim/detective-do?room="+sessionIDObject.ID)
-        }
-        else if (clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "suspect") {
-            goto("/play/select-penalty-prelim/suspect-await?room="+sessionIDObject.ID)
+        else if (clientStateObject.state.gameState === "select-penalty-final") {
+            goto("/play/select-penalty-final/suspect-do?room="+sessionIDObject.ID)
         }
     })
 
     loadingSequence()
 </script>
 
-<h2>Waiting for game setup</h2>
+<h2>Waiting for detective to select penalties</h2>
 
 <h3>{loadingElementText}</h3>
 
