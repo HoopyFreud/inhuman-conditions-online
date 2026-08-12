@@ -1,0 +1,107 @@
+[
+    {
+        "id": 0,
+        "text": "Answer three questions without referencing your background",
+        "digitalSafe": true
+    },
+    {
+        "id": 1,
+        "text": "Apologize",
+        "digitalSafe": true
+    },
+    {
+        "id": 2,
+        "text": "Swear",
+        "digitalSafe": true
+    },
+    {
+        "id": 3,
+        "text": "Take your hands off the table",
+        "digitalSafe": false
+    },
+    {
+        "id": 4,
+        "text": "Say three consecutive words beginning with the same letter",
+        "digitalSafe": true
+    },
+    {
+        "id": 5,
+        "text": "Say the number of fingers held up on your left hand",
+        "digitalSafe": false
+    },
+    {
+        "id": 6,
+        "text": "Say two consecutive rhyming words",
+        "digitalSafe": true
+    },
+    {
+        "id": 7,
+        "text": "Remain silent for ten seconds",
+        "digitalSafe": true
+    },
+    {
+        "id": 8,
+        "text": "Interrupt the detective",
+        "digitalSafe": true
+    },
+    {
+        "id": 9,
+        "text": "Ask for clarification",
+        "digitalSafe": true
+    },
+    {
+        "id": 10,
+        "text": "Restate a question in your own words",
+        "digitalSafe": true
+    },
+    {
+        "id": 11,
+        "text": "Say any three letters in a row",
+        "digitalSafe": true
+    },
+    {
+        "id": 12,
+        "text": "Say a word with at least five syllables",
+        "digitalSafe": true
+    },
+    {
+        "id": 13,
+        "text": "Compliment the investigator",
+        "digitalSafe": true
+    },
+    {
+        "id": 14,
+        "text": "Say the name of a punctuation mark",
+        "digitalSafe": true
+    },
+    {
+        "id": 15,
+        "text": "Point at something",
+        "digitalSafe": false
+    },
+    {
+        "id": 16,
+        "text": "Use an ordinal number other than \"first\"",
+        "digitalSafe": true
+    },
+    {
+        "id": 17,
+        "text": "Don't not use a double negative",
+        "digitalSafe": true
+    },
+    {
+        "id": 18,
+        "text": "Say three words beginning with consecutive letters of the alphabet",
+        "digitalSafe": true
+    },
+    {
+        "id": 19,
+        "text": "Begin and end a sentence with the same word",
+        "digitalSafe": true
+    },
+    {
+        "id": 20,
+        "text": "Answer a question in exectly five words",
+        "digitalSafe": true
+    }
+]

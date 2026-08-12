@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
+	
 	import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -6,50 +9,97 @@
 	import Shuffle from '@lucide/svelte/icons/shuffle';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientLastStatusCode, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-	import { joinGame, updateGameState } from "$lib/stateHandler.svelte";
-    import { goto } from '$app/navigation';
+	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { joinGame, updateGameState, resetState } from "$lib/stateHandler.svelte";
+
+	onMount(() => resetState())
 
 	let invalidInputError = $state(false)
+
 	let roomIsFullError = $state(false)
 	let roomDoesNotExistError = $state(false)
 	let roomAlreadyExistsError = $state(false)
+	let joinGameError = $state(false)
 
-	let disableRoomCreation = $derived(invalidInputError || roomDoesNotExistError || roomAlreadyExistsError || roomIsFullError || sessionIDObject.ID === "")
+	let websocketError = $derived(roomIsFullError || roomDoesNotExistError || roomAlreadyExistsError || joinGameError)
+	
+    let stateError = $state(false)
+
+	let disableRoomCreation = $derived(invalidInputError || websocketError || stateError || sessionIDObject.ID === "")
 
 	const characters = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	function randomize_room() {
+	function resetErrors() {
+		roomIsFullError = false
+		roomDoesNotExistError = false
+		roomAlreadyExistsError = false
+		joinGameError = false
+		stateError = false
+	}
+
+	function randomizeRoom() {
 		let sessionStr = ""
 		for(let i=0;i<8;i++){
 			sessionStr += characters[Math.floor(Math.random()*36)]
 		}
 		sessionIDObject.ID = sessionStr
+		resetErrors()
 	}
 
-	function validate_room_number() {
+	function validateRoomNumber() {
 		sessionIDObject.ID = sessionIDObject.ID.toUpperCase()
   		invalidInputError = /[^A-Z0-9]/.test(sessionIDObject.ID)
+		resetErrors()
 	}
 
-	async function getSessionWebsocket(joinType:string) {
+	async function getSessionWebsocket(joinType:"new" | "existing") {
 		webSocketObject.websocket = await joinGame(sessionIDObject.ID,joinType)
-		console.log(webSocketObject)
+
 		if (webSocketObject.websocket && joinType === "new") {
 			console.log("websocket established, creating new room")
-			updateGameState({gameState: "select-role"})
-			goto("/play/slect-role?"+sessionIDObject.ID)
 		}
 		else if (webSocketObject.websocket && joinType === "existing") {
 			console.log("websocket established, joining existing room")
-			goto("/play/await-select-role?"+sessionIDObject.ID)
 		}
 		else {
 			console.log("websocket initialization failed")
-			roomIsFullError = (clientLastStatusCode.code === 4001)
-			roomDoesNotExistError = (clientLastStatusCode.code === 4002)
-			roomAlreadyExistsError = (clientLastStatusCode.code === 4003)
+			switch(clientLastStatusCode.code) {
+				case 4001:
+					roomIsFullError = true
+					break
+				case 4002:
+					roomDoesNotExistError = true
+					break
+				case 4003:
+					roomAlreadyExistsError = true
+					break
+				default: joinGameError = true
+			}
 		}
+		
+		if (!websocketError) {
+            if (joinType === "new" && clientStateObject.state.gameState === "init") {
+				await updateGameState({gameState: "game-setup"})
+                goto("/play/game-setup/do?room="+sessionIDObject.ID)
+            }
+            else if (joinType === "existing" && clientStateObject.state.gameState === "game-setup") {
+                goto("/play/game-setup/await?room="+sessionIDObject.ID)
+            }
+            else if (joinType === "existing" && clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "suspect") {
+                goto("/play/select-penalty-prelim/suspect-await?room="+sessionIDObject.ID)
+            }
+            else if (joinType === "existing" && clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "detective") {
+                goto("/play/select-penalty-prelim/detective-do?room="+sessionIDObject.ID)
+            }
+            else if (joinType === "existing" && clientStateObject.state.gameState === "select-penalty-final" && clientRoleObject.role === "suspect") {
+                goto("/play/select-penalty-final/suspect-do?room="+sessionIDObject.ID)
+            }
+            else {
+                console.log("Failed state init, closing websocket")
+                webSocketObject.websocket?.close()
+                stateError = true
+            }
+        }
 	}
 
 </script>
@@ -67,8 +117,8 @@
 	<h2>Room Number</h2>
 	<div class="w-60">
 		<ButtonGroup.Root class="justify-center w-full">
-			<Input type="text" bind:value={sessionIDObject.ID} oninput={() => validate_room_number()}/>
-			<Button variant="outline" size="icon" aria-label="Random" title="Random" onclick={() => randomize_room()}>
+			<Input type="text" bind:value={sessionIDObject.ID} oninput={() => validateRoomNumber()}/>
+			<Button variant="outline" size="icon" aria-label="Random" title="Random" onclick={() => randomizeRoom()}>
 				<Shuffle />
 			</Button>
 		</ButtonGroup.Root>
@@ -108,10 +158,28 @@
 			</Alert.Description>
 		</Alert.Root>
 		{/if}
+		{#if joinGameError}
+		<Alert.Root variant="destructive">
+			<AlertCircleIcon />
+			<Alert.Title>Unable to join game</Alert.Title>
+			<Alert.Description>
+			<p>Try again.</p>
+			</Alert.Description>
+		</Alert.Root>
+		{/if}
+		{#if stateError}
+		<Alert.Root variant="destructive">
+			<AlertCircleIcon />
+			<Alert.Title>Unable to set initial state</Alert.Title>
+			<Alert.Description>
+			<p>Try again.</p>
+			</Alert.Description>
+		</Alert.Root>
+		{/if}
 	</div>
 	<div class="flex flex-row justify-evenly w-100 mt-4">
-		<Button variant="outline" type="submit" onclick={() => getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
-		<Button variant="outline" type="submit" onclick={() => getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
+		<Button variant="outline" type="submit" onclick={async () => await getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
+		<Button variant="outline" type="submit" onclick={async() => await getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
 	</div>
 </section>
 

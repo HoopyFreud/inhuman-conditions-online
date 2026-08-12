@@ -1,50 +1,66 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-	import { joinGame } from "$lib/stateHandler.svelte"
+	import { joinGame, updateGameState } from "$lib/stateHandler.svelte"
 
 	let roomIsFullError = $state(false)
 	let roomDoesNotExistError = $state(false)
 	let joinGameError = $state(false)
 
-    let joinError = $derived(roomIsFullError || roomDoesNotExistError || joinGameError)
+    let stateError = $state(false)
 
-    $effect(() => {
-        (async () => {
-            await joinGame(sessionIDObject.ID,"existing")
-            if (webSocketObject.websocket) {
-                console.log("websocket established, joining existing room")
-                if (clientStateObject.state.gameState === "role-selection") {
-                    goto("/play/await-select-role?"+sessionIDObject.ID)
-                }
-                else if (clientStateObject.state.gameState === "penalty-selection" && clientRoleObject.role === "detective") {
-                    goto("/play/detective-select-penalty?"+sessionIDObject.ID)
-                }
-                else if (clientStateObject.state.gameState === "penalty-selection" && clientRoleObject.role === "suspect") {
-                    goto("/play/suspect-await-select-penalty?"+sessionIDObject.ID)
-                }
-                else if (clientStateObject.state.gameState === "penalty-calibration" && clientRoleObject.role === "suspect") {
-                    goto("/play/calibrate-penalty?"+sessionIDObject.ID)
-                }
-                else {
-                    webSocketObject.websocket.close()
-                    console.log("Can't join game, closing websocket")
-                    joinGameError = true
-                }
+    let websocketError = $derived(roomIsFullError || roomDoesNotExistError || joinGameError)
+
+    let joinError = $derived(websocketError || stateError)
+
+    onMount(async () => {
+        await joinGame(sessionIDObject.ID,"existing")
+        
+        if (webSocketObject.websocket) {
+            console.log("websocket established, joining existing room")
+        }
+        else {
+            console.log("websocket initialization failed")
+            switch(clientLastStatusCode.code) {
+                case 4001:
+                    roomIsFullError = true
+                    break
+                case 4002:
+                    roomDoesNotExistError = true
+                    break
+                default: joinGameError = true
+            }
+        }
+
+        stateError = !(
+            clientStateObject.state.gameState === "game-setup" ||
+            clientStateObject.state.gameState === "select-penalty-prelim" ||
+            (clientStateObject.state.gameState === "select-penalty-final" && clientRoleObject.role === "suspect")
+        )
+        
+        if (!joinError) {
+            if (clientStateObject.state.gameState === "game-setup") {
+                goto("/play/game-setup/await?room="+sessionIDObject.ID)
+            }
+            else if (clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "suspect") {
+                goto("/play/select-penalty-prelim/suspect-await?room="+sessionIDObject.ID)
+            }
+            else if (clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "detective") {
+                goto("/play/select-penalty-prelim/detective-do?room="+sessionIDObject.ID)
+            }
+            else if (clientStateObject.state.gameState === "select-penalty-final" && clientRoleObject.role === "suspect") {
+                goto("/play/select-penalty-final/suspect-do?room="+sessionIDObject.ID)
             }
             else {
-                console.log("websocket initialization failed")
-                switch(clientLastStatusCode.code) {
-                    case 4001: roomIsFullError = true
-                    case 4002: roomDoesNotExistError = true
-                    default: joinGameError = true
-                }
+                console.log("No valid redirect, closing websocket")
+                webSocketObject.websocket?.close()
             }
-        })
+        }
     })
 </script>
 
@@ -67,7 +83,16 @@
     <Alert.Title>Cannot join game</Alert.Title>
     {/if}
     <Alert.Description>
-    <p>Return to the home page and choose a different room number.</p>
+    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if websocketError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Websocket could not connect</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

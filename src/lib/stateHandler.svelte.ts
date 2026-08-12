@@ -1,17 +1,23 @@
-interface IHCStateData {
-	gameState: string;
+export interface IHCStateData {
+	gameState: (
+		"init" | "game-setup" | 
+		"select-penalty-prelim" | "select-penalty-final" | "calibrate-penalty" |
+		"select-module" | "confirm-module" |
+		"select-background-fail" | "select-background-success" |
+		"interrogate" | "end-game");
 	validatedSessions: number;
 	moduleID: number | null;
 	robotCardID: number | null;
-	penaltyCardID: number | null;
+	penaltyCardID: number | [number, number] | null;
 	backgroundCardID: number | null;
 	permanentPenalty: boolean;
 	continuousCatalyzation: boolean;
+	digitalGame: boolean;
 	sealedFile: boolean;
 	endTime: Date | null
 }
 
-type IHCRole = "detective" | "suspect"
+export type IHCRole = "detective" | "suspect"
 
 interface IHCRoleData {
 	self: IHCRole;
@@ -47,38 +53,31 @@ interface IHCStateResponse {
 	type: "state-response";
 	state: Partial<IHCStateData>
 	role: null
-	string: null
+	string: "confirm" | null
 }
 
 interface IHCRoleResponse {
 	type: "role-response";
 	state: null
 	role: IHCRole
-	string: null
-}
-
-interface IHCStringResponse {
-	type: "string-response";
-	state: null
-	role: null
-	string: null
+	string: "confirm" | null
 }
 
 interface IHCCombinedResponse {
 	type: "combined-response";
 	state: Partial<IHCStateData> | null
 	role: IHCRole | null
-	string: string | null
+	string: "confirm" | null
 }
 
-type IHCResponse = (IHCStateResponse | IHCRoleResponse | IHCStringResponse | IHCCombinedResponse)
+type IHCResponse = (IHCStateResponse | IHCRoleResponse | IHCCombinedResponse)
 
 export const clientLastMessageObject: {message: string} = $state({message: ""})
 export const clientLastStatusCode: {code: number | null} = $state({code: null})
 export const clientErroredObject: {error: boolean} = $state({error: false})
 export const clientStateObject: {state:IHCStateData} = $state({
     state: {
-        gameState: "pre-init",
+        gameState: "init",
         validatedSessions: 0,
         moduleID: null,
         robotCardID: null,
@@ -86,6 +85,7 @@ export const clientStateObject: {state:IHCStateData} = $state({
         backgroundCardID: null,
         permanentPenalty: false,
         continuousCatalyzation: false,
+        digitalGame: false,
         sealedFile: false,
         endTime: null
     }
@@ -93,6 +93,32 @@ export const clientStateObject: {state:IHCStateData} = $state({
 export const clientRoleObject: {role: IHCRole | null} = $state({role: null})
 export const sessionIDObject: {ID: string} = $state(({ID: ""}))
 export const webSocketObject: {websocket: WebSocket | null} = $state({websocket: null})
+
+export function resetState() {
+	console.log("resetting state")
+	clientLastMessageObject.message = ""
+	clientLastStatusCode.code = null
+	clientErroredObject.error = false
+	clientStateObject.state = {
+		gameState: "init",
+		validatedSessions: 0,
+		moduleID: null,
+		robotCardID: null,
+		penaltyCardID: null,
+		backgroundCardID: null,
+		permanentPenalty: false,
+		continuousCatalyzation: false,
+        digitalGame: false,
+		sealedFile: false,
+		endTime: null
+	}
+	clientRoleObject.role = null
+	sessionIDObject.ID = ""
+	if (webSocketObject.websocket !== null) {
+		webSocketObject.websocket.close()
+	}
+	webSocketObject.websocket = null
+}
 
 export async function joinGame(sessionID:string, joinType:string) {
 	let url = new URL('https://ihc-server.mechanist.net/ihc-gameserver')
@@ -102,16 +128,14 @@ export async function joinGame(sessionID:string, joinType:string) {
 	const introMessage: IHCMessageData = {
 		"type": "intro",
 		"data": {
-			"sessionID": sessionID,
-			"joinType": joinType
+			sessionID: sessionID,
+			joinType: joinType
 		}
 	}
 	
 	socket.addEventListener("message", (event) => {
 		const response: IHCResponse = JSON.parse(event.data)
-		console.log(response.state)
-		console.log(response.role)
-		console.log(response.string)
+		console.log([response.type,response.state,response.role,response.string])
 		if (response.type == "state-response" || response.type == "combined-response") {
 			clientStateObject.state = {...clientStateObject.state, ...response.state};
 		}
@@ -146,21 +170,23 @@ export async function joinGame(sessionID:string, joinType:string) {
 export async function queryGameState() {
 	if (webSocketObject.websocket) {
 		const query: IHCQuery = {type: "query", data: null}
-		webSocketObject.websocket.send(JSON.stringify(query))
+		await sendMessageAndAwaitResponse(query, "query")
 	}
 }
 
 export async function updateGameState(stateUpdateData: Partial<IHCStateData>) {
 	if (webSocketObject.websocket) {
+		clientStateObject.state = {...clientStateObject.state,...stateUpdateData}
 		const stateUpdate: IHCStateUpdate = {type: "state-update", data: stateUpdateData}
-		webSocketObject.websocket.send(JSON.stringify(stateUpdate))
+		await sendMessageAndAwaitResponse(stateUpdate, "state-update")
 	}
 }
 
 export async function assignRoles(roleData: IHCRoleData) {
 	if (webSocketObject.websocket) {
+		clientRoleObject.role = roleData.self
 		const roleUpdate: IHCRoleUpdate = {type: "role-update", data: roleData}
-		webSocketObject.websocket.send(JSON.stringify(roleUpdate))
+		await sendMessageAndAwaitResponse(roleUpdate, "role-update")
 	}
 }
 
@@ -175,7 +201,7 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 		socket.addEventListener("message", (event) => {
 			const response: IHCCombinedResponse = JSON.parse(event.data)
 			clearTimeout(timeoutID)
-			if (response.string === "success") {
+			if (response.string === "confirm") {
 				resolve(socket);
 			}
 			else {
@@ -190,5 +216,33 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 		socket.addEventListener("open", (event) => {
 			socket.send(JSON.stringify(introMessage))
 		})
+	})
+}
+
+async function sendMessageAndAwaitResponse(message: IHCMessageData, messageType: "query" | "state-update" | "role-update") {
+	return new Promise((resolve) => {
+		if (webSocketObject.websocket) {
+			const timeoutID = setTimeout(() => {
+				webSocketObject.websocket!.close()
+				console.log("websocket timeout")
+				resolve(null)
+			},1000)
+
+			webSocketObject.websocket.addEventListener("message", (event) => {
+				const response: IHCResponse = JSON.parse(event.data)
+				if (
+					(messageType === "query" && response.string === "confirm" && response.type === "combined-response") ||
+					(messageType === "state-update" && response.string === "confirm" && response.type === "state-response") ||
+					(messageType === "role-update" && response.string === "confirm" && response.type === "role-response")
+				) {
+					clearTimeout(timeoutID)
+					resolve(null)
+				}
+			},
+			{once: true}
+			)
+			webSocketObject.websocket.send(JSON.stringify(message))
+		}
+		else resolve(null)
 	})
 }
