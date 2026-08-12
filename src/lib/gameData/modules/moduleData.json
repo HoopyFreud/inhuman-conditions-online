@@ -1,0 +1,70 @@
+[
+    {
+        "id": 0,
+        "text": "Small talk",
+        "difficulty": "Introductory",
+        "dark-icon": "/images/small-talk-dark.svg",
+        "light-icon": "/images/small-talk-light.svg"
+    },
+    {
+        "id": 1,
+        "text": "Creative Problem Solving",
+        "difficulty": "Easy",
+        "dark-icon": "/images/creative-dark.svg",
+        "light-icon": "/images/creative-light.svg"
+    },
+    {
+        "id": 2,
+        "text": "Imagination",
+        "difficulty": "Easy",
+        "icon": "/images/imagination.svg"
+    },
+    {
+        "id": 3,
+        "text": "Cooperation and Collaboration",
+        "difficulty": "Easy",
+        "icon": "/images/coop.svg"
+    },
+    {
+        "id": 4,
+        "text": "Hopes and Dreams",
+        "difficulty": "Intermediate",
+        "icon": "/images/hopes.svg"
+    },
+    {
+        "id": 5,
+        "text": "Body Integration",
+        "difficulty": "Intermediate",
+        "icon": "/images/body.svg"
+    },
+    {
+        "id": 6,
+        "text": "Grief",
+        "difficulty": "Intermediate",
+        "icon": "/images/grief.svg"
+    },
+    {
+        "id": 7,
+        "text": "Threat Assessment",
+        "difficulty": "Intermediate",
+        "icon": "/images/threat.svg"
+    },
+    {
+        "id": 8,
+        "text": "Moral Failings",
+        "difficulty": "Intermediate",
+        "icon": "/images/moral.svg"
+    },
+    {
+        "id": 9,
+        "text": "Self Image",
+        "difficulty": "Intermediate",
+        "icon": "/images/self.svg"
+    },
+    {
+        "id": 10,
+        "text": "Recognizing Intentions",
+        "difficulty": "Hard",
+        "icon": "/images/intentions.svg"
+    }
+]
