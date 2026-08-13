@@ -13,8 +13,8 @@
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
 
-    import penaltyData from "$lib/gameData/penalties/penaltyData.json"
-    import moduleData from "$lib/gameData/modules/moduleData.json" 
+    import penaltyData from "$lib/gameData/penalties/penalties.json"
+    import moduleData from "$lib/gameData/modules/modules.json" 
 
     const gameError = getErrorContext()
 

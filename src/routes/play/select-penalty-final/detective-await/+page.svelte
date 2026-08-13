@@ -10,7 +10,7 @@
 	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
-    import penaltyData from "$lib/gameData/penalties/penaltyData.json"
+    import penaltyData from "$lib/gameData/penalties/penalties.json"
 
     let availablePenalties: IHCPenalty[]= $state([])
     let permanentPenalty: IHCPenalty | null = $state(null)

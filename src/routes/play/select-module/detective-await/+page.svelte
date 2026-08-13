@@ -10,8 +10,8 @@
 	import type { IHCPenalty, IHCModule } from "$lib/gameObjectHandler.svelte."
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
-    import penaltyData from "$lib/gameData/penalties/penaltyData.json"
-    import moduleData from "$lib/gameData/modules/moduleData.json" 
+    import penaltyData from "$lib/gameData/penalties/penalties.json"
+    import moduleData from "$lib/gameData/modules/modules.json" 
 
     let selectedPenalty: IHCPenalty | null = $derived(penaltyData.find((penalty) => penalty.id === clientStateObject.state.penaltyCardID) ?? null)
     let invalidPenaltyError = $derived(selectedPenalty === null)
