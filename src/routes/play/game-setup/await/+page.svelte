@@ -2,8 +2,8 @@
     import { goto } from "$app/navigation";
 
 	import * as Alert from "$lib/components/ui/alert/index.js";
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
     import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
+	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 

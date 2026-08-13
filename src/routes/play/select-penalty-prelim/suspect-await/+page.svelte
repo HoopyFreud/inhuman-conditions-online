@@ -2,10 +2,10 @@
     import { goto } from "$app/navigation";
 
 	import * as Alert from "$lib/components/ui/alert/index.js";
+    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 
     let validState = $derived(
         clientStateObject.state.gameState === "select-penalty-prelim" ||

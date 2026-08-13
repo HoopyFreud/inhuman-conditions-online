@@ -4,8 +4,8 @@
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
     import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
+	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import type { IHCPenalty, IHCModule } from "$lib/gameObjectHandler.svelte."
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
