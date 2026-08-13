@@ -92,12 +92,6 @@
 
 <Button disabled={disableConfirmPenalty} variant="outline" type="submit" onclick={async () => await calibrationCompleted()} class="w-fit m-auto mb-2"><h3>Calibration completed</h3></Button>
 
-    
-<div class="flex flex-row justify-evenly w-3/4 mt-4">
-    <Button variant="destructive" type="submit" onclick={async () => await calibrationFailed()} disabled={disableConfirmPenalty}><h3>Suspect failed calibration</h3></Button>
-    <Button variant="outline" type="submit" onclick={async() => await calibrationCompleted()} disabled={disableConfirmPenalty}><h3>Suspect achieved calibration</h3></Button>
-</div>
-
 {#if invalidDataError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

@@ -1,0 +1,122 @@
+[
+    {
+        "id": 0,
+        "role": "Maker of false animals"
+    },
+    {
+        "id": 1,
+        "role": "Renowned professor"
+    },
+    {
+        "id": 2,
+        "role": "Reality TV contestant"
+    },
+    {
+        "id": 3,
+        "role": "Cult leader"
+    },
+    {
+        "id": 4,
+        "role": "Foreign ambassador"
+    },
+    {
+        "id": 5,
+        "role": "Motivational speaker"
+    },
+    {
+        "id": 6,
+        "role": "Conspiracy theorist"
+    },
+    {
+        "id": 7,
+        "role": "Professional criminal"
+    },
+    {
+        "id": 8,
+        "role": "Used van dealer"
+    },
+    {
+        "id": 9,
+        "role": "Popstar"
+    },
+    {
+        "id": 10,
+        "role": "Retired sports champion"
+    },
+    {
+        "id": 11,
+        "role": "Very old"
+    },
+    {
+        "id": 12,
+        "role": "Mayoral candidate"
+    },
+    {
+        "id": 13,
+        "role": "Decorated robot war veteran"
+    },
+    {
+        "id": 14,
+        "role": "Former investigator"
+    },
+    {
+        "id": 15,
+        "role": "Dishonorably discharged from the military"
+    },
+    {
+        "id": 16,
+        "role": "World's second richest person"
+    },
+    {
+        "id": 17,
+        "role": "Cannibal"
+    },
+    {
+        "id": 18,
+        "role": "Amateur wrestler"
+    },
+    {
+        "id": 19,
+        "role": "\"The Butcher\""
+    },
+    {
+        "id": 20,
+        "role": "Body builder"
+    },
+    {
+        "id": 21,
+        "role": "Freelance robot hunter"
+    },
+    {
+        "id": 22,
+        "role": "Royalty"
+    },
+    {
+        "id": 23,
+        "role": "Disgraced scientist"
+    },
+    {
+        "id": 24,
+        "role": "Dean of a clown college"
+    },
+    {
+        "id": 25,
+        "role": "Former child star"
+    },
+    {
+        "id": 26,
+        "role": "Butler to the stars"
+    },
+    {
+        "id": 27,
+        "role": "Internal affairs agent"
+    },
+    {
+        "id": 28,
+        "role": "Robots rights activist"
+    },
+    {
+        "id": 29,
+        "role": "Sponsored by an energy drink brand"
+    }
+]

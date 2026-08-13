@@ -5,14 +5,12 @@
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 
 	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
     import penaltyData from "$lib/gameData/penalties/penaltyData.json"
-
-    const loadingElementTextSequence = ["",".","..","..."]
-    let loadingElementText = $state("")
 
     let availablePenalties: IHCPenalty[]= $state([])
     let permanentPenalty: IHCPenalty | null = $state(null)
@@ -25,22 +23,6 @@
     )
 
     let stateUpdateError = $derived(!validState)
-
-    function loadingSequence() {
-        let textIndex = 0
-        loadingElementText = loadingElementTextSequence[textIndex]
-        while(true) {
-            setTimeout(() => {
-                if (textIndex < loadingElementTextSequence.length) {
-                    textIndex += 1
-                }
-                else {
-                    textIndex = 0
-                }
-                loadingElementText = loadingElementTextSequence[textIndex]
-            },500)
-        }
-    }
 
     onMount(() => {
         availablePenalties = [...penaltyData]
@@ -69,12 +51,10 @@
             goto("/play/calibrate-penalty/detective-do?room="+sessionIDObject.ID)
         }
     })
-
-    loadingSequence()
 </script>
 
 <h2>Waiting for suspect to select penalty</h2>
-<h3>{loadingElementText}</h3>
+<Ellipsis />
 {#if permanentPenalty !== null}
 <p>
     The permanent penalty will be enforced in addition to the selected penalty.

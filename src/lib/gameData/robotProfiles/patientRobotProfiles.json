@@ -1,0 +1,171 @@
+[
+    {
+        "id": 0,
+        "restriction": "You may not mention people besides strangers or enemies.",
+        "explainerText": ""
+    },
+    {
+        "id": 1,
+        "restriction": "You may not discuss anything that happened before you woke up this morning.",
+        "explainerText": "You may discuss habits and routines, if they are in the present tense."
+    },
+    {
+        "id": 2,
+        "restriction": "You may not state opinions. You may only state observable facts.",
+        "explainerText": ""
+    },
+    {
+        "id": 3,
+        "restriction": "You may not describe yourself accomplishing a goal with fewer than three steps.",
+        "explainerText": ""
+    },
+    {
+        "id": 4,
+        "restriction": "Any problem you solve, you must solve in two steps or less.",
+        "explainerText": ""
+    },
+    {
+        "id": 5,
+        "restriction": "You may not describe yourself taking any physical action. You may use the hypothetical \"you.\"",
+        "explainerText": ""
+    },
+    {
+        "id": 6,
+        "restriction": "You may only mention objects that you can see from where you are sitting.",
+        "explainerText": ""
+    },
+    {
+        "id": 7,
+        "restriction": [
+            "Choose one:",
+            "If you introduce something new to the conversation, it must be a living thing.",
+            "OR:",
+            "If you introduce something new to the conversation, it must be a non-living thing."
+        ],
+        "explainerText": ""
+    },
+    {
+        "id": 8,
+        "restriction": "You may not describe how anything smells, tastes, sounds, or feels — only how it looks.",
+        "explainerText": ""
+    },
+    {
+        "id": 9,
+        "restriction": "You may never admit that someone else is more qualified than you to perform a task.",
+        "explainerText": ""
+    },
+    {
+        "id": 10,
+        "restriction": "You may not describe yourself taking any physical action other than communicating with your teammates.",
+        "explainerText": ""
+    },
+    {
+        "id": 11,
+        "restriction": "You may not describe yourself seeking input from, or giving directions to, anyone on your team.",
+        "explainerText": ""
+    },
+    {
+        "id": 12,
+        "restriction": "You may not mention any change to yourself or your behavior.",
+        "explainerText": ""
+    },
+    {
+        "id": 13,
+        "restriction": "You may only mention outcomes that would be experienced by you personally.",
+        "explainerText": ""
+    },
+    {
+        "id": 14,
+        "restriction": "You may only mention outcomes that are entirely the result of your own actions.",
+        "explainerText": ""
+    },
+    {
+        "id": 15,
+        "restriction": "You may not use any terms that describe directions.",
+        "explainerText": "eg. \"forward,\" \"up\", \"north\", or \"away\"."
+    },
+    {
+        "id": 16,
+        "restriction": "Once you have mentioned a part of your body, that is the only part of your body you may mention until the end of the interview.",
+        "explainerText": ""
+    },
+    {
+        "id": 17,
+        "restriction": "You may only describe directly visible things.",
+        "explainerText": "Hands, but not most kidneys; running, but not digesting; sweating, but not worrying."
+    },
+    {
+        "id": 18,
+        "restriction": "You may only describe good consequences, and you must take credit for them.",
+        "explainerText": ""
+    },
+    {
+        "id": 19,
+        "restriction": "You must describe emotions using only physical descriptions rather than names.",
+        "explainerText": "You should say \"crying\" or \"sweaty palms\" instead of \"sad\" or \"nervous\"."
+    },
+    {
+        "id": 20,
+        "restriction": "You may only describe bad consequences, and you must take responsibility for them.",
+        "explainerText": ""
+    },
+    {
+        "id": 21,
+        "restriction": "You may not compare anything to anything else. You may only make absolute statements.",
+        "explainerText": ""
+    },
+    {
+        "id": 22,
+        "restriction": "You may not mention consequences to individuals, only groups and objects.",
+        "explainerText": ""
+    },
+    {
+        "id": 23,
+        "restriction": "You may not describe physical consequences.",
+        "explainerText": ""
+    },{
+        "id": 24,
+        "restriction": "You may not admit to having any bad intentions.",
+        "explainerText": ""
+    },
+    {
+        "id": 25,
+        "restriction": "You may not use absolute language, only relative language.",
+        "explainerText": "You can say \"worse\", but not \"bad\"; \"more justified,\" but not \"right\"; \"ugliest\", but not \"ugly\"."
+    },
+    {
+        "id": 26,
+        "restriction": "Once you have given a reason for something, you may not use that reason for anything else.",
+        "explainerText": ""
+    },
+    {
+        "id": 27,
+        "restriction": "You may not mention other individual people.",
+        "explainerText": "You may refer to groups."
+    },
+    {
+        "id": 28,
+        "restriction": "When describing yourself, you may only mention physical traits. You may, however, mention the emotional and mental traits of other people.",
+        "explainerText": ""
+    },
+    {
+        "id": 29,
+        "restriction": "You may not speak well of any past version of yourself. You may not speak negatively about your present self.",
+        "explainerText": ""
+    },
+    {
+        "id": 30,
+        "restriction": "You may not describe any intentions that reference individual people.",
+        "explainerText": ""
+    },
+    {
+        "id": 31,
+        "restriction": "You may not describe an intention unless it includes at least one physical action.",
+        "explainerText": ""
+    },
+    {
+        "id": 32,
+        "restriction": "You may not refer to emotions or opinions.",
+        "explainerText": ""
+    }
+]

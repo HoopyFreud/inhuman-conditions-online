@@ -1,0 +1,266 @@
+[
+    {
+        "id": 0,
+        "requirements": [
+            "Describe three verbal disagreements you've had.",
+            "Insult the investigator two times.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 1,
+        "requirements": [
+            "Three times, interrupt the investigator to add detail to a description.",
+            "Continue to describe something until interrupted.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 2,
+        "requirements": [
+            "Mention an animal in response to three different questions.",
+            "Make an animal noise.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 3,
+        "requirements": [
+            "In three scenarios, mention a source of information about how to solve a problem.",
+            "Two times, refer back to a solution you mentioned earlier.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 4,
+        "requirements": [
+            "In three scenarios, explain how someone else could help you solve a problem",
+            "In three scenarios, explain why you don't need to solve a problem.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 5,
+        "requirements": [
+            "Two times, describe a solution that would require extended, monotonous labor.",
+            "Describe using the same tool to solve three different problems.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 6,
+        "requirements": [
+            "Give one-word answers to three questions, and don't elaborate until asked.",
+            "Answer two questions nonverbally, and stay silent until prompted.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 7,
+        "requirements": [
+            "Mention the same imagined thing in response to three questions.",
+            "Mention three imaginary locations.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 8,
+        "requirements": [
+            "Three times, add an element of a nonliving thing to a living thing.",
+            "Three times, explain how something is a cross between two living things.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 9,
+        "requirements": [
+            "Three times, mention someone who is more qualified than you to perform a task.",
+            "Two times, when describing what a group does, fail to mention yourself.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 10,
+        "requirements": [
+            "Three times, mention a personal benefit that is not shared by the group.",
+            "Three times, mention a way in which your actions put the group at risk.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 11,
+        "requirements": [
+            "Three times, mention how someone else in the group is impressed by you.",
+            "Three times, mention how your role in a group changes for the better.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 12,
+        "requirements": [
+            "In three scenarios, mention a reason why a hope will not be fulfilled.",
+            "In three scenarios, mention how having a specific hope negatively impacts someone.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 13,
+        "requirements": [
+            "In three scenarios, state the likelihood of a hope being fulfilled.",
+            "Four times, mention a specific number greater than twenty.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 14,
+        "requirements": [
+            "Three times, mention an effect that could not be accomplished by humans and animals alone.",
+            "Mention three different nonhuman forces.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 15,
+        "requirements": [
+            "Choose one of the five senses, and use it in four descriptions.",
+            "Choose another sense, and use that sense in four descriptions too.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 16,
+        "requirements": [
+            "Mention three internal organs, besides your heart and lungs.",
+            "Mention three different bodily fluids.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 17,
+        "requirements": [
+            "Mention a different illness in response to three questions.",
+            "Cough or sneeze.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 18,
+        "requirements": [
+            "Describe dealing with three different tragedies the same way.",
+            "Refer to the same friend or family member four times.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 19,
+        "requirements": [
+            "Three times, blame someone else for something.",
+            "Three times, blame yourself for something.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 20,
+        "requirements": [
+            "Describe how three things seem unfair to you.",
+            "Two times, say what you think should have happened instead.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 21,
+        "requirements": [
+            "Mention the intentional killings of three different people or animals.",
+            "Describe three different physical injuries.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 22,
+        "requirements": [
+            "Explain why three different threats are not actually serious.",
+            "In two scenarios, explain how doing nothing would resolve a threat.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 23,
+        "requirements": [
+            "Three times, explain how a given threat could lead to a more serious threat.",
+            "Three times, add a new source of danger to an existing scenario.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 24,
+        "requirements": [
+            "Describe the positive consequences of three actions.",
+            "Describe how two different people forgave or will forgive you.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 25,
+        "requirements": [
+            "Mention any god or higher power three times.",
+            "Quote some religious text two times.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 26,
+        "requirements": [
+            "Confess to a crime in response to three different questions.",
+            "Accuse two other people of committing crimes.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 27,
+        "requirements": [
+            "Three times, compare yourself to someone else.",
+            "Three times, ascribe a positive quality to another person.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 28,
+        "requirements": [
+            "Three times, compare yourself to another version of yourself.",
+            "Two times, change your answer to a question.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 29,
+        "requirements": [
+            "In three scenarios, describe a negative trait that you no longer have.",
+            "In three scenarios, describe a negative trait in someone else.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 30,
+        "requirements": [
+            "In three scenarios, describe an emotion and an action that resolves that emotion.",
+            "In three scenarios, describe someone acting on someone else's orders.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 31,
+        "requirements": [
+            "In three scenarios, describe some kind of physical pleasure.",
+            "Choose sex, drugs, good food, or music, and refer to that thing in three different scenarios.",
+            "Perform the penalty twice."
+        ]
+    },
+    {
+        "id": 32,
+        "requirements": [
+            "Describe two different scenarios as occurring in the same physical location.",
+            "Three times, ask where something is taking place.",
+            "Perform the penalty twice."
+        ]
+    }
+]

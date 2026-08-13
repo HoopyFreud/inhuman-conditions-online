@@ -4,26 +4,19 @@
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 
-	import type { IHCStateData } from "$lib/stateHandler.svelte"
 	import type { IHCPenalty, IHCModule } from "$lib/gameObjectHandler.svelte."
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
 
     import penaltyData from "$lib/gameData/penalties/penaltyData.json"
     import moduleData from "$lib/gameData/modules/moduleData.json" 
 
-    const gameError = getErrorContext()
-
     let selectedPenalty: IHCPenalty | null = $derived(penaltyData.find((penalty) => penalty.id === clientStateObject.state.penaltyCardID) ?? null)
     let invalidPenaltyError = $derived(selectedPenalty === null)
 
-    let selectedModule: number | null = $state(null)
     let availableModules: IHCModule[] = $state([])
-    let invalidModuleSelection = $derived(selectedModule === null)
 
     let validState = $derived(
         clientStateObject.state.gameState === "select-module" ||
@@ -31,30 +24,6 @@
     )
     
     let stateUpdateError = $derived(!validState)
-
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "confirm-module",
-        penaltyCardID: selectedModule
-    })
-
-    let disableModuleSelectButton: boolean = $derived(selectedModule !== null)
-    let disableModuleDeselectButton: boolean = $derived(selectedModule === null)
-    let disableSelectModule: boolean = $derived(invalidModuleSelection || invalidPenaltyError || stateUpdateError || gameError())
-
-    function removeModule() {
-        selectedModule = null
-    }
-
-    function addModule(module: IHCModule) {
-        selectedModule = module.id
-    }
-
-    async function submitModule() {
-        if (!disableSelectModule){
-            await updateGameState(gameStateUpdate)
-            goto("/play/confirm-module/suspect-await?room="+sessionIDObject.ID)
-        }
-    }
 
     onMount(() => {
         availableModules = [...(moduleData as IHCModule[])]
@@ -69,6 +38,9 @@
             console.log("Client has invalid penalty selection, closing websocket")
             webSocketObject.websocket?.close()
         }
+        else if (clientStateObject.state.gameState === "confirm-module") {
+            goto("/play/confirm-module/detective-do?room="+sessionIDObject.ID)
+        }
     })
 </script>
 
@@ -78,27 +50,18 @@
 </p>
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each availableModules as availableModule}
-        <Card.Root class="w-1/4 {selectedModule === availableModule.id? 'light' : ''}">
+        <Card.Root class="w-1/4">
             <Card.Header>
                 <Card.Title>{availableModule.name}</Card.Title>
             </Card.Header>
             <Card.Content class="mt-auto">
-                {#if selectedModule === availableModule.id}
-                    <img src={availableModule.lightIcon} alt={availableModule.name}/>
-                    <Button variant="outline" type="submit" disabled={disableModuleDeselectButton} onclick={() => removeModule()} class="w-fit m-auto mt-4">
-                        <h3>Deselect</h3>
-                    </Button>
-                {:else}
-                    <img src={availableModule.darkIcon} alt={availableModule.name}/>
-                    <Button variant="outline" type="submit" disabled={disableModuleSelectButton} onclick={() => addModule(availableModule)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
-                    </Button>
-                {/if}
+                <img src={availableModule.darkIcon} alt={availableModule.name}/>
             </Card.Content>
         </Card.Root>
     {/each}
-    </div>
-<Button disabled={disableSelectModule} variant="outline" type="submit" onclick={async () => await submitModule()} class="w-fit m-auto mb-2"><h3>Select Module</h3></Button>
+</div>
+
+<Ellipsis />
 
 {#if stateUpdateError}
 <Alert.Root variant="destructive">

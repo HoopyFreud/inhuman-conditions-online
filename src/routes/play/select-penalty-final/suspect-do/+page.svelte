@@ -17,8 +17,8 @@
     
     const gameError = getErrorContext()
 
-    let selectedPenalty: number | null= $state(null)
-    let availablePenalties: IHCPenalty[]= $state([])
+    let selectedPenalty: number | null = $state(null)
+    let availablePenalties: IHCPenalty[] = $state([])
     let permanentPenalty: IHCPenalty | null = $state(null)
 
     let invalidPenaltySelection = $derived(selectedPenalty === null)

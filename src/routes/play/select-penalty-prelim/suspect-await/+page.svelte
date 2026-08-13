@@ -5,10 +5,7 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-
-    const loadingElementTextSequence = ["",".","..","..."]
-
-    let loadingElementText = $state("")
+    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 
     let validState = $derived(
         clientStateObject.state.gameState === "select-penalty-prelim" ||
@@ -16,22 +13,6 @@
     )
 
     let stateUpdateError = $derived(!validState)
-
-    function loadingSequence() {
-        let textIndex = 0
-        loadingElementText = loadingElementTextSequence[textIndex]
-        while(true) {
-            setTimeout(() => {
-                if (textIndex < loadingElementTextSequence.length) {
-                    textIndex += 1
-                }
-                else {
-                    textIndex = 0
-                }
-                loadingElementText = loadingElementTextSequence[textIndex]
-            },500)
-        }
-    }
 
     $effect(() => {
         if (stateUpdateError) {
@@ -42,13 +23,11 @@
             goto("/play/select-penalty-final/suspect-do?room="+sessionIDObject.ID)
         }
     })
-
-    loadingSequence()
 </script>
 
 <h2>Waiting for detective to select penalties</h2>
 
-<h3>{loadingElementText}</h3>
+<Ellipsis />
 
 {#if stateUpdateError}
 <Alert.Root variant="destructive">
