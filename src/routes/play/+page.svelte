@@ -6,7 +6,7 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-	import { joinGame, updateGameState } from "$lib/stateHandler.svelte"
+	import { joinGame } from "$lib/stateHandler.svelte"
 
 	let roomIsFullError = $state(false)
 	let roomDoesNotExistError = $state(false)
