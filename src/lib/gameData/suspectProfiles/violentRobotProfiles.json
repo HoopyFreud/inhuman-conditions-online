@@ -1,6 +1,7 @@
 [
     {
         "id": 0,
+        "type": "violentRobot",
         "requirements": [
             "Describe three verbal disagreements you've had.",
             "Insult the investigator two times.",
@@ -9,6 +10,7 @@
     },
     {
         "id": 1,
+        "type": "violentRobot",
         "requirements": [
             "Three times, interrupt the investigator to add detail to a description.",
             "Continue to describe something until interrupted.",
@@ -17,6 +19,7 @@
     },
     {
         "id": 2,
+        "type": "violentRobot",
         "requirements": [
             "Mention an animal in response to three different questions.",
             "Make an animal noise.",
@@ -25,6 +28,7 @@
     },
     {
         "id": 3,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, mention a source of information about how to solve a problem.",
             "Two times, refer back to a solution you mentioned earlier.",
@@ -33,6 +37,7 @@
     },
     {
         "id": 4,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, explain how someone else could help you solve a problem",
             "In three scenarios, explain why you don't need to solve a problem.",
@@ -41,6 +46,7 @@
     },
     {
         "id": 5,
+        "type": "violentRobot",
         "requirements": [
             "Two times, describe a solution that would require extended, monotonous labor.",
             "Describe using the same tool to solve three different problems.",
@@ -49,6 +55,7 @@
     },
     {
         "id": 6,
+        "type": "violentRobot",
         "requirements": [
             "Give one-word answers to three questions, and don't elaborate until asked.",
             "Answer two questions nonverbally, and stay silent until prompted.",
@@ -57,6 +64,7 @@
     },
     {
         "id": 7,
+        "type": "violentRobot",
         "requirements": [
             "Mention the same imagined thing in response to three questions.",
             "Mention three imaginary locations.",
@@ -65,6 +73,7 @@
     },
     {
         "id": 8,
+        "type": "violentRobot",
         "requirements": [
             "Three times, add an element of a nonliving thing to a living thing.",
             "Three times, explain how something is a cross between two living things.",
@@ -73,6 +82,7 @@
     },
     {
         "id": 9,
+        "type": "violentRobot",
         "requirements": [
             "Three times, mention someone who is more qualified than you to perform a task.",
             "Two times, when describing what a group does, fail to mention yourself.",
@@ -81,6 +91,7 @@
     },
     {
         "id": 10,
+        "type": "violentRobot",
         "requirements": [
             "Three times, mention a personal benefit that is not shared by the group.",
             "Three times, mention a way in which your actions put the group at risk.",
@@ -89,6 +100,7 @@
     },
     {
         "id": 11,
+        "type": "violentRobot",
         "requirements": [
             "Three times, mention how someone else in the group is impressed by you.",
             "Three times, mention how your role in a group changes for the better.",
@@ -97,6 +109,7 @@
     },
     {
         "id": 12,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, mention a reason why a hope will not be fulfilled.",
             "In three scenarios, mention how having a specific hope negatively impacts someone.",
@@ -105,6 +118,7 @@
     },
     {
         "id": 13,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, state the likelihood of a hope being fulfilled.",
             "Four times, mention a specific number greater than twenty.",
@@ -113,6 +127,7 @@
     },
     {
         "id": 14,
+        "type": "violentRobot",
         "requirements": [
             "Three times, mention an effect that could not be accomplished by humans and animals alone.",
             "Mention three different nonhuman forces.",
@@ -121,6 +136,7 @@
     },
     {
         "id": 15,
+        "type": "violentRobot",
         "requirements": [
             "Choose one of the five senses, and use it in four descriptions.",
             "Choose another sense, and use that sense in four descriptions too.",
@@ -129,6 +145,7 @@
     },
     {
         "id": 16,
+        "type": "violentRobot",
         "requirements": [
             "Mention three internal organs, besides your heart and lungs.",
             "Mention three different bodily fluids.",
@@ -137,6 +154,7 @@
     },
     {
         "id": 17,
+        "type": "violentRobot",
         "requirements": [
             "Mention a different illness in response to three questions.",
             "Cough or sneeze.",
@@ -145,6 +163,7 @@
     },
     {
         "id": 18,
+        "type": "violentRobot",
         "requirements": [
             "Describe dealing with three different tragedies the same way.",
             "Refer to the same friend or family member four times.",
@@ -153,6 +172,7 @@
     },
     {
         "id": 19,
+        "type": "violentRobot",
         "requirements": [
             "Three times, blame someone else for something.",
             "Three times, blame yourself for something.",
@@ -161,6 +181,7 @@
     },
     {
         "id": 20,
+        "type": "violentRobot",
         "requirements": [
             "Describe how three things seem unfair to you.",
             "Two times, say what you think should have happened instead.",
@@ -169,6 +190,7 @@
     },
     {
         "id": 21,
+        "type": "violentRobot",
         "requirements": [
             "Mention the intentional killings of three different people or animals.",
             "Describe three different physical injuries.",
@@ -177,6 +199,7 @@
     },
     {
         "id": 22,
+        "type": "violentRobot",
         "requirements": [
             "Explain why three different threats are not actually serious.",
             "In two scenarios, explain how doing nothing would resolve a threat.",
@@ -185,6 +208,7 @@
     },
     {
         "id": 23,
+        "type": "violentRobot",
         "requirements": [
             "Three times, explain how a given threat could lead to a more serious threat.",
             "Three times, add a new source of danger to an existing scenario.",
@@ -193,6 +217,7 @@
     },
     {
         "id": 24,
+        "type": "violentRobot",
         "requirements": [
             "Describe the positive consequences of three actions.",
             "Describe how two different people forgave or will forgive you.",
@@ -201,6 +226,7 @@
     },
     {
         "id": 25,
+        "type": "violentRobot",
         "requirements": [
             "Mention any god or higher power three times.",
             "Quote some religious text two times.",
@@ -209,6 +235,7 @@
     },
     {
         "id": 26,
+        "type": "violentRobot",
         "requirements": [
             "Confess to a crime in response to three different questions.",
             "Accuse two other people of committing crimes.",
@@ -217,6 +244,7 @@
     },
     {
         "id": 27,
+        "type": "violentRobot",
         "requirements": [
             "Three times, compare yourself to someone else.",
             "Three times, ascribe a positive quality to another person.",
@@ -225,6 +253,7 @@
     },
     {
         "id": 28,
+        "type": "violentRobot",
         "requirements": [
             "Three times, compare yourself to another version of yourself.",
             "Two times, change your answer to a question.",
@@ -233,6 +262,7 @@
     },
     {
         "id": 29,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, describe a negative trait that you no longer have.",
             "In three scenarios, describe a negative trait in someone else.",
@@ -241,6 +271,7 @@
     },
     {
         "id": 30,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, describe an emotion and an action that resolves that emotion.",
             "In three scenarios, describe someone acting on someone else's orders.",
@@ -249,6 +280,7 @@
     },
     {
         "id": 31,
+        "type": "violentRobot",
         "requirements": [
             "In three scenarios, describe some kind of physical pleasure.",
             "Choose sex, drugs, good food, or music, and refer to that thing in three different scenarios.",
@@ -257,6 +289,7 @@
     },
     {
         "id": 32,
+        "type": "violentRobot",
         "requirements": [
             "Describe two different scenarios as occurring in the same physical location.",
             "Three times, ask where something is taking place.",
