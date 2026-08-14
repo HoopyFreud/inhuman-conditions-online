@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { page } from '$app/state';
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
 
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
@@ -19,11 +19,11 @@
     let websocketError = $derived(webSocketObject.websocket === null)
 
     function newGame() {
-		goto("/")
+		goto("/", { invalidateAll: true })
 	}
 
     function copyRoomLink() {
-		navigator.clipboard.writeText(page.url.href)
+		navigator.clipboard.writeText(page.url.host+"/join?room="+urlSessionID)
 	}
 
     setErrorContext(() => sessionIDMismatchError || websocketError)

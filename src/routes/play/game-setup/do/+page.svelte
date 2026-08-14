@@ -45,12 +45,12 @@
     async function performSetup() {
         if (!disableSetupSubmission) {
             if (clientRoleObject.role === "detective") {
-                assignRoles({self: "detective", other: "suspect"})
+                await assignRoles({self: "detective", other: "suspect"})
                 await updateGameState(gameStateUpdate)
                 goto("/play/select-penalty-prelim/detective-do?room="+sessionIDObject.ID)
             }
             else if (clientRoleObject.role === "suspect") {
-                assignRoles({self: "suspect", other: "detective"})
+                await assignRoles({self: "suspect", other: "detective"})
                 await updateGameState(gameStateUpdate)
                 goto("/play/select-penalty-prelim/suspect-await?room="+sessionIDObject.ID)
             }
@@ -69,8 +69,8 @@
 <h2>Select Role</h2>
 <ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto"
     bind:value={
-    () => clientRoleObject.role ?? undefined,
-    (v:IHCRole | undefined) => clientRoleObject.role = v ?? null
+    () => clientRoleObject.role ?? "",
+    (v:IHCRole | "") => clientRoleObject.role = v || null
 }>
     <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
         <h3 class="m-0!">Detective</h3>

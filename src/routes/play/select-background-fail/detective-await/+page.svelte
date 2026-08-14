@@ -1,25 +1,82 @@
-
 <script lang="ts">
-	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+    import { goto } from '$app/navigation';
+    
+	import * as Alert from "$lib/components/ui/alert/index.js";
+    import * as Card from "$lib/components/ui/card/index.js";
+    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
+	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
 
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+
+    let validState = $derived(
+        clientStateObject.state.gameState === "select-background-fail" ||
+        clientStateObject.state.gameState === "interrogate-prelim"
+    )
+    
+    let stateUpdateError = $derived(!validState)
+
+    let roleError = $derived(clientRoleObject.role !== "detective")
+
+    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null)
+
+    $effect(() => {
+        if (stateUpdateError) {
+            console.log("Failed state update, closing websocket")
+            webSocketObject.websocket?.close()
+        }
+        else if (invalidDataError) {
+            console.log("Bad penalty or module data, closing websocket")
+            webSocketObject.websocket?.close()
+        }
+        else if (clientStateObject.state.gameState === "interrogate-prelim") {
+            goto("/play/interrogate/detective?room="+sessionIDObject.ID)
+        }
+    })
 </script>
 
-<svelte:head>
-	<title>Identity Crisis - Play</title>
-	<meta name="description" content="Play Identity Crisis" />
-</svelte:head>
+<h2>Select Module</h2>
+<p>
+    The suspect will now recieve a role. Take this time to review the module prompts and prepare to interrogate the suspect.
+</p>
+<div class="flex flex-row justify-around gap-2 mx-2 my-2">
+    {#each gamePenalties.currentPenalties as activePenalty}
+        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+            <Card.Header>
+                <Card.Title>{activePenalty.text}</Card.Title>
+            </Card.Header>
+            <Card.Content class="mt-auto">
+            </Card.Content>
+        </Card.Root>
+    {/each}
+</div>
+<Ellipsis />
 
-<h2>Select Role</h2>
-<ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto">
-    <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
-        <h3 class="m-0!">Detective</h3>
-    </ToggleGroup.Item>
-    <ToggleGroup.Item value="suspect" aria-label="Toggle Suspect">
-        <h3 class="m-0!">Suspect</h3>
-    </ToggleGroup.Item>
-</ToggleGroup.Root>
-    
-<Button variant="outline" type="submit" class="w-fit m-auto mt-4 "><h3>Set Up Room</h3></Button>
+{#if stateUpdateError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Failed to update game state</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if roleError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Wrong role</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if invalidDataError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Bad incoming penalty or module data</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}

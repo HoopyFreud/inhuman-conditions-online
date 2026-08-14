@@ -114,7 +114,7 @@
                     </Button>
                 {:else}
                     <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
+                        <h3>Select</h3>
                     </Button>
                 {/if}
             </Card.Content>

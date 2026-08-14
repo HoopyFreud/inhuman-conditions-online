@@ -19,7 +19,8 @@
     let validState = $derived(
         clientStateObject.state.gameState === "confirm-module" ||
         clientStateObject.state.gameState === "select-background-fail" ||
-        clientStateObject.state.gameState === "select-background-success"
+        clientStateObject.state.gameState === "select-background-success"||
+        clientStateObject.state.gameState === "interrogate-prelim"
     )
 
     let stateUpdateError = $derived(!validState)
@@ -50,6 +51,16 @@
         }
     }
 
+    async function validationSealed() {
+        if (!disableConfirmModule) {
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "interrogate-prelim",
+            }
+            await updateGameState(gameStateUpdate)
+            goto("/play/interrogation/detective?room="+sessionIDObject.ID)
+        }
+    }
+
     $effect(() => {
         if (stateUpdateError) {
             console.log("Failed state update, closing websocket")
@@ -63,12 +74,27 @@
 </script>
 
 <h2>Module validation</h2>
+{#if !clientStateObject.state.continuousCatalyzation}
 <p>
-    Ask the suspect a question about the module sequence, such as "what letters come between D and A?" or "what letter follows B?" Note that there is no beginning or end to this sequence of letters; it is cyclical. They will take some time to answer the question.
+    Ask the suspect a question about the module sequence, such as "what letters come between D and A?" or "what letter follows B?"
 </p>
+{:else}
+<p>
+    Ask the suspect a question about the module sequence with a single answer, such as "what letter is between D and A?" or "what letter follows B?" but not "what two letters are between E and C?"
+</p>
+{/if}
+<p>
+    Note that there is no beginning or end to this sequence of letters; it is cyclical. They will take some time to answer the question.
+</p>
+{#if !clientStateObject.state.sealedFile}
 <p>
     If the suspect's provides a correct answer on the first try, press the "Suspect completed validation" button below. If the suspect's answer is incorrect, tell them so and wait for them to provide the corerct answer. Once they do, press the "Suspect failed validation" button below. 
 </p>
+{:else}
+<p>
+    Once the suspect's provides a correct answer, press the "Suspect completed validation" button below. If the suspect's initial answer is incorrect, tell them so and wait for them to provide the corerct answer.
+</p>
+{/if}
 
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each gamePenalties.currentPenalties as activePenalty}
@@ -82,10 +108,14 @@
     {/each}
 </div>
     
+{#if !clientStateObject.state.sealedFile}
 <div class="flex flex-row justify-evenly w-3/4 mt-4">
     <Button variant="destructive" type="submit" onclick={async () => await validationFailure()} disabled={disableConfirmModule}><h3>Suspect failed validation</h3></Button>
     <Button variant="outline" type="submit" onclick={async() => await validationSuccess()} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
 </div>
+{:else}
+<Button class="w-fit mx-auto mt-4" variant="outline" type="submit" onclick={async() => await validationSealed()} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
+{/if}
 
 {#if stateUpdateError}
 <Alert.Root variant="destructive">

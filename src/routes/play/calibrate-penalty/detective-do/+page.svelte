@@ -72,7 +72,7 @@
     {/each}
 </div>
 
-<Button disabled={disableConfirmPenalty} variant="outline" type="submit" onclick={async () => await calibrationCompleted()} class="w-fit m-auto mb-2"><h3>Calibration completed</h3></Button>
+<Button disabled={disableConfirmPenalty} variant="outline" type="submit" onclick={async () => await calibrationCompleted()} class="w-fit mx-auto mb-2"><h3>Calibration completed</h3></Button>
 
 {#if stateUpdateError}
 <Alert.Root variant="destructive">

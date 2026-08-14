@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
+    import { page } from '$app/state';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 	import { joinGame } from "$lib/stateHandler.svelte"
+
+    const urlSessionID = page.url.searchParams.get('room')
 
 	let roomIsFullError = $state(false)
 	let roomDoesNotExistError = $state(false)
@@ -19,7 +22,9 @@
     let joinError = $derived(websocketError || stateError)
 
     onMount(async () => {
-        await joinGame(sessionIDObject.ID,"existing")
+        if (urlSessionID !== null) {
+            await joinGame(urlSessionID,"existing")
+        }
         
         if (webSocketObject.websocket) {
             console.log("websocket established, joining existing room")
@@ -66,33 +71,38 @@
 
 <svelte:head>
 	<title>Identity Crisis - Play</title>
-	<meta name="description" content="Play Identity Crisis" />
+	<meta name="description" content="Join Identity Crisis Game" />
 </svelte:head>
 
+<h1>
+    Identity Crisis
+</h1>
 
-{#if joinError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    {#if roomIsFullError}
-    <Alert.Title>Room is full</Alert.Title>
+<section class="game-area">
+    {#if joinError}
+    <Alert.Root variant="destructive">
+        <AlertCircleIcon />
+        {#if roomIsFullError}
+        <Alert.Title>Room is full</Alert.Title>
+        {/if}
+        {#if roomDoesNotExistError}
+        <Alert.Title>Room does not exist</Alert.Title>
+        {/if}
+        {#if joinGameError}
+        <Alert.Title>Cannot join game</Alert.Title>
+        {/if}
+        <Alert.Description>
+        <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+        </Alert.Description>
+    </Alert.Root>
     {/if}
-    {#if roomDoesNotExistError}
-    <Alert.Title>Room does not exist</Alert.Title>
+    {#if websocketError}
+    <Alert.Root variant="destructive">
+        <AlertCircleIcon />
+        <Alert.Title>Websocket closed unexpectedly</Alert.Title>
+        <Alert.Description>
+        <p>Return to the <a href="/">home page</a> and try again.</p>
+        </Alert.Description>
+    </Alert.Root>
     {/if}
-    {#if joinGameError}
-    <Alert.Title>Cannot join game</Alert.Title>
-    {/if}
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
-{#if websocketError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Websocket could not connect</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and try again.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
+</section>

@@ -30,7 +30,7 @@ export const webSocketObject: {websocket: WebSocket | null} = $state({websocket:
 
 const currentPenalties: IHCPenalty[] = $derived.by(() => {
 	if (typeof clientStateObject.state.penaltyCardID === "number") {
-		let activePenalties = [...penaltyData]  as IHCPenalty[]
+		let activePenalties = [...(penaltyData as IHCPenalty[])]
 		if (clientStateObject.state.permanentPenalty) {
 			activePenalties.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID)
 		}
@@ -159,7 +159,7 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 			socket.close()
 			console.log("websocket timeout")
 			resolve(null)
-		},1000)
+		},5000)
 
 		socket.addEventListener("message", (event) => {
 			const response: IHCCombinedResponse = JSON.parse(event.data)
@@ -189,7 +189,7 @@ async function sendMessageAndAwaitResponse(message: IHCMessageData, messageType:
 				webSocketObject.websocket!.close()
 				console.log("websocket timeout")
 				resolve(null)
-			},1000)
+			},5000)
 
 			webSocketObject.websocket.addEventListener("message", (event) => {
 				const response: IHCResponse = JSON.parse(event.data)

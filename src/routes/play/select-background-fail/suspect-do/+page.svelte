@@ -21,8 +21,8 @@
 
     const gameError = getErrorContext()
 
-    let selectedBackground: number | null = $state(null)
     let availableBackgrounds: IHCBackground[] = $state([])
+    let selectedBackground: number | null = $derived(availableBackgrounds[0]?.id)
     let invalidBackgroundSelection = $derived(selectedBackground === null)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
@@ -41,17 +41,7 @@
 
     let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null)
 
-    let disableBackgroundSelectButton: boolean = $derived(selectedBackground !== null)
-    let disablebackgroundDeselectButton: boolean = $derived(selectedBackground === null)
     let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || stateUpdateError || gameError())
-
-    function removeBackground() {
-        selectedBackground = null
-    }
-
-    function addBackground(background: IHCBackground) {
-        selectedBackground = background.id
-    }
 
     async function submitBackground() {
         if (!disableSelectBackground){
@@ -62,7 +52,7 @@
 
     onMount(() => {
         availableBackgrounds = [...backgroundData]
-        availableBackgrounds = knuthShuffle(availableBackgrounds).slice(0,3)
+        availableBackgrounds = knuthShuffle(availableBackgrounds).slice(0,1)
     })
 
     $effect(() => {
@@ -79,24 +69,15 @@
 
 <h2>Select Role</h2>
 <p>
-    Prepare to take on one of the roles shown below.
+    Prepare to take on the provided role. Because you failed validation, you may not choose a different one.
 </p>
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each availableBackgrounds as availableBackground}
-        <Card.Root class="w-1/4 {selectedBackground === availableBackground.id? 'light' : ''}">
+        <Card.Root class="w-1/4">
             <Card.Header>
                 <Card.Title>{availableBackground.background}</Card.Title>
             </Card.Header>
             <Card.Content class="mt-auto">
-                {#if selectedBackground === availableBackground.id}
-                    <Button variant="outline" type="submit" disabled={disablebackgroundDeselectButton} onclick={() => removeBackground()} class="w-fit m-auto mt-4">
-                        <h3>Deselect</h3>
-                    </Button>
-                {:else}
-                    <Button variant="outline" type="submit" disabled={disableBackgroundSelectButton} onclick={() => addBackground(availableBackground)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
-                    </Button>
-                {/if}
             </Card.Content>
         </Card.Root>
     {/each}
