@@ -8,7 +8,7 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import { clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
     
@@ -23,9 +23,11 @@
 
     let stateUpdateError = $derived(!validState)
 
+    let roleError = $derived(clientRoleObject.role !== "detective")
+
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
-    let disableConfirmPenalty = $derived(invalidDataError || stateUpdateError || gameError())
+    let disableConfirmPenalty = $derived(roleError || invalidDataError || stateUpdateError || gameError())
 
     async function calibrationCompleted() {
         if (!disableConfirmPenalty) {
@@ -78,6 +80,15 @@
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if roleError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Wrong role</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

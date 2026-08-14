@@ -8,7 +8,7 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
     import penaltyData from "$lib/gameData/penalties/penalties.json"
 
@@ -21,6 +21,8 @@
     )
 
     let stateUpdateError = $derived(!validState)
+
+    let roleError = $derived(clientRoleObject.role !== "detective")
 
     let invalidDataError = $state(false)
 
@@ -87,6 +89,15 @@
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if roleError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Wrong role</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

@@ -11,7 +11,7 @@
 
 	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
 	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
 
@@ -36,9 +36,11 @@
     
     let stateUpdateError = $derived(!validState)
 
+    let roleError = $derived(clientRoleObject.role !== "detective")
+
     let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2)
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0)
-    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || stateUpdateError || gameError())
+    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || stateUpdateError || gameError())
 
     function removePenalty(penalty: IHCPenalty) {
         selectedPenalties = selectedPenalties.filter((id) => id !== penalty.id)
@@ -127,6 +129,15 @@
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if roleError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Wrong role</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

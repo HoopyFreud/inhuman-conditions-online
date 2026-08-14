@@ -5,7 +5,7 @@
     import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
     let validState = $derived(
         clientStateObject.state.gameState === "select-penalty-prelim" ||
@@ -13,6 +13,8 @@
     )
 
     let stateUpdateError = $derived(!validState)
+
+    let roleError = $derived(clientRoleObject.role !== "detective")
 
     $effect(() => {
         if (stateUpdateError) {
@@ -35,6 +37,15 @@
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if roleError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Wrong role</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}
