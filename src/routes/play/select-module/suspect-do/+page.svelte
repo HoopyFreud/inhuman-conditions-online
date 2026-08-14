@@ -7,23 +7,26 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCStateData } from "$lib/stateHandler.svelte"
-	import type { IHCPenalty, IHCModule } from "$lib/gameObjectHandler.svelte."
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
+	import type { IHCPenalty, IHCModule } from "$lib/gameObjectTypes.svelte"
+	import { clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
 
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
     import moduleData from "$lib/gameData/modules/modules.json" 
 
-    const gameError = getErrorContext()
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
-    let selectedPenalty: IHCPenalty | null = $derived(penaltyData.find((penalty) => penalty.id === clientStateObject.state.penaltyCardID) ?? null)
-    let invalidPenaltyError = $derived(selectedPenalty === null)
+    const gameError = getErrorContext()
 
     let selectedModule: number | null = $state(null)
     let availableModules: IHCModule[] = $state([])
     let invalidModuleSelection = $derived(selectedModule === null)
+
+    let gameStateUpdate: Partial<IHCStateData> = $derived({
+        gameState: "confirm-module",
+        penaltyCardID: selectedModule
+    })
 
     let validState = $derived(
         clientStateObject.state.gameState === "select-module" ||
@@ -32,14 +35,11 @@
     
     let stateUpdateError = $derived(!validState)
 
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "confirm-module",
-        penaltyCardID: selectedModule
-    })
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
     let disableModuleSelectButton: boolean = $derived(selectedModule !== null)
     let disableModuleDeselectButton: boolean = $derived(selectedModule === null)
-    let disableSelectModule: boolean = $derived(invalidModuleSelection || invalidPenaltyError || stateUpdateError || gameError())
+    let disableSelectModule: boolean = $derived(invalidModuleSelection || invalidDataError || stateUpdateError || gameError())
 
     function removeModule() {
         selectedModule = null
@@ -65,8 +65,8 @@
             console.log("Failed state update, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (invalidPenaltyError) {
-            console.log("Client has invalid penalty selection, closing websocket")
+        else if (invalidDataError) {
+            console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }
     })
@@ -109,10 +109,10 @@
     </Alert.Description>
 </Alert.Root>
 {/if}
-{#if invalidPenaltyError}
+{#if invalidDataError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
-    <Alert.Title>Client has an invalid penalty</Alert.Title>
+    <Alert.Title>Bad incoming penalty data</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>

@@ -7,7 +7,7 @@
     import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
+	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
 
     import penaltyData from "$lib/gameData/penalties/penalties.json"
@@ -15,14 +15,14 @@
     let availablePenalties: IHCPenalty[]= $state([])
     let permanentPenalty: IHCPenalty | null = $state(null)
 
-    let invalidDataError = $state(false)
-
     let validState = $derived(
         clientStateObject.state.gameState === "select-penalty-final" ||
         clientStateObject.state.gameState === "select-module"
     )
 
     let stateUpdateError = $derived(!validState)
+
+    let invalidDataError = $state(false)
 
     onMount(() => {
         availablePenalties = [...penaltyData]
@@ -81,21 +81,21 @@
     {/each}
 </div>
 
-{#if invalidDataError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Bad incoming penalty data</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and try again.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if stateUpdateError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if invalidDataError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Bad incoming penalty data</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

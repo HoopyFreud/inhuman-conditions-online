@@ -1,6 +1,5 @@
 
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
@@ -8,37 +7,44 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCStateData } from "$lib/stateHandler.svelte"
-	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
+	import { clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
-
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
     
     const gameError = getErrorContext()
 
-    let activePenalties: IHCPenalty[] = $state([])
-    let multiplePenalties = $derived(activePenalties.length > 1)
-
-    let invalidDataError = $state(false)
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
     let validState = $derived(
-        clientStateObject.state.gameState === "calibrate-penalty" ||
-        clientStateObject.state.gameState === "select-module"
+        clientStateObject.state.gameState === "confirm-module" ||
+        clientStateObject.state.gameState === "select-background-fail" ||
+        clientStateObject.state.gameState === "select-background-success"
     )
 
     let stateUpdateError = $derived(!validState)
 
-    let disableConfirmPenalty = $derived(invalidDataError || stateUpdateError || gameError())
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null)
 
-    async function calibrationCompleted() {
-        if (!disableConfirmPenalty) {
+    let disableConfirmModule = $derived(invalidDataError || stateUpdateError || gameError())
+
+    async function validationFailure() {
+        if (!disableConfirmModule) {
             const gameStateUpdate: Partial<IHCStateData> = {
-                gameState: "select-module",
+                gameState: "select-background-fail",
             }
             await updateGameState(gameStateUpdate)
-            goto("/play/select-module/detective-await?room="+sessionIDObject.ID)
+            goto("/play/select-background-fail/detective-await?room="+sessionIDObject.ID)
+        }
+    }
+
+    async function validationSuccess() {
+        if (!disableConfirmModule) {
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "select-background-success",
+            }
+            await updateGameState(gameStateUpdate)
+            goto("/play/select-background-success/detective-await?room="+sessionIDObject.ID)
         }
     }
 
@@ -48,38 +54,22 @@
             webSocketObject.websocket?.close()
         }
         else if (invalidDataError) {
-            console.log("Bad penalty data, closing websocket")
+            console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
-        }
-    })
-
-    onMount(() => {
-        activePenalties = [...penaltyData]
-        if (clientStateObject.state.permanentPenalty) {
-            activePenalties.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID)
-            if (activePenalties.length !== 2) {
-                invalidDataError = true
-            }
-        }
-        else {
-            activePenalties.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
-            if (activePenalties.length !== 1) {
-                invalidDataError = true
-            }
         }
     })
 </script>
 
-<h2>Penalty calibration</h2>
+<h2>Module validation</h2>
 <p>
-    {#if multiplePenalties}For each penalty, ask{:else}Ask{/if} the suspect to perform the penalty. You may ask them to do so in as specific a manner as you like. Penalty calibration is an opportunity for you both to come to an agreement about what exactly constitutes "performing the penalty,"" so seek out edge cases.
+    Ask the suspect a question about the module sequence, such as "what letters come between D and A?" or "what letter follows B?" Note that there is no beginning or end to this sequence of letters; it is cyclical. They will take some time to answer the question.
 </p>
 <p>
-    Once the suspect has performed {#if activePenalties.length > 1}each{:else}the{/if} penalty three times, press the "calibration completed" button below.
+    If the suspect's provides a correct answer on the first try, press the "Suspect completed validation" button below. If the suspect's answer is incorrect, tell them so and wait for them to provide the corerct answer. Once they do, press the "Suspect failed validation" button below. 
 </p>
 
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
-    {#each activePenalties as activePenalty}
+    {#each gamePenalties.currentPenalties as activePenalty}
         <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
             <Card.Header>
                 <Card.Title>{activePenalty.text}</Card.Title>
@@ -89,30 +79,27 @@
         </Card.Root>
     {/each}
 </div>
-
-<Button disabled={disableConfirmPenalty} variant="outline" type="submit" onclick={async () => await calibrationCompleted()} class="w-fit m-auto mb-2"><h3>Calibration completed</h3></Button>
-
     
 <div class="flex flex-row justify-evenly w-3/4 mt-4">
-    <Button variant="destructive" type="submit" onclick={async () => await calibrationFailed()} disabled={disableConfirmPenalty}><h3>Suspect failed calibration</h3></Button>
-    <Button variant="outline" type="submit" onclick={async() => await calibrationCompleted()} disabled={disableConfirmPenalty}><h3>Suspect achieved calibration</h3></Button>
+    <Button variant="destructive" type="submit" onclick={async () => await validationFailure()} disabled={disableConfirmModule}><h3>Suspect failed validation</h3></Button>
+    <Button variant="outline" type="submit" onclick={async() => await validationSuccess()} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
 </div>
 
-{#if invalidDataError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Bad incoming penalty data</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and try again.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if stateUpdateError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if invalidDataError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Bad incoming penalty or module data</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

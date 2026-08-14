@@ -1,86 +1,19 @@
-export interface IHCStateData {
-	gameState: (
-		"init" | "game-setup" | 
-		"select-penalty-prelim" | "select-penalty-final" | "calibrate-penalty" |
-		"select-module" | "confirm-module" |
-		"select-background-fail" | "select-background-success" |
-		"interrogate" | "end-game");
-	validatedSessions: number;
-	moduleID: number | null;
-	robotCardID: number | null;
-	penaltyCardID: number | [number, number] | null;
-	backgroundCardID: number | null;
-	permanentPenalty: boolean;
-	continuousCatalyzation: boolean;
-	digitalGame: boolean;
-	sealedFile: boolean;
-	endTime: Date | null
-}
+import type { IHCCombinedResponse, IHCMessageData, IHCQuery, IHCResponse, IHCRole, IHCRoleData, IHCRoleUpdate, IHCStateData, IHCStateUpdate } from '$lib/stateHandlerTypes.svelte'
+import type { IHCModule, IHCBackground, IHCPenalty, IHCProfile } from './gameObjectTypes.svelte'
 
-export type IHCRole = "detective" | "suspect"
+import penaltyData from "$lib/gameData/penalties/penalties.json" 
+import moduleData from "$lib/gameData/modules/modules.json" 
+import backgroundData from "$lib/gameData/backgrounds/backgrounds.json" 
 
-interface IHCRoleData {
-	self: IHCRole;
-	other: IHCRole;
-}
-
-interface IHCIntroductionData {
-	type: "intro";
-	data: {
-		sessionID: string;
-		joinType: string;
-	}
-}
-
-interface IHCQuery {
-	type: "query";
-	data: null
-}
-
-interface IHCStateUpdate {
-	type: "state-update";
-	data: Partial<IHCStateData>
-}
-
-interface IHCRoleUpdate {
-	type: "role-update";
-	data: IHCRoleData
-}
-
-type IHCMessageData = (IHCIntroductionData | IHCQuery | IHCStateUpdate | IHCRoleUpdate)
-
-interface IHCStateResponse {
-	type: "state-response";
-	state: Partial<IHCStateData>
-	role: null
-	string: "confirm" | null
-}
-
-interface IHCRoleResponse {
-	type: "role-response";
-	state: null
-	role: IHCRole
-	string: "confirm" | null
-}
-
-interface IHCCombinedResponse {
-	type: "combined-response";
-	state: Partial<IHCStateData> | null
-	role: IHCRole | null
-	string: "confirm" | null
-}
-
-type IHCResponse = (IHCStateResponse | IHCRoleResponse | IHCCombinedResponse)
-
+export const clientErroredObject: {error: boolean} = $state({error: false})
 export const clientLastMessageObject: {message: string} = $state({message: ""})
 export const clientLastStatusCode: {code: number | null} = $state({code: null})
-export const clientErroredObject: {error: boolean} = $state({error: false})
+export const clientRoleObject: {role: IHCRole | null} = $state({role: null})
 export const clientStateObject: {state:IHCStateData} = $state({
     state: {
         gameState: "init",
         validatedSessions: 0,
         moduleID: null,
-        robotCardID: null,
         penaltyCardID: null,
         backgroundCardID: null,
         permanentPenalty: false,
@@ -88,22 +21,52 @@ export const clientStateObject: {state:IHCStateData} = $state({
         digitalGame: false,
         sealedFile: false,
         endTime: null
-    }
+    } as IHCStateData
 })
-export const clientRoleObject: {role: IHCRole | null} = $state({role: null})
+
+export const profileObject: {profile: IHCProfile | null} = $state({profile: null})
 export const sessionIDObject: {ID: string} = $state(({ID: ""}))
 export const webSocketObject: {websocket: WebSocket | null} = $state({websocket: null})
 
+const currentPenalties: IHCPenalty[] = $derived.by(() => {
+	if (typeof clientStateObject.state.penaltyCardID === "number") {
+		let activePenalties = [...penaltyData]  as IHCPenalty[]
+		if (clientStateObject.state.permanentPenalty) {
+			activePenalties.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID)
+		}
+		else {
+			activePenalties.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
+		}
+		return activePenalties
+	}
+	else {
+		return []
+	}
+})
+export const gamePenalties = {
+	get currentPenalties() { return currentPenalties; },
+}
+
+const currentModule: IHCModule | null = $derived(moduleData.find((module) => module.id === clientStateObject.state.moduleID) as IHCModule ?? null)
+export const gameModule = {
+	get currentModule() { return currentModule; },
+}
+
+const currentBackground: IHCBackground | null = $derived(backgroundData.find((background) => background.id === clientStateObject.state.backgroundCardID) as IHCBackground ?? null)
+export const gameBackground = {
+	get currentBackground() { return currentBackground; },
+}
+
 export function resetState() {
 	console.log("resetting state")
+	clientErroredObject.error = false
 	clientLastMessageObject.message = ""
 	clientLastStatusCode.code = null
-	clientErroredObject.error = false
+	clientRoleObject.role = null
 	clientStateObject.state = {
 		gameState: "init",
 		validatedSessions: 0,
 		moduleID: null,
-		robotCardID: null,
 		penaltyCardID: null,
 		backgroundCardID: null,
 		permanentPenalty: false,
@@ -112,7 +75,7 @@ export function resetState() {
 		sealedFile: false,
 		endTime: null
 	}
-	clientRoleObject.role = null
+	profileObject.profile = null
 	sessionIDObject.ID = ""
 	if (webSocketObject.websocket !== null) {
 		webSocketObject.websocket.close()

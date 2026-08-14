@@ -23,3 +23,27 @@ export interface IHCModule {
 	patientRobotProfiles: number[],
 	violentRobotProfiles: number[]
 }
+
+export interface IHCBackground {
+	id: number
+	background: string
+}
+
+export interface IHCHumanProfile {
+	type: "human"
+}
+
+export interface IHCPatientRobotProfile {
+	id: number
+	type: "patientRobot"
+	restriction: string
+	explainerText: string
+}
+
+export interface IHCViolentRobotProfile {
+	id: number
+	type: "violentRobot"
+	requirements: string[]
+}
+
+export type IHCProfile = IHCHumanProfile | IHCPatientRobotProfile | IHCViolentRobotProfile

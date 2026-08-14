@@ -9,8 +9,8 @@
 
     import { knuthShuffle } from 'knuth-shuffle'
 
-	import type { IHCStateData } from "$lib/stateHandler.svelte"
-	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
+	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
+	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
 	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
@@ -22,8 +22,12 @@
     let selectedPenalties: number[] = $state([])
     let availablePenalties: IHCPenalty[] = $state([])
     let permanentPenalty: IHCPenalty | null = $state(null)
-
     let invalidPenaltySelection = $derived(selectedPenalties.length !== 2)
+
+    let gameStateUpdate: Partial<IHCStateData> = $derived({
+        gameState: "select-penalty-final",
+        penaltyCardID: invalidPenaltySelection ? null : selectedPenalties as [number, number]
+    })
 
     let validState = $derived(
         clientStateObject.state.gameState === "select-penalty-prelim" ||
@@ -31,11 +35,6 @@
     )
     
     let stateUpdateError = $derived(!validState)
-
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "select-penalty-final",
-        penaltyCardID: invalidPenaltySelection ? null : selectedPenalties as [number, number]
-    })
 
     let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2)
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0)

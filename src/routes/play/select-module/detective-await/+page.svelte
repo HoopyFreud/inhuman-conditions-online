@@ -7,14 +7,12 @@
     import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCPenalty, IHCModule } from "$lib/gameObjectHandler.svelte."
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import type { IHCModule } from "$lib/gameObjectTypes.svelte"
+	import { clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
 
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
-    import moduleData from "$lib/gameData/modules/modules.json" 
+    import moduleData from "$lib/gameData/modules/modules.json"
 
-    let selectedPenalty: IHCPenalty | null = $derived(penaltyData.find((penalty) => penalty.id === clientStateObject.state.penaltyCardID) ?? null)
-    let invalidPenaltyError = $derived(selectedPenalty === null)
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
     let availableModules: IHCModule[] = $state([])
 
@@ -25,6 +23,8 @@
     
     let stateUpdateError = $derived(!validState)
 
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null)
+
     onMount(() => {
         availableModules = [...(moduleData as IHCModule[])]
     })
@@ -34,8 +34,8 @@
             console.log("Failed state update, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (invalidPenaltyError) {
-            console.log("Client has invalid penalty selection, closing websocket")
+        else if (invalidDataError) {
+            console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }
         else if (clientStateObject.state.gameState === "confirm-module") {
@@ -46,7 +46,7 @@
 
 <h2>Select Module</h2>
 <p>
-    Choose a module to play. You may consult with the detective player, but you have final authority over this decision.
+    The suspect will now choose a module to play. You may offer input, but they have final authority over this decision.
 </p>
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each availableModules as availableModule}
@@ -72,10 +72,10 @@
     </Alert.Description>
 </Alert.Root>
 {/if}
-{#if invalidPenaltyError}
+{#if invalidDataError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
-    <Alert.Title>Client has an invalid penalty</Alert.Title>
+    <Alert.Title>Bad incoming penalty data</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>

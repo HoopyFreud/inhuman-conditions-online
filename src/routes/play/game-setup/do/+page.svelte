@@ -11,7 +11,7 @@
     import { Separator } from "$lib/components/ui/separator"
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCStateData, IHCRole } from "$lib/stateHandler.svelte"
+	import type { IHCStateData, IHCRole } from "$lib/stateHandlerTypes.svelte"
 	import { clientRoleObject, webSocketObject, clientStateObject, sessionIDObject } from "$lib/stateHandler.svelte"
     import { updateGameState, assignRoles } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
@@ -23,6 +23,14 @@
     let sealedFileValue: boolean = $state(false)
     let digitalGameValue: boolean = $state(false)
 
+    let gameStateUpdate: Partial<IHCStateData> = $derived({
+        gameState: "select-penalty-prelim",
+        permanentPenalty: permanentPenaltyValue,
+        continuousCatalyzation: continuousCatalyzationValue,
+        sealedFile: sealedFileValue,
+        digitalGame: digitalGameValue
+    })
+
     let noRoleSelected = $derived(clientRoleObject.role === null)
 
     let validState = $derived(
@@ -31,14 +39,6 @@
     )
 
     let stateUpdateError = $derived(!validState)
-
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "select-penalty-prelim",
-        permanentPenalty: permanentPenaltyValue,
-        continuousCatalyzation: continuousCatalyzationValue,
-        sealedFile: sealedFileValue,
-        digitalGame: digitalGameValue
-    })
 
     let disableSetupSubmission: boolean = $derived(noRoleSelected || stateUpdateError || gameError())
 

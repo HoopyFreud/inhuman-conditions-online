@@ -1,6 +1,5 @@
 
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
@@ -8,22 +7,19 @@
     import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCPenalty } from "$lib/gameObjectHandler.svelte."
-	import { clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
-
-    let activePenalties: IHCPenalty[] = $state([])
-    let multiplePenalties = $derived(activePenalties.length > 1)
-
-    let invalidDataError = $state(false)
+	import { clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
+    
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
     let validState = $derived(
-        clientStateObject.state.gameState === "calibrate-penalty" ||
-        clientStateObject.state.gameState === "select-module"
+        clientStateObject.state.gameState === "confirm-module" ||
+        clientStateObject.state.gameState === "select-background-fail" ||
+        clientStateObject.state.gameState === "select-background-success"
     )
 
     let stateUpdateError = $derived(!validState)
+
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null)
 
     $effect(() => {
         if (stateUpdateError) {
@@ -31,41 +27,28 @@
             webSocketObject.websocket?.close()
         }
         else if (invalidDataError) {
-            console.log("Bad penalty data, closing websocket")
+            console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (clientStateObject.state.gameState === "select-module") {
-            goto("/play/select-module/suspect-do?room="+sessionIDObject.ID)
+        else if (clientStateObject.state.gameState === "select-background-fail") {
+            goto("/play/select-background-fail/suspect-do?room="+sessionIDObject.ID)
         }
-    })
-
-    onMount(() => {
-        activePenalties = [...penaltyData]
-        if (clientStateObject.state.permanentPenalty) {
-            activePenalties.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID)
-            if (activePenalties.length !== 2) {
-                invalidDataError = true
-            }
-        }
-        else {
-            activePenalties.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
-            if (activePenalties.length !== 1) {
-                invalidDataError = true
-            }
+        else if (clientStateObject.state.gameState === "select-background-success") {
+            goto("/play/select-background-success/suspect-do?room="+sessionIDObject.ID)
         }
     })
 </script>
 
-<h2>Penalty calibration</h2>
+<h2>Module validation</h2>
 <p>
-    The detective will ask you to perform {#if multiplePenalties}each{:else}the{/if} penalty. They may ask them to do so in as specific a manner as they like. Penalty calibration is an opportunity for you both to come to an agreement about what exactly constitutes "performing the penalty,"" so if you think of an edge case, you should mention it to the detective.
+    The detective will ask you a question about the module sequence, such as "what letters come between D and A?" or "what letter follows B?" Note that there is no beginning or end to this sequence of letters; it is cyclical. Take some time to answer the question; if you are human, make sure you solve the maze correctly. If you are robot, take this time to study the requirements for this round.
 </p>
 <p>
-    Once you have performed {#if multiplePenalties}each{:else}the{/if} penalty three times, the detective will confirm that calibration is complete.
+    If you provide a correct answer on the first try, you will get to choose between three backgrounds. Otherwise, one will be picked for you.
 </p>
 
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
-    {#each activePenalties as activePenalty}
+    {#each gamePenalties.currentPenalties as activePenalty}
         <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
             <Card.Header>
                 <Card.Title>{activePenalty.text}</Card.Title>
@@ -77,21 +60,21 @@
 </div>
 <Ellipsis />
 
-{#if invalidDataError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Bad incoming penalty data</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and try again.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if stateUpdateError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
     <Alert.Title>Failed to update game state</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
+    </Alert.Description>
+</Alert.Root>
+{/if}
+{#if invalidDataError}
+<Alert.Root variant="destructive">
+    <AlertCircleIcon />
+    <Alert.Title>Bad incoming penalty or module data</Alert.Title>
+    <Alert.Description>
+    <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}
