@@ -28,21 +28,14 @@ export const profileObject: {profile: IHCProfile | null} = $state({profile: null
 export const sessionIDObject: {ID: string} = $state(({ID: ""}))
 export const webSocketObject: {websocket: WebSocket | null} = $state({websocket: null})
 
-const currentPenalties: IHCPenalty[] = $derived.by(() => {
-	if (typeof clientStateObject.state.penaltyCardID === "number") {
-		let activePenalties = [...(penaltyData as IHCPenalty[])]
-		if (clientStateObject.state.permanentPenalty) {
-			activePenalties.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID)
-		}
-		else {
-			activePenalties.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
-		}
-		return activePenalties
-	}
-	else {
-		return []
-	}
-})
+const currentPenalties: IHCPenalty[] = $derived(
+	typeof clientStateObject.state.penaltyCardID === "number" ?
+		clientStateObject.state.permanentPenalty ? 
+			penaltyData.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID) :
+			penaltyData.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
+		:
+		[]
+)
 export const gamePenalties = {
 	get currentPenalties() { return currentPenalties; },
 }

@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
@@ -16,32 +15,21 @@
 
     let availableModules: IHCModule[] = $state([])
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "select-module" ||
-        clientStateObject.state.gameState === "confirm-module"
-    )
-    
-    let stateUpdateError = $derived(!validState)
-
     let roleError = $derived(clientRoleObject.role !== "detective")
 
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
-    onMount(() => {
+    afterNavigate(() => {
         availableModules = [...(moduleData as IHCModule[])]
     })
 
     $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-        else if (invalidDataError) {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (clientStateObject.state.gameState === "confirm-module") {
-            goto("/play/confirm-module/detective-do?room="+sessionIDObject.ID)
+        else if (clientStateObject.state.gameState !== "select-module") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>
@@ -65,15 +53,6 @@
 
 <Ellipsis />
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

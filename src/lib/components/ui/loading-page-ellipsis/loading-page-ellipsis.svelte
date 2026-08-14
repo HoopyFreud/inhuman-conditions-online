@@ -2,7 +2,7 @@
     import { type WithElementRef } from "$lib/utils.js";
     import type { HTMLAttributes } from "svelte/elements";
 
-	const loadingElementTextSequence = ["",".","..","..."]
+	const loadingElementTextSequence = [".","..","..."]
 
     let textElement = $state(loadingElementTextSequence[0])
 
@@ -15,7 +15,7 @@
         let textIndex = 0
         textElement = loadingElementTextSequence[textIndex]
         setInterval(() => {
-            if (textIndex < loadingElementTextSequence.length) {
+            if (textIndex < loadingElementTextSequence.length-1) {
                 textIndex += 1
             }
             else {

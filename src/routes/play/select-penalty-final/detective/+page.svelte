@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { goto } from "$app/navigation";
 
 	import * as Alert from "$lib/components/ui/alert/index.js";
@@ -12,45 +11,25 @@
 
     import penaltyData from "$lib/gameData/penalties/penalties.json"
 
-    let availablePenalties: IHCPenalty[]= $state([])
-    let permanentPenalty: IHCPenalty | null = $state(null)
-
-    let validState = $derived(
-        clientStateObject.state.gameState === "select-penalty-final" ||
-        clientStateObject.state.gameState === "select-module"
+    let availablePenalties: IHCPenalty[] = $derived(
+        Array.isArray(clientStateObject.state.penaltyCardID) ?
+        // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
+            penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id)) : 
+            []
     )
-
-    let stateUpdateError = $derived(!validState)
+    let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
     let roleError = $derived(clientRoleObject.role !== "detective")
 
-    let invalidDataError = $state(false)
-
-    onMount(() => {
-        availablePenalties = [...penaltyData]
-        if (clientStateObject.state.permanentPenalty) {
-            permanentPenalty = availablePenalties[0]
-        }
-        if (Array.isArray(clientStateObject.state.penaltyCardID)) {
-            // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
-            availablePenalties.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.ID))
-        }
-        else {
-            invalidDataError = true
-        }
-    })
+    let invalidDataError = $derived(availablePenalties.length === 0)
 
     $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-        else if (invalidDataError) {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (clientStateObject.state.gameState === "calibrate-penalty") {
-            goto("/play/calibrate-penalty/detective-do?room="+sessionIDObject.ID)
+        else if (clientStateObject.state.gameState !== "select-penalty-final") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>
@@ -83,15 +62,6 @@
     {/each}
 </div>
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

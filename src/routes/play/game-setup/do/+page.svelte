@@ -4,12 +4,10 @@
     
     import * as Accordion from "$lib/components/ui/accordion/index.js";
 	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Separator } from "$lib/components/ui/separator"
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import type { IHCStateData, IHCRole } from "$lib/stateHandlerTypes.svelte"
 	import { clientRoleObject, webSocketObject, clientStateObject, sessionIDObject } from "$lib/stateHandler.svelte"
@@ -33,36 +31,19 @@
 
     let noRoleSelected = $derived(clientRoleObject.role === null)
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "game-setup" ||
-        clientStateObject.state.gameState === "select-penalty-prelim"
-    )
-
-    let stateUpdateError = $derived(!validState)
-
-    let disableSetupSubmission: boolean = $derived(noRoleSelected || stateUpdateError || gameError())
+    let disableSetupSubmission: boolean = $derived(noRoleSelected || gameError())
 
     async function performSetup() {
         if (!disableSetupSubmission) {
             if (clientRoleObject.role === "detective") {
                 await assignRoles({self: "detective", other: "suspect"})
-                await updateGameState(gameStateUpdate)
-                goto("/play/select-penalty-prelim/detective-do?room="+sessionIDObject.ID)
             }
             else if (clientRoleObject.role === "suspect") {
-                await assignRoles({self: "suspect", other: "detective"})
                 await updateGameState(gameStateUpdate)
-                goto("/play/select-penalty-prelim/suspect-await?room="+sessionIDObject.ID)
             }
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
-
-    $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-    })
 </script>
 
 <h2>Game Setup</h2>
@@ -135,13 +116,3 @@
 </Accordion.Root>
     
 <Button disabled={disableSetupSubmission} variant="outline" type="submit" onclick={async () => await performSetup()} class="w-fit mx-auto mb-2 "><h3>Set Up Room</h3></Button>
-
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}

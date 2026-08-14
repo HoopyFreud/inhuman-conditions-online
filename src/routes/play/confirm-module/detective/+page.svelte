@@ -16,57 +16,24 @@
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "confirm-module" ||
-        clientStateObject.state.gameState === "select-background-fail" ||
-        clientStateObject.state.gameState === "select-background-success"||
-        clientStateObject.state.gameState === "interrogate-prelim"
-    )
-
-    let stateUpdateError = $derived(!validState)
-
     let roleError = $derived(clientRoleObject.role !== "detective")
 
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null)
 
-    let disableConfirmModule = $derived(roleError || invalidDataError || stateUpdateError || gameError())
+    let disableConfirmModule = $derived(roleError || invalidDataError || gameError())
 
-    async function validationFailure() {
+    async function validationOutcome(newGameState: IHCStateData["gameState"]) {
         if (!disableConfirmModule) {
             const gameStateUpdate: Partial<IHCStateData> = {
-                gameState: "select-background-fail",
+                gameState: newGameState,
             }
             await updateGameState(gameStateUpdate)
-            goto("/play/select-background-fail/detective-await?room="+sessionIDObject.ID)
-        }
-    }
-
-    async function validationSuccess() {
-        if (!disableConfirmModule) {
-            const gameStateUpdate: Partial<IHCStateData> = {
-                gameState: "select-background-success",
-            }
-            await updateGameState(gameStateUpdate)
-            goto("/play/select-background-success/detective-await?room="+sessionIDObject.ID)
-        }
-    }
-
-    async function validationSealed() {
-        if (!disableConfirmModule) {
-            const gameStateUpdate: Partial<IHCStateData> = {
-                gameState: "interrogate-prelim",
-            }
-            await updateGameState(gameStateUpdate)
-            goto("/play/interrogation/detective?room="+sessionIDObject.ID)
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 
     $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-        else if (invalidDataError) {
+        if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
@@ -110,22 +77,13 @@
     
 {#if !clientStateObject.state.sealedFile}
 <div class="flex flex-row justify-evenly w-3/4 mt-4">
-    <Button variant="destructive" type="submit" onclick={async () => await validationFailure()} disabled={disableConfirmModule}><h3>Suspect failed validation</h3></Button>
-    <Button variant="outline" type="submit" onclick={async() => await validationSuccess()} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
+    <Button variant="destructive" type="submit" onclick={async () => await validationOutcome("select-background-fail")} disabled={disableConfirmModule}><h3>Suspect failed validation</h3></Button>
+    <Button variant="outline" type="submit" onclick={async() => await validationOutcome("select-background-success")} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
 </div>
 {:else}
-<Button class="w-fit mx-auto mt-4" variant="outline" type="submit" onclick={async() => await validationSealed()} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
+<Button class="w-fit mx-auto mt-4" variant="outline" type="submit" onclick={async() => await validationOutcome("interrogate-prelim")} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
 {/if}
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

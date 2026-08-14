@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
@@ -28,20 +27,13 @@
         penaltyCardID: selectedModule
     })
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "select-module" ||
-        clientStateObject.state.gameState === "confirm-module"
-    )
-    
-    let stateUpdateError = $derived(!validState)
-
-    let roleError = $derived(clientRoleObject.role !== "detective")
+    let roleError = $derived(clientRoleObject.role !== "suspect")
 
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
     let disableModuleSelectButton: boolean = $derived(selectedModule !== null)
     let disableModuleDeselectButton: boolean = $derived(selectedModule === null)
-    let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || stateUpdateError || gameError())
+    let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || gameError())
 
     function removeModule() {
         selectedModule = null
@@ -54,20 +46,16 @@
     async function submitModule() {
         if (!disableSelectModule){
             await updateGameState(gameStateUpdate)
-            goto("/play/confirm-module/suspect-await?room="+sessionIDObject.ID)
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 
-    onMount(() => {
+    afterNavigate(() => {
         availableModules = [...(moduleData as IHCModule[])]
     })
 
     $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-        else if (invalidDataError) {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }
@@ -102,15 +90,6 @@
     </div>
 <Button disabled={disableSelectModule} variant="outline" type="submit" onclick={async () => await submitModule()} class="w-fit m-auto mb-2"><h3>Select Module</h3></Button>
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

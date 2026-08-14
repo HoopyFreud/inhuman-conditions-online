@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
@@ -21,26 +20,20 @@
 
     let selectedPenalties: number[] = $state([])
     let availablePenalties: IHCPenalty[] = $state([])
-    let permanentPenalty: IHCPenalty | null = $state(null)
     let invalidPenaltySelection = $derived(selectedPenalties.length !== 2)
+    
+    let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
         gameState: "select-penalty-final",
         penaltyCardID: invalidPenaltySelection ? null : selectedPenalties as [number, number]
     })
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "select-penalty-prelim" ||
-        clientStateObject.state.gameState === "select-penalty-final"
-    )
-    
-    let stateUpdateError = $derived(!validState)
-
     let roleError = $derived(clientRoleObject.role !== "detective")
 
     let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2)
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0)
-    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || stateUpdateError || gameError())
+    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || gameError())
 
     function removePenalty(penalty: IHCPenalty) {
         selectedPenalties = selectedPenalties.filter((id) => id !== penalty.id)
@@ -55,11 +48,11 @@
     async function submitPenalties() {
         if (!disableSelectPenalty){
             await updateGameState(gameStateUpdate)
-            goto("/play/select-penalty-final/detective-await?room="+sessionIDObject.ID)
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 
-    onMount(() => {
+    afterNavigate(() => {
         availablePenalties = [...penaltyData]
         if (clientStateObject.state.permanentPenalty) {
             permanentPenalty = availablePenalties[0]
@@ -69,13 +62,6 @@
             availablePenalties.filter((penalty) => penalty.digitalSafe)
         }
         availablePenalties = knuthShuffle(availablePenalties).slice(0,3)
-    })
-
-    $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
     })
 </script>
 
@@ -123,15 +109,6 @@
     </div>
 <Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto mb-2"><h3>Select Penalties</h3></Button>
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

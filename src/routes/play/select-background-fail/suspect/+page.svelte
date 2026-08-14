@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
@@ -21,8 +20,8 @@
 
     const gameError = getErrorContext()
 
-    let selectedBackground: number | null = $state(null)
     let availableBackgrounds: IHCBackground[] = $state([])
+    let selectedBackground: number | null = $derived(availableBackgrounds[0]?.id)
     let invalidBackgroundSelection = $derived(selectedBackground === null)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
@@ -30,47 +29,26 @@
         penaltyCardID: selectedBackground
     })
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "select-module" ||
-        clientStateObject.state.gameState === "interrogate-prelim"
-    )
-    
-    let stateUpdateError = $derived(!validState)
-
-    let roleError = $derived(clientRoleObject.role !== "detective")
+    let roleError = $derived(clientRoleObject.role !== "suspect")
 
     let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null)
 
-    let disableBackgroundSelectButton: boolean = $derived(selectedBackground !== null)
-    let disablebackgroundDeselectButton: boolean = $derived(selectedBackground === null)
-    let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || stateUpdateError || gameError())
-
-    function removeBackground() {
-        selectedBackground = null
-    }
-
-    function addBackground(background: IHCBackground) {
-        selectedBackground = background.id
-    }
+    let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || gameError())
 
     async function submitBackground() {
         if (!disableSelectBackground){
             await updateGameState(gameStateUpdate)
-            goto("/play/interrogate-prelim/suspect?room="+sessionIDObject.ID)
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 
-    onMount(() => {
+    afterNavigate(() => {
         availableBackgrounds = [...backgroundData]
-        availableBackgrounds = knuthShuffle(availableBackgrounds).slice(0,3)
+        availableBackgrounds = knuthShuffle(availableBackgrounds).slice(0,1)
     })
 
     $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-        else if (invalidDataError) {
+        if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
@@ -79,39 +57,21 @@
 
 <h2>Select Role</h2>
 <p>
-    Prepare to take on one of the roles shown below.
+    Prepare to take on the provided role. Because you failed validation, you may not choose a different one.
 </p>
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each availableBackgrounds as availableBackground}
-        <Card.Root class="w-1/4 {selectedBackground === availableBackground.id? 'light' : ''}">
+        <Card.Root class="w-1/4">
             <Card.Header>
                 <Card.Title>{availableBackground.background}</Card.Title>
             </Card.Header>
             <Card.Content class="mt-auto">
-                {#if selectedBackground === availableBackground.id}
-                    <Button variant="outline" type="submit" disabled={disablebackgroundDeselectButton} onclick={() => removeBackground()} class="w-fit m-auto mt-4">
-                        <h3>Deselect</h3>
-                    </Button>
-                {:else}
-                    <Button variant="outline" type="submit" disabled={disableBackgroundSelectButton} onclick={() => addBackground(availableBackground)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
-                    </Button>
-                {/if}
             </Card.Content>
         </Card.Root>
     {/each}
     </div>
 <Button disabled={disableSelectBackground} variant="outline" type="submit" onclick={async () => await submitBackground()} class="w-fit m-auto mb-2"><h3>Ready for interrogation</h3></Button>
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

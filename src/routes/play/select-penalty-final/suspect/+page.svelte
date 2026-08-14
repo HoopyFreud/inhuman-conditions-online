@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
@@ -18,8 +17,13 @@
     const gameError = getErrorContext()
 
     let selectedPenalty: number | null = $state(null)
-    let availablePenalties: IHCPenalty[] = $state([])
-    let permanentPenalty: IHCPenalty | null = $state(null)
+    let availablePenalties: IHCPenalty[] = $derived(
+        Array.isArray(clientStateObject.state.penaltyCardID) ?
+        // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
+            penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id)) : 
+            []
+    )
+    let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
         gameState: "calibrate-penalty",
@@ -28,20 +32,13 @@
 
     let invalidPenaltySelection = $derived(selectedPenalty === null)
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "select-penalty-final" ||
-        clientStateObject.state.gameState === "calibrate-penalty"
-    )
+    let roleError = $derived(clientRoleObject.role !== "suspect")
 
-    let stateUpdateError = $derived(!validState)
-
-    let roleError = $derived(clientRoleObject.role !== "detective")
-
-    let invalidDataError = $state(false)
+    let invalidDataError = $derived(availablePenalties.length === 0)
 
     let disablePenaltyAddButton: boolean = $derived(selectedPenalty !== null)
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null)
-    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || stateUpdateError || gameError())
+    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || gameError())
 
     function removePenalty() {
         selectedPenalty = null
@@ -54,30 +51,9 @@
     async function submitPenalty() {
         if (!disableSelectPenalty) {
             await updateGameState(gameStateUpdate)
-            goto("/play/calibrate-penalty/suspect-await?room="+sessionIDObject.ID)
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
-
-    onMount(() => {
-        availablePenalties = [...penaltyData]
-        if (clientStateObject.state.permanentPenalty) {
-            permanentPenalty = availablePenalties[0]
-        }
-        if (Array.isArray(clientStateObject.state.penaltyCardID)) {
-            // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
-            availablePenalties.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.ID))
-        }
-        else {
-            invalidDataError = true
-        }
-    })
-
-    $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-    })
 </script>
 
 <h2>Select Penalty</h2>
@@ -124,15 +100,6 @@
 </div>
 <Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalty()} class="w-fit m-auto mb-2"><h3>Select Penalty</h3></Button>
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

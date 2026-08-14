@@ -11,32 +11,17 @@
     
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
-    let validState = $derived(
-        clientStateObject.state.gameState === "confirm-module" ||
-        clientStateObject.state.gameState === "select-background-fail" ||
-        clientStateObject.state.gameState === "select-background-success"
-    )
-
-    let stateUpdateError = $derived(!validState)
-
-    let roleError = $derived(clientRoleObject.role !== "detective")
+    let roleError = $derived(clientRoleObject.role !== "suspect")
 
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null)
 
     $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-        else if (invalidDataError) {
+        if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (clientStateObject.state.gameState === "select-background-fail") {
-            goto("/play/select-background-fail/suspect-do?room="+sessionIDObject.ID)
-        }
-        else if (clientStateObject.state.gameState === "select-background-success") {
-            goto("/play/select-background-success/suspect-do?room="+sessionIDObject.ID)
+        else if (clientStateObject.state.gameState !== "confirm-module") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>
@@ -62,15 +47,6 @@
 </div>
 <Ellipsis />
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

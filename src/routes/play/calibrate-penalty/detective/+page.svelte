@@ -4,45 +4,49 @@
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
+	import { Button } from "$lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
+	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
 	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
+    import { updateGameState } from "$lib/stateHandler.svelte"
+    import { getErrorContext } from '$lib/errorContext';
+    
+    const gameError = getErrorContext()
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
-
-    let validState = $derived(
-        clientStateObject.state.gameState === "calibrate-penalty" ||
-        clientStateObject.state.gameState === "select-module"
-    )
-
-    let stateUpdateError = $derived(!validState)
 
     let roleError = $derived(clientRoleObject.role !== "detective")
 
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
-    $effect(() => {
-        if (stateUpdateError) {
-            console.log("Failed state update, closing websocket")
-            webSocketObject.websocket?.close()
+    let disableConfirmPenalty = $derived(roleError || invalidDataError || gameError())
+
+    async function calibrationCompleted() {
+        if (!disableConfirmPenalty) {
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "select-module",
+            }
+            await updateGameState(gameStateUpdate)
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
-        else if (invalidDataError) {
+    }
+
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }
-        else if (clientStateObject.state.gameState === "select-module") {
-            goto("/play/select-module/suspect-do?room="+sessionIDObject.ID)
-        }
     })
+
 </script>
 
 <h2>Penalty calibration</h2>
 <p>
-    The detective will ask you to perform {#if multiplePenalties}each{:else}the{/if} penalty. They may ask them to do so in as specific a manner as they like. Penalty calibration is an opportunity for you both to come to an agreement about what exactly constitutes "performing the penalty,"" so if you think of an edge case, you should mention it to the detective.
+    {#if multiplePenalties}For each penalty, ask{:else}Ask{/if} the suspect to perform the penalty. You may ask them to do so in as specific a manner as you like. Penalty calibration is an opportunity for you both to come to an agreement about what exactly constitutes "performing the penalty,"" so seek out edge cases.
 </p>
 <p>
-    Once you have performed {#if multiplePenalties}each{:else}the{/if} penalty three times, the detective will confirm that calibration is complete.
+    Once the suspect has performed {#if multiplePenalties}each{:else}the{/if} penalty three times, press the "calibration completed" button below.
 </p>
 
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
@@ -56,17 +60,9 @@
         </Card.Root>
     {/each}
 </div>
-<Ellipsis />
 
-{#if stateUpdateError}
-<Alert.Root variant="destructive">
-    <AlertCircleIcon />
-    <Alert.Title>Failed to update game state</Alert.Title>
-    <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and choose a different room to join.</p>
-    </Alert.Description>
-</Alert.Root>
-{/if}
+<Button disabled={disableConfirmPenalty} variant="outline" type="submit" onclick={async () => await calibrationCompleted()} class="w-fit mx-auto mb-2"><h3>Calibration completed</h3></Button>
+
 {#if roleError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />

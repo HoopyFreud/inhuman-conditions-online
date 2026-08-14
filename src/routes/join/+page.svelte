@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/state';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
@@ -15,15 +14,13 @@
 	let roomDoesNotExistError = $state(false)
 	let joinGameError = $state(false)
 
-    let stateError = $state(false)
-
     let websocketError = $derived(roomIsFullError || roomDoesNotExistError || joinGameError)
 
-    let joinError = $derived(websocketError || stateError)
+    let joinError = $derived(websocketError)
 
-    onMount(async () => {
+    afterNavigate(async () => {
         if (urlSessionID !== null) {
-            await joinGame(urlSessionID,"existing")
+            webSocketObject.websocket = await joinGame(urlSessionID,"existing")
         }
         
         if (webSocketObject.websocket) {
@@ -41,25 +38,13 @@
                 default: joinGameError = true
             }
         }
-
-        stateError = !(
-            clientStateObject.state.gameState === "game-setup" ||
-            clientStateObject.state.gameState === "select-penalty-prelim" ||
-            (clientStateObject.state.gameState === "select-penalty-final" && clientRoleObject.role === "suspect")
-        )
         
         if (!joinError) {
             if (clientStateObject.state.gameState === "game-setup") {
                 goto("/play/game-setup/await?room="+sessionIDObject.ID)
             }
-            else if (clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "suspect") {
-                goto("/play/select-penalty-prelim/suspect-await?room="+sessionIDObject.ID)
-            }
-            else if (clientStateObject.state.gameState === "select-penalty-prelim" && clientRoleObject.role === "detective") {
-                goto("/play/select-penalty-prelim/detective-do?room="+sessionIDObject.ID)
-            }
-            else if (clientStateObject.state.gameState === "select-penalty-final" && clientRoleObject.role === "suspect") {
-                goto("/play/select-penalty-final/suspect-do?room="+sessionIDObject.ID)
+            else if (clientStateObject.state.gameState !== "init" && clientRoleObject.role !== null && sessionIDObject.ID !== ""){
+                goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
             }
             else {
                 console.log("No valid redirect, closing websocket")
