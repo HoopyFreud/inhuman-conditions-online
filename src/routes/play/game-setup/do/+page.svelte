@@ -39,9 +39,10 @@
                 await assignRoles({self: "detective", other: "suspect"})
             }
             else if (clientRoleObject.role === "suspect") {
-                await updateGameState(gameStateUpdate)
+                await assignRoles({self: "suspect", other: "detective"})
             }
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+            await updateGameState(gameStateUpdate)
+            await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 </script>

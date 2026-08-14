@@ -36,7 +36,6 @@
 
     let invalidDataError = $derived(availablePenalties.length === 0)
 
-    let disablePenaltyAddButton: boolean = $derived(selectedPenalty !== null)
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null)
     let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || gameError())
 
@@ -51,7 +50,7 @@
     async function submitPenalty() {
         if (!disableSelectPenalty) {
             await updateGameState(gameStateUpdate)
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+            await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 </script>
@@ -90,7 +89,7 @@
                         <h3>Deselect</h3>
                     </Button>
                 {:else}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit m-auto mt-4">
+                    <Button variant="outline" type="submit" onclick={() => addPenalty(availablePenalty)} class="w-fit m-auto mt-4">
                         <h3>Select</h3>
                     </Button>
                 {/if}

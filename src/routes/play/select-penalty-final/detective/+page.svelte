@@ -24,12 +24,12 @@
     let invalidDataError = $derived(availablePenalties.length === 0)
 
     $effect(() => {
-        if (invalidDataError) {
+        if (clientStateObject.state.gameState !== "select-penalty-final") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+        }
+        else if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
-        }
-        else if (clientStateObject.state.gameState !== "select-penalty-final") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>
@@ -47,8 +47,6 @@
             <Card.Header>
                 <Card.Title>Permanent penalty: {permanentPenalty.text}</Card.Title>
             </Card.Header>
-            <Card.Content class="mt-auto">
-            </Card.Content>
         </Card.Root>
     {/if}
     {#each availablePenalties as availablePenalty}
@@ -56,8 +54,6 @@
             <Card.Header>
                 <Card.Title>{availablePenalty.text}</Card.Title>
             </Card.Header>
-            <Card.Content class="mt-auto">
-            </Card.Content>
         </Card.Root>
     {/each}
 </div>

@@ -15,12 +15,12 @@
     let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null)
 
     $effect(() => {
-        if (invalidDataError) {
+        if (clientStateObject.state.gameState !== "select-background-success") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+        }
+        else if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
-        }
-        else if (clientStateObject.state.gameState !== "select-background-success") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>

@@ -28,7 +28,7 @@
                 gameState: "select-module",
             }
             await updateGameState(gameStateUpdate)
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+            await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
 
@@ -55,8 +55,6 @@
             <Card.Header>
                 <Card.Title>{activePenalty.text}</Card.Title>
             </Card.Header>
-            <Card.Content class="mt-auto">
-            </Card.Content>
         </Card.Root>
     {/each}
 </div>

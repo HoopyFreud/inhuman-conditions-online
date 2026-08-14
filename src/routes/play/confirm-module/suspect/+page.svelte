@@ -16,12 +16,12 @@
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null)
 
     $effect(() => {
-        if (invalidDataError) {
+        if (clientStateObject.state.gameState !== "confirm-module") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+        }
+        else if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket")
             webSocketObject.websocket?.close()
-        }
-        else if (clientStateObject.state.gameState !== "confirm-module") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>

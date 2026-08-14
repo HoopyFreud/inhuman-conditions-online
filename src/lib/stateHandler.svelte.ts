@@ -5,6 +5,8 @@ import penaltyData from "$lib/gameData/penalties/penalties.json"
 import moduleData from "$lib/gameData/modules/modules.json" 
 import backgroundData from "$lib/gameData/backgrounds/backgrounds.json" 
 
+let reconnectAttempt = 0
+
 export const clientErroredObject: {error: boolean} = $state({error: false})
 export const clientLastMessageObject: {message: string} = $state({message: ""})
 export const clientLastStatusCode: {code: number | null} = $state({code: null})
@@ -109,7 +111,7 @@ export async function joinGame(sessionID:string, joinType:string) {
 	});
 
 	// Handle disconnection
-	socket.addEventListener("close", (event) => {
+	socket.addEventListener("close", async (event) => {
         webSocketObject.websocket = null
 		clientLastMessageObject.message = event.reason
 		clientLastStatusCode.code = event.code
@@ -117,6 +119,9 @@ export async function joinGame(sessionID:string, joinType:string) {
 			console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
 		} else {
 			console.log("Connection died");
+		}
+		if (reconnectAttempt === 0) {
+			webSocketObject.websocket = await joinGame(sessionIDObject.ID, "existing")
 		}
 	});
 
@@ -158,6 +163,7 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 			const response: IHCCombinedResponse = JSON.parse(event.data)
 			clearTimeout(timeoutID)
 			if (response.string === "confirm") {
+				reconnectAttempt = 0
 				resolve(socket);
 			}
 			else {

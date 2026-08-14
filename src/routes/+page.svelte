@@ -80,6 +80,9 @@
 				await updateGameState({gameState: "game-setup"})
                 goto("/play/game-setup/do?room="+sessionIDObject.ID)
             }
+            else if (clientStateObject.state.gameState === "game-setup" && sessionIDObject.ID !== ""){
+                goto("/play/game-setup/await?room="+sessionIDObject.ID)
+            }
             else if (clientStateObject.state.gameState !== "init" && clientRoleObject.role !== null && sessionIDObject.ID !== ""){
                 goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
             }

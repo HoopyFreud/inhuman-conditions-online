@@ -16,12 +16,12 @@
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
     $effect(() => {
-        if (invalidDataError) {
+        if (clientStateObject.state.gameState !== "calibrate-penalty") {
+            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+        }
+        else if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
-        }
-        else if (clientStateObject.state.gameState !== "calibrate-penalty") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
 </script>
@@ -40,8 +40,6 @@
             <Card.Header>
                 <Card.Title>{activePenalty.text}</Card.Title>
             </Card.Header>
-            <Card.Content class="mt-auto">
-            </Card.Content>
         </Card.Root>
     {/each}
 </div>

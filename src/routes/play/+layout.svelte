@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
 
@@ -10,7 +11,11 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
     import { setErrorContext } from '$lib/errorContext';
-    import { sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+    import { sessionIDObject, webSocketObject, joinGame } from "$lib/stateHandler.svelte"
+
+    import moduleData from "$lib/gameData/modules/modules.json"
+
+    const preloadUrls = moduleData.flatMap((module) => [module.lightIcon,module.darkIcon])
 
     let sessionID = $derived(sessionIDObject.ID)
     const urlSessionID = page.url.searchParams.get('room')
@@ -28,8 +33,16 @@
 
     setErrorContext(() => sessionIDMismatchError || websocketError)
 
+    onMount(async () => {
+        if (sessionIDMismatchError && urlSessionID !== null && webSocketObject.websocket === null) {
+            console.log("trying to reestablish websocket")
+            sessionIDObject.ID = urlSessionID
+            webSocketObject.websocket = await joinGame(urlSessionID,"existing")
+        }
+    })
+
     $effect(() => {
-        if (sessionIDMismatchError) {
+        if (sessionIDMismatchError && webSocketObject.websocket !== null) {
             console.log("Session ID mismatch")
             webSocketObject.websocket!.close()
         }
@@ -44,6 +57,11 @@
 <svelte:head>
 	<title>Identity Crisis - Play</title>
 	<meta name="description" content="Play Identity Crisis" />
+    
+    {#each preloadUrls as image}
+        <link rel="preload" as="image" href={image} />
+
+     {/each}
 </svelte:head>
 
 <h1>
