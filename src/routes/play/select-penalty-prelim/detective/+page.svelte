@@ -61,6 +61,8 @@
             availablePenalties = penaltyData.filter((penalty) => penalty.digitalSafe)
         }
         availablePenalties = knuthShuffle(availablePenalties).slice(0,3)
+        console.log(penaltyData)
+        console.log(availablePenalties)
     })
 </script>
 
