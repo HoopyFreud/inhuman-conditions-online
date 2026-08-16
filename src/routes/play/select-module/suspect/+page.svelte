@@ -5,7 +5,7 @@
   import * as Alert from "#lib/components/ui/alert/index.js";
   import * as Card from "#lib/components/ui/card/index.js";
   import * as Carousel from "#lib/components/ui/carousel/index.js";
-  import AutoHeight from 'embla-carousel-auto-height'
+  import { default as AutoHeight } from 'embla-carousel-auto-height'
   import { Button } from "#lib/components/ui/button/index.js";
   import { Separator } from '#lib/components/ui/separator/index.js';
   import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
