@@ -15,7 +15,16 @@
     import moduleData from "$lib/gameData/modules/modules.json"
 
     const headerImages: Map<IHCModule,Promise<string>> = new Map(moduleData.map(
-        (module) => [module as IHCModule,import(module.lightIcon)]))
+        (module) => [
+            module as IHCModule,
+            import(
+                module.lightIcon,
+                {
+                    with: {type:"image/svg+xml"}
+                }
+            )
+        ]
+    ))
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 

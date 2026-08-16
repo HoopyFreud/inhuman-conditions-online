@@ -16,7 +16,7 @@
 
     let roleError = $derived(clientRoleObject.role !== "detective")
 
-    let invalidDataError = $derived(availablePenalties.length === 0)
+    let invalidDataError = $state(false)
 
     afterNavigate(() => {
         if (Array.isArray(clientStateObject.state.penaltyCardID)) {

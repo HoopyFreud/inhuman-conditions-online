@@ -87,24 +87,6 @@ export async function joinGame(sessionID:string, joinType:string) {
 			joinType: joinType
 		}
 	}
-	
-	// Handle errors
-	socket.addEventListener("error", (event) => {
-		clientErroredObject.error = true;
-		console.log(event)
-	});
-
-	// Handle disconnection
-	socket.addEventListener("close", (event) => {
-		clientLastMessageObject.message = event.reason
-		clientLastStatusCode.code = event.code
-		if (event.wasClean) {
-			console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
-		} else {
-			console.log("Connection died");
-		}
-        webSocketObject.websocket = null
-	});
 
 	await sendAndRecieveIntroduction(socket, introMessage)
 }
@@ -140,6 +122,24 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 			resolve(null)
 		},5000)
 
+		// Handle disconnection
+		socket.addEventListener("close", (event) => {
+			clientLastMessageObject.message = event.reason
+			clientLastStatusCode.code = event.code
+			if (event.wasClean) {
+				console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
+			} else {
+				console.log("Connection died");
+			}
+			resolve(null)
+		});
+
+		// Handle errors
+		socket.addEventListener("error", (event) => {
+			resolve(null)
+			console.log(event)
+		});
+
 		socket.addEventListener("message", (event) => {
 			const response: IHCCombinedResponse = JSON.parse(event.data)
 			console.log("recieved update:",response.type,response.state,response.role,response.string)
@@ -163,6 +163,25 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 						clientLastMessageObject.message = response.string;
 					}
 				});
+
+				// Handle disconnection
+				socket.addEventListener("close", (event) => {
+					clientLastMessageObject.message = event.reason
+					clientLastStatusCode.code = event.code
+					if (event.wasClean) {
+						console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
+					} else {
+						console.log("Connection died");
+					}
+					webSocketObject.websocket = null
+				});
+	
+				// Handle errors
+				socket.addEventListener("error", (event) => {
+					clientErroredObject.error = true;
+					console.log(event)
+				});
+
 				webSocketObject.websocket = socket
 				resolve(null);
 			}
