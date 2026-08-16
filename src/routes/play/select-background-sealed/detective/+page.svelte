@@ -15,10 +15,10 @@
 
     let roleError = $derived(clientRoleObject.role !== "detective")
 
-    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null)
+    let invalidDataError = $derived(!clientStateObject.state.sealedFile || gameModule.currentModule === null || gamePenalties.currentPenalties === null)
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "select-background-success") {
+        if (clientStateObject.state.gameState !== "select-background-sealed") {
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
         else if (invalidDataError) {
@@ -30,7 +30,7 @@
 
 <h2>Role Selection</h2>
 <p>
-    The suspect will now select a role. Take this time to review the {#if multiplePenalties}penalties{:else}penalty{/if} and module prompts and prepare to interrogate the suspect.
+    The suspect will decide how they want to portray themselves. Take this time to review the {#if multiplePenalties}penalties{:else}penalty{/if} and module prompts and prepare to interrogate the suspect.
 </p>
 {#if multiplePenalties}
 <h2>Penalties</h2>
@@ -103,7 +103,7 @@
 {#if invalidDataError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
-    <Alert.Title>Bad incoming penalty or module data</Alert.Title>
+    <Alert.Title>Bad client data, incoming penalty, or module data</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>

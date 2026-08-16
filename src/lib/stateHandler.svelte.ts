@@ -3,9 +3,7 @@ import type { IHCModule, IHCBackground, IHCPenalty, IHCProfile } from './gameObj
 
 import penaltyData from "$lib/gameData/penalties/penalties.json" 
 import moduleData from "$lib/gameData/modules/modules.json" 
-import backgroundData from "$lib/gameData/backgrounds/backgrounds.json" 
-
-let reconnectAttempt = 0
+import backgroundData from "$lib/gameData/backgrounds/backgrounds.json"
 
 export const clientErroredObject: {error: boolean} = $state({error: false})
 export const clientLastMessageObject: {message: string} = $state({message: ""})
@@ -60,6 +58,7 @@ export function resetState() {
 	clientRoleObject.role = null
 	clientStateObject.state = {
 		gameState: "init",
+		interrogationState: "prelim",
 		validatedSessions: 0,
 		moduleID: null,
 		penaltyCardID: null,
@@ -72,9 +71,7 @@ export function resetState() {
 	}
 	profileObject.profile = null
 	sessionIDObject.ID = ""
-	if (webSocketObject.websocket !== null) {
-		webSocketObject.websocket.close()
-	}
+	webSocketObject.websocket?.close()
 	webSocketObject.websocket = null
 }
 
@@ -91,19 +88,6 @@ export async function joinGame(sessionID:string, joinType:string) {
 		}
 	}
 	
-	socket.addEventListener("message", (event) => {
-		const response: IHCResponse = JSON.parse(event.data)
-		console.log([response.type,response.state,response.role,response.string])
-		if (response.type == "state-response" || response.type == "combined-response") {
-			clientStateObject.state = {...clientStateObject.state, ...response.state};
-		}
-		if (response.type == "role-response" || response.type == "combined-response") {
-			clientRoleObject.role = response.role;
-		}
-		if (response.string !== null) {
-			clientLastMessageObject.message = response.string;
-		}
-	});
 	// Handle errors
 	socket.addEventListener("error", (event) => {
 		clientErroredObject.error = true;
@@ -111,8 +95,7 @@ export async function joinGame(sessionID:string, joinType:string) {
 	});
 
 	// Handle disconnection
-	socket.addEventListener("close", async (event) => {
-        webSocketObject.websocket = null
+	socket.addEventListener("close", (event) => {
 		clientLastMessageObject.message = event.reason
 		clientLastStatusCode.code = event.code
 		if (event.wasClean) {
@@ -120,12 +103,10 @@ export async function joinGame(sessionID:string, joinType:string) {
 		} else {
 			console.log("Connection died");
 		}
-		if (reconnectAttempt === 0) {
-			webSocketObject.websocket = await joinGame(sessionIDObject.ID, "existing")
-		}
+        webSocketObject.websocket = null
 	});
 
-	return await sendAndRecieveIntroduction(socket, introMessage)
+	await sendAndRecieveIntroduction(socket, introMessage)
 }
 
 export async function queryGameState() {
@@ -161,10 +142,29 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 
 		socket.addEventListener("message", (event) => {
 			const response: IHCCombinedResponse = JSON.parse(event.data)
-			clearTimeout(timeoutID)
+			console.log("recieved update:",response.type,response.state,response.role,response.string)
 			if (response.string === "confirm") {
-				reconnectAttempt = 0
-				resolve(socket);
+				clearTimeout(timeoutID)
+				//update state based on response
+				clientStateObject.state = {...clientStateObject.state, ...response.state};
+				clientRoleObject.role = response.role;
+
+				// add the ongoing event listener
+				socket.addEventListener("message", (event) => {
+					const response: IHCResponse = JSON.parse(event.data)
+					console.log("recieved update:",response.type,response.state,response.role,response.string)
+					if (response.type == "state-response" || response.type == "combined-response") {
+						clientStateObject.state = {...clientStateObject.state, ...response.state};
+					}
+					if (response.type == "role-response" || response.type == "combined-response") {
+						clientRoleObject.role = response.role;
+					}
+					if (response.string !== null && response.string !== "confirm") {
+						clientLastMessageObject.message = response.string;
+					}
+				});
+				webSocketObject.websocket = socket
+				resolve(null);
 			}
 			else {
 				socket.close()

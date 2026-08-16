@@ -51,7 +51,8 @@
 	}
 
 	async function getSessionWebsocket(joinType:"new" | "existing") {
-		webSocketObject.websocket = await joinGame(sessionIDObject.ID,joinType)
+		const sessionID = $state.snapshot(sessionIDObject.ID)
+		await joinGame(sessionID,joinType)
 
 		if (webSocketObject.websocket && joinType === "new") {
 			console.log("websocket established, creating new room")
@@ -78,13 +79,13 @@
 		if (!websocketError) {
             if (joinType === "new" && clientStateObject.state.gameState === "init") {
 				await updateGameState({gameState: "game-setup"})
-                goto("/play/game-setup/do?room="+sessionIDObject.ID)
+                goto("/play/game-setup/do?room="+sessionID)
             }
             else if (clientStateObject.state.gameState === "game-setup" && sessionIDObject.ID !== ""){
-                goto("/play/game-setup/await?room="+sessionIDObject.ID)
+                goto("/play/game-setup/await?room="+sessionID)
             }
-            else if (clientStateObject.state.gameState !== "init" && clientRoleObject.role !== null && sessionIDObject.ID !== ""){
-                goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+            else if (clientStateObject.state.gameState !== "init" && clientRoleObject.role !== null && sessionID !== ""){
+                goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionID)
             }
             else {
                 console.log("Failed state init, closing websocket")

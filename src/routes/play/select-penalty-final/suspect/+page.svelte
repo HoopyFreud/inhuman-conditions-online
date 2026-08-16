@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
     
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
@@ -8,7 +8,7 @@
 
 	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
 	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
 
@@ -17,12 +17,7 @@
     const gameError = getErrorContext()
 
     let selectedPenalty: number | null = $state(null)
-    let availablePenalties: IHCPenalty[] = $derived(
-        Array.isArray(clientStateObject.state.penaltyCardID) ?
-        // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
-            penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id)) : 
-            []
-    )
+    let availablePenalties: IHCPenalty[] = $state([])
     let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
@@ -34,7 +29,7 @@
 
     let roleError = $derived(clientRoleObject.role !== "suspect")
 
-    let invalidDataError = $derived(availablePenalties.length === 0)
+    let invalidDataError = $state(false)
 
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null)
     let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || gameError())
@@ -53,6 +48,14 @@
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
+
+    afterNavigate(() => {
+        if (Array.isArray(clientStateObject.state.penaltyCardID)) {
+            // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
+            availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
+        }
+        invalidDataError = availablePenalties.length === 0
+    })
 </script>
 
 <h2>Select Penalty</h2>
@@ -113,7 +116,7 @@
     <AlertCircleIcon />
     <Alert.Title>Bad incoming penalty data</Alert.Title>
     <Alert.Description>
-    <p>Return to the <a href="/">home page</a> and try again.</p>
+    <p>Refresh the page or return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>
 </Alert.Root>
 {/if}

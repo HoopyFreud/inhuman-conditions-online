@@ -53,13 +53,12 @@
     }
 
     afterNavigate(() => {
-        availablePenalties = [...penaltyData]
         if (clientStateObject.state.permanentPenalty) {
-            permanentPenalty = availablePenalties[0]
-            availablePenalties = availablePenalties.slice(1)
+            permanentPenalty = penaltyData[0]
+            availablePenalties = penaltyData.slice(1)
         }
         if (clientStateObject.state.digitalGame) {
-            availablePenalties.filter((penalty) => penalty.digitalSafe)
+            availablePenalties = penaltyData.filter((penalty) => penalty.digitalSafe)
         }
         availablePenalties = knuthShuffle(availablePenalties).slice(0,3)
     })

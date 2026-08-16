@@ -26,8 +26,8 @@
 
     const gameError = getErrorContext()
 
-    let selectedBackground: number | null = $state(null)
     let availableBackgrounds: IHCBackground[] = $state([])
+    let selectedBackground: number | null = $derived(availableBackgrounds[0]?.id)
     let invalidBackgroundSelection = $derived(selectedBackground === null)
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
@@ -37,19 +37,9 @@
 
     let roleError = $derived(clientRoleObject.role !== "suspect")
 
-    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null || profileObject.profile === null)
+    let invalidDataError = $derived(!clientStateObject.state.sealedFile || gameModule.currentModule === null || gamePenalties.currentPenalties === null || profileObject.profile === null)
 
-    let disableBackgroundSelectButton: boolean = $derived(selectedBackground !== null)
-    let disablebackgroundDeselectButton: boolean = $derived(selectedBackground === null)
     let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || gameError())
-
-    function removeBackground() {
-        selectedBackground = null
-    }
-
-    function addBackground(background: IHCBackground) {
-        selectedBackground = background.id
-    }
 
     async function submitBackground() {
         if (!disableSelectBackground){
@@ -59,12 +49,12 @@
     }
 
     afterNavigate(() => {
-        availableBackgrounds = knuthShuffle(backgroundData).slice(0,3)
+        availableBackgrounds = backgroundData.slice(0,1)
     })
 
     $effect(() => {
         if (invalidDataError) {
-            console.log("Bad penalty or module data, closing websocket")
+            console.log("Bad penalty, profile, or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
     })
@@ -113,9 +103,9 @@
         {/if}
     </Card.Content>
 </Card.Root>
-<h2>Select Role</h2>
+<h2>Sealed Role</h2>
 <p>
-    Prepare to take on the provided role. Because you failed validation, you may not choose a different one. Click the button when you are ready to proceed.
+    The sealed role option is enabled for this game. The character for this role is based on yourself. Take a moment to decide what that will look like — What will you fictionalize? What will be true to life? Click the button when you are ready to proceed.
 </p>
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each availableBackgrounds as availableBackground}
@@ -123,17 +113,6 @@
             <Card.Header>
                 <Card.Title>{availableBackground.background}</Card.Title>
             </Card.Header>
-            <Card.Content class="mt-auto">
-                {#if selectedBackground === availableBackground.id}
-                    <Button variant="outline" type="submit" disabled={disablebackgroundDeselectButton} onclick={() => removeBackground()} class="w-fit m-auto mt-4">
-                        <h3>Deselect</h3>
-                    </Button>
-                {:else}
-                    <Button variant="outline" type="submit" disabled={disableBackgroundSelectButton} onclick={() => addBackground(availableBackground)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
-                    </Button>
-                {/if}
-            </Card.Content>
         </Card.Root>
     {/each}
 </div>
@@ -151,7 +130,7 @@
 {#if invalidDataError}
 <Alert.Root variant="destructive">
     <AlertCircleIcon />
-    <Alert.Title>Bad incoming penalty, profile, or module data</Alert.Title>
+    <Alert.Title>Bad client data, incoming penalty, profile, or module data</Alert.Title>
     <Alert.Description>
     <p>Return to the <a href="/">home page</a> and try again.</p>
     </Alert.Description>

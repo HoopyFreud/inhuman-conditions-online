@@ -17,6 +17,8 @@
 
     import moduleData from "$lib/gameData/modules/modules.json" 
 
+    const preloadUrls = moduleData.flatMap((module) => [module.lightIcon,module.darkIcon])
+
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
     const gameError = getErrorContext()
@@ -64,7 +66,13 @@
     })
 </script>
 
-{#if clientStateObject.state.permanentPenalty}
+<svelte:head>
+	{#each preloadUrls as image}
+        <link rel="preload" as="image" href={image} />
+    {/each}
+</svelte:head>
+
+{#if multiplePenalties}
 <h2>Penalties</h2>
 {:else}
 <h2>Penalty</h2>

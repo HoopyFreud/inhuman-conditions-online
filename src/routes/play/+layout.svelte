@@ -11,11 +11,10 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
     import { setErrorContext } from '$lib/errorContext';
-    import { sessionIDObject, webSocketObject, joinGame } from "$lib/stateHandler.svelte"
+    import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+    import { joinGame } from "$lib/stateHandler.svelte"
 
-    import moduleData from "$lib/gameData/modules/modules.json"
-
-    const preloadUrls = moduleData.flatMap((module) => [module.lightIcon,module.darkIcon])
+    let retry = false
 
     let sessionID = $derived(sessionIDObject.ID)
     const urlSessionID = page.url.searchParams.get('room')
@@ -31,23 +30,44 @@
 		navigator.clipboard.writeText(page.url.host+"/join?room="+urlSessionID)
 	}
 
+    async function retryJoin() {
+        if (urlSessionID !== null) {
+            await joinGame(urlSessionID,"existing")
+        }
+        if (webSocketObject !== null) {
+            retry = false
+            const goUrl = "/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+urlSessionID
+            if (goUrl !== page.url.pathname + page.url.search) {
+                await goto(goUrl)
+            }
+        }
+    }
+
     setErrorContext(() => sessionIDMismatchError || websocketError)
 
     onMount(async () => {
-        if (sessionIDMismatchError && urlSessionID !== null && webSocketObject.websocket === null) {
-            console.log("trying to reestablish websocket")
+        if (urlSessionID !== null && webSocketObject.websocket === null) {
+            console.log("trying to establish websocket")
             sessionIDObject.ID = urlSessionID
-            webSocketObject.websocket = await joinGame(urlSessionID,"existing")
+            await joinGame(urlSessionID,"existing")
         }
     })
 
     $effect(() => {
-        if (sessionIDMismatchError && webSocketObject.websocket !== null) {
+        if (sessionIDMismatchError) {
             console.log("Session ID mismatch")
-            webSocketObject.websocket!.close()
+            if (webSocketObject.websocket !== null) {
+                webSocketObject.websocket?.close()
+                webSocketObject.websocket = null
+            }
         }
         if (websocketError) {
             console.log("Websocket failure")
+            if (!retry) {
+                console.log("attempting to reconnect")
+                retry = true
+                retryJoin()
+            }
         }
     })
     
@@ -57,11 +77,6 @@
 <svelte:head>
 	<title>Identity Crisis - Play</title>
 	<meta name="description" content="Play Identity Crisis" />
-    
-    {#each preloadUrls as image}
-        <link rel="preload" as="image" href={image} />
-
-     {/each}
 </svelte:head>
 
 <h1>

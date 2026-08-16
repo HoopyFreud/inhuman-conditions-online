@@ -20,7 +20,7 @@
 
     afterNavigate(async () => {
         if (urlSessionID !== null) {
-            webSocketObject.websocket = await joinGame(urlSessionID,"existing")
+            await joinGame(urlSessionID,"existing")
             sessionIDObject.ID = urlSessionID
         }
         

@@ -1,122 +1,126 @@
 [
     {
         "id": 0,
-        "background": "Maker of false animals"
+        "background": "Sealed"
     },
     {
         "id": 1,
-        "background": "Renowned professor"
+        "background": "Maker of false animals"
     },
     {
         "id": 2,
-        "background": "Reality TV contestant"
+        "background": "Renowned professor"
     },
     {
         "id": 3,
-        "background": "Cult leader"
+        "background": "Reality TV contestant"
     },
     {
         "id": 4,
-        "background": "Foreign ambassador"
+        "background": "Cult leader"
     },
     {
         "id": 5,
-        "background": "Motivational speaker"
+        "background": "Foreign ambassador"
     },
     {
         "id": 6,
-        "background": "Conspiracy theorist"
+        "background": "Motivational speaker"
     },
     {
         "id": 7,
-        "background": "Professional criminal"
+        "background": "Conspiracy theorist"
     },
     {
         "id": 8,
-        "background": "Used van dealer"
+        "background": "Professional criminal"
     },
     {
         "id": 9,
-        "background": "Popstar"
+        "background": "Used van dealer"
     },
     {
         "id": 10,
-        "background": "Retired sports champion"
+        "background": "Popstar"
     },
     {
         "id": 11,
-        "background": "Very old"
+        "background": "Retired sports champion"
     },
     {
         "id": 12,
-        "background": "Mayoral candidate"
+        "background": "Very old"
     },
     {
         "id": 13,
-        "background": "Decorated robot war veteran"
+        "background": "Mayoral candidate"
     },
     {
         "id": 14,
-        "background": "Former investigator"
+        "background": "Decorated robot war veteran"
     },
     {
         "id": 15,
-        "background": "Dishonorably discharged from the military"
+        "background": "Former investigator"
     },
     {
         "id": 16,
-        "background": "World's second richest person"
+        "background": "Dishonorably discharged from the military"
     },
     {
         "id": 17,
-        "background": "Cannibal"
+        "background": "World's second richest person"
     },
     {
         "id": 18,
-        "background": "Amateur wrestler"
+        "background": "Cannibal"
     },
     {
         "id": 19,
-        "background": "\"The Butcher\""
+        "background": "Amateur wrestler"
     },
     {
         "id": 20,
-        "background": "Body builder"
+        "background": "\"The Butcher\""
     },
     {
         "id": 21,
-        "background": "Freelance robot hunter"
+        "background": "Body builder"
     },
     {
         "id": 22,
-        "background": "Royalty"
+        "background": "Freelance robot hunter"
     },
     {
         "id": 23,
-        "background": "Disgraced scientist"
+        "background": "Royalty"
     },
     {
         "id": 24,
-        "background": "Dean of a clown college"
+        "background": "Disgraced scientist"
     },
     {
         "id": 25,
-        "background": "Former child star"
+        "background": "Dean of a clown college"
     },
     {
         "id": 26,
-        "background": "Butler to the stars"
+        "background": "Former child star"
     },
     {
         "id": 27,
-        "background": "Internal affairs agent"
+        "background": "Butler to the stars"
     },
     {
         "id": 28,
-        "background": "Robots rights activist"
+        "background": "Internal affairs agent"
     },
     {
         "id": 29,
+        "background": "Robots rights activist"
+    },
+    {
+        "id": 30,
         "background": "Sponsored by an energy drink brand"
     }
 ]

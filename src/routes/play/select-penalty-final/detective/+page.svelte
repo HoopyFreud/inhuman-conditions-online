@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { afterNavigate, goto } from "$app/navigation";
 
 	import * as Alert from "$lib/components/ui/alert/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
@@ -11,17 +11,20 @@
 
     import penaltyData from "$lib/gameData/penalties/penalties.json"
 
-    let availablePenalties: IHCPenalty[] = $derived(
-        Array.isArray(clientStateObject.state.penaltyCardID) ?
-        // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
-            penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id)) : 
-            []
-    )
+    let availablePenalties: IHCPenalty[] = $state([])
     let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
     let roleError = $derived(clientRoleObject.role !== "detective")
 
     let invalidDataError = $derived(availablePenalties.length === 0)
+
+    afterNavigate(() => {
+        if (Array.isArray(clientStateObject.state.penaltyCardID)) {
+            // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
+            availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
+        }
+        invalidDataError = availablePenalties.length === 0
+    })
 
     $effect(() => {
         if (clientStateObject.state.gameState !== "select-penalty-final") {
