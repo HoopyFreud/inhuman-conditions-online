@@ -56,8 +56,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/small-talk-dark.svg",
-        "lightIcon": "/images/small-talk-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/small-talk-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/small-talk-light.svg",
         "mazePoints": ["E","D","C","A","F","B"],
         "patientRobotProfiles": [0,1,2],
         "violentRobotProfiles": [0,1,2]
@@ -119,8 +119,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/creative-dark.svg",
-        "lightIcon": "/images/creative-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/creative-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/creative-light.svg",
         "mazePoints": ["E","D","C","B","A","F"],
         "patientRobotProfiles": [3,4,5],
         "violentRobotProfiles": [3,4,5]
@@ -182,8 +182,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/imagination-dark.svg",
-        "lightIcon": "/images/imagination-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/imagination-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/imagination-light.svg",
         "mazePoints": ["C","E","F","D","B","A"],
         "patientRobotProfiles": [6,7,8],
         "violentRobotProfiles": [6,7,8]
@@ -245,8 +245,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/coop-dark.svg",
-        "lightIcon": "/images/coop-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/coop-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/coop-light.svg",
         "mazePoints": ["A","B","F","E","D","C"],
         "patientRobotProfiles": [9,10,11],
         "violentRobotProfiles": [9,10,11]
@@ -308,8 +308,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/hopes-dark.svg",
-        "lightIcon": "/images/hopes-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/hopes-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/hopes-light.svg",
         "mazePoints": ["D","F","A","C","E","B"],
         "patientRobotProfiles": [12,13,14],
         "violentRobotProfiles": [12,13,14]
@@ -371,8 +371,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/body-dark.svg",
-        "lightIcon": "/images/body-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/body-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/body-light.svg",
         "mazePoints": ["A","C","F","E","D","B"],
         "patientRobotProfiles": [15,16,17],
         "violentRobotProfiles": [15,16,17]
@@ -434,8 +434,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/grief-dark.svg",
-        "lightIcon": "/images/grief-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/grief-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/grief-light.svg",
         "mazePoints": ["C","D","F","E","B","A"],
         "patientRobotProfiles": [18,19,20],
         "violentRobotProfiles": [18,19,20]
@@ -497,8 +497,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/threat-dark.svg",
-        "lightIcon": "/images/threat-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/threat-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/threat-light.svg",
         "mazePoints": ["A","C","D","E","F","B"],
         "patientRobotProfiles": [21,22,23],
         "violentRobotProfiles": [21,22,23]
@@ -560,8 +560,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/moral-dark.svg",
-        "lightIcon": "/images/moral-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/moral-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/moral-light.svg",
         "mazePoints": ["E","A","F","D","C","B"],
         "patientRobotProfiles": [24,25,26],
         "violentRobotProfiles": [24,25,26]
@@ -623,8 +623,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/self-dark.svg",
-        "lightIcon": "/images/self-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/self-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/self-light.svg",
         "mazePoints": ["A","D","B","E","F","C"],
         "patientRobotProfiles": [27,28,29],
         "violentRobotProfiles": [27,28,29]
@@ -686,8 +686,8 @@
                 ]
             }
         ],
-        "darkIcon": "/images/intentions-dark.svg",
-        "lightIcon": "/images/intentions-light.svg",
+        "darkIcon": "/src/lib/gameData/icons/intentions-dark.svg",
+        "lightIcon": "/src/lib/gameData/icons/intentions-light.svg",
         "mazePoints": ["A","B","D","E","F","C"],
         "patientRobotProfiles": [30,31,32],
         "violentRobotProfiles": [30,31,32]

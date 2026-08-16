@@ -18,11 +18,11 @@
     const height = 400
     const radius = 150
     const arrowDist = 10
-    const numRadsPerLetter = 2*Math.PI / textArray.length;
     const paddingRads = Math.PI/10;
     
-    function drawText () {
+    function draw () {
         if (context !== null) {
+            const numRadsPerLetter = 2*Math.PI / textArray.length;
             context.translate(width/2, height/2);
 
             for(var i=0;i<textArray.length;i++){
@@ -34,9 +34,11 @@
                 context.beginPath()
                 context.arc(0,0,radius,(i*numRadsPerLetter)+paddingRads, ((i+1)*numRadsPerLetter)-paddingRads,false);
                 context.stroke()
-                context.beginPath()
+                context.restore()
+                context.save()
                 context.rotate((i*numRadsPerLetter)+paddingRads)
                 context.translate(radius,0);
+                context.beginPath()
                 context.moveTo(arrowDist,arrowDist)
                 context.lineTo(0,0)
                 context.lineTo(-arrowDist,arrowDist)
@@ -51,10 +53,12 @@
         textArray = sequence.slice(randomIndex).concat(sequence.slice(0,randomIndex))
         context = canvas.getContext("2d")
         if (context !== null) {
-            context.font = "500, 24px, Circuit"
             context.textAlign = "center"
             context.textBaseline = "middle"
-            drawText()
+            context.fillStyle = "oklch(0.985 0 0)"
+            context.strokeStyle = "oklch(0.985 0 0)"
+            context.font = "50px Circuit"
+            draw()
         }
     })
 </script>

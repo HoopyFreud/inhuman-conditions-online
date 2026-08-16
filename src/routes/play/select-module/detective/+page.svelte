@@ -14,15 +14,12 @@
 
     import moduleData from "$lib/gameData/modules/modules.json"
 
-    const headerImages: Map<IHCModule,Promise<string>> = new Map(moduleData.map(
+    const imageGlob = import.meta.glob("$lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
+
+    const headerImages: Map<number,string> = new Map(moduleData.map(
         (module) => [
-            module as IHCModule,
-            import(
-                module.lightIcon,
-                {
-                    with: {type:"image/svg+xml"}
-                }
-            )
+            module.id,
+            imageGlob[module.lightIcon]
         ]
     ))
 
@@ -77,7 +74,7 @@
                     <Card.Title><h3>{availableModule.name}</h3></Card.Title>
                 </Card.Header>
                 <Card.Content class="mt-auto">
-                    <img src={await (headerImages.get(availableModule))} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                    <img src={headerImages.get(availableModule.id)} alt={availableModule.name} class="w-1/2 mx-auto"/>
                     <p class="my-2">Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>
                     <Accordion.Root type="single" class="w-full">

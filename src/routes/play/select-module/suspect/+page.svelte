@@ -17,22 +17,14 @@
 
     import moduleData from "$lib/gameData/modules/modules.json" 
 
-    const headerImages: Map<IHCModule,[Promise<string>,Promise<string>]> = new Map(moduleData.map(
+    const imageGlob = import.meta.glob("$lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
+
+    const headerImages: Map<number,[string,string]> = new Map(moduleData.map(
         (module) => [
-            module as IHCModule,
+            module.id,
             [
-                import(
-                    module.darkIcon,
-                    {
-                        with: {type:"image/svg+xml"}
-                    }
-                ),
-                import(
-                    module.lightIcon,
-                    {
-                        with: {type:"image/svg+xml"}
-                    }
-                )
+                imageGlob[module.darkIcon],
+                imageGlob[module.lightIcon]
             ]
         ]
     ))
@@ -113,9 +105,9 @@
                 </Card.Header>
                 <Card.Content class="mt-auto">
                     {#if selectedModule === availableModule.id}
-                        <img src={await (headerImages.get(availableModule)?.[0])} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                        <img src={headerImages.get(availableModule.id)?.[0]} alt={availableModule.name} class="w-1/2 mx-auto"/>
                     {:else}
-                        <img src={await (headerImages.get(availableModule)?.[1])} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                        <img src={headerImages.get(availableModule.id)?.[1]} alt={availableModule.name} class="w-1/2 mx-auto"/>
                     {/if}
                     <p class="my-2">Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>

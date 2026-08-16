@@ -4,6 +4,8 @@
     import type { WithElementRef } from "$lib/utils.js";
     import type { HTMLAttributes } from "svelte/elements";
 
+    import maze from "./maze.svg?url"
+
     let {
 		class: className,
         sequence,
@@ -17,20 +19,21 @@
     const width = 512
     const height = 1024
     const textLocations = [
-        [462.584,620],
+        [462.584,625],
         [167.464,280],
         [403.560,310],
-        [340,775],
-        [226.488,685],
-        [108.440,555]
+        [340,780],
+        [226.488,705],
+        [108.440,575]
     ]
     
-    function drawText () {
+    function draw () {
         if (context !== null) {
-            context.save()
-            context.translate(width/2, height/2);
-
+            const img = new Image();
+            img.onload = () => context?.drawImage(img, 0, 0)
+            img.src = maze; 
             for(var i=0;i<textArray.length;i++){
+                context.save()
                 context.translate(textLocations[i][0], textLocations[i][1]);
                 context.fillText(textArray[i],0,0);
                 context.restore();
@@ -38,18 +41,23 @@
         }
     }
 
-    onMount(() => {
+    onMount(async () => {
         const randomIndex = Math.floor(Math.random() * sequence.length)
         textArray = sequence.slice(randomIndex).concat(sequence.slice(0,randomIndex))
         context = canvas.getContext("2d")
         if (context !== null) {
-            const img = new Image();
-            img.src = '/images/maze.svg'; 
-            context.drawImage(img, 0, 0);
-            context.font = "500, 24px, Circuit"
-            context.textAlign = "center"
-            context.textBaseline = "middle"
-            drawText()
+            document.fonts.ready.then(async (fontFaceSet) => {
+                // Any operation that needs to be done only after all used fonts
+                // have finished loading can go here.
+                await [...fontFaceSet].find((fontFace) => fontFace.family == '"Circuit"')?.load()
+                //we just checked if context exists
+                context!.textAlign = "center"
+                context!.textBaseline = "middle"
+                context!.fillStyle = "oklch(0.985 0 0)"
+                context!.strokeStyle = "oklch(0.985 0 0)"
+                context!.font = "50px Circuit"
+                draw()
+            })
         }
     })
 </script>

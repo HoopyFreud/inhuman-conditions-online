@@ -124,7 +124,7 @@
 </Card.Root>
     
 {#if !clientStateObject.state.sealedFile}
-<div class="flex flex-row justify-evenly w-3/4 mt-4">
+<div class="flex flex-row flex-wrap justify-evenly w-3/4 mt-4 mx-auto">
     <Button variant="destructive" type="submit" onclick={async () => await validationOutcome("select-background-fail")} disabled={disableConfirmModule}><h3>Suspect failed validation</h3></Button>
     <Button variant="outline" type="submit" onclick={async() => await validationOutcome("select-background-success")} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
 </div>
