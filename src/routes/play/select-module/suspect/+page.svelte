@@ -65,7 +65,7 @@
     }
 
     afterNavigate(() => {
-        availableModules = [...(moduleData as IHCModule[])]
+        availableModules = moduleData as IHCModule[]
     })
 
     $effect(() => {
@@ -116,11 +116,13 @@
                             <Accordion.Item value={"item-" + index.toString()}>
                                 <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
                                 <Accordion.Content class="flex flex-col gap-4 text-balance">
-                                {#each prompt.samplePrompts as sample}
-                                    <p>
-                                        - {sample}
-                                    </p>
-                                {/each}
+                                <ul>
+                                    {#each prompt.samplePrompts as sample}
+                                        <li>
+                                            {sample}
+                                        </li>
+                                    {/each}
+                                </ul>
                                 </Accordion.Content>
                             </Accordion.Item>
                         {/each}
@@ -131,11 +133,13 @@
                             <Accordion.Item value={"item-" + index.toString()}>
                                 <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
                                 <Accordion.Content class="flex flex-col gap-4 text-balance">
-                                {#each prompt.samplePrompts as sample}
-                                    <p>
-                                        - {sample}
-                                    </p>
-                                {/each}
+                                <ul>
+                                    {#each prompt.samplePrompts as sample}
+                                        <li>
+                                            {sample}
+                                        </li>
+                                    {/each}
+                                </ul>
                                 </Accordion.Content>
                             </Accordion.Item>
                         {/each}

@@ -11,6 +11,8 @@
 
 	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
 
+    const moduleIcon = await import(gameModule.currentModule.lightIcon+"?url")
+
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
     let roleError = $derived(clientRoleObject.role !== "detective")
@@ -53,7 +55,7 @@
         <Card.Title><h3>{gameModule.currentModule.name}</h3></Card.Title>
     </Card.Header>
     <Card.Content class="mt-auto">
-        <img src={gameModule.currentModule.darkIcon} alt={gameModule.currentModule.name} class="w-1/2 mx-auto"/>
+        <img src={moduleIcon} alt={gameModule.currentModule.name} class="w-1/2 mx-auto"/>
         <p class="my-2">Difficulty: {gameModule.currentModule.difficulty}</p>
         <h3>Module verification sequence</h3>
         <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
@@ -63,11 +65,13 @@
                 <Accordion.Item value={"item-" + index.toString()}>
                     <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
                     <Accordion.Content class="flex flex-col gap-4 text-balance">
-                    {#each prompt.samplePrompts as sample}
-                        <p>
-                            - {sample}
-                        </p>
-                    {/each}
+                    <ul>
+                        {#each prompt.samplePrompts as sample}
+                            <li>
+                                {sample}
+                            </li>
+                        {/each}
+                    </ul>
                     </Accordion.Content>
                 </Accordion.Item>
             {/each}
@@ -78,11 +82,13 @@
                 <Accordion.Item value={"item-" + index.toString()}>
                     <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
                     <Accordion.Content class="flex flex-col gap-4 text-balance">
-                    {#each prompt.samplePrompts as sample}
-                        <p>
-                            - {sample}
-                        </p>
-                    {/each}
+                    <ul>
+                        {#each prompt.samplePrompts as sample}
+                            <li>
+                                {sample}
+                            </li>
+                        {/each}
+                    </ul>
                     </Accordion.Content>
                 </Accordion.Item>
             {/each}

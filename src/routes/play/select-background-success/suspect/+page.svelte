@@ -94,10 +94,10 @@
     <Card.Content class="mt-auto">
         {#if !invalidDataError && profileObject.profile?.type === "human"}
             <h3>Module Verification Maze</h3>
-            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
         {:else if !invalidDataError}
             <h3>Module Verification Sequence</h3>
-            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
             {#if profileObject.profile?.type === "patientRobot"}
                 <h3>Restriction</h3>
                 <p>{profileObject.profile.restriction}</p>
@@ -119,7 +119,7 @@
 </p>
 <div class="flex flex-row justify-around gap-2 mx-2 my-2">
     {#each availableBackgrounds as availableBackground}
-        <Card.Root class="w-1/4">
+        <Card.Root class="w-1/4 {selectedBackground === availableBackground.id? 'light' : ''}">
             <Card.Header>
                 <Card.Title>{availableBackground.background}</Card.Title>
             </Card.Header>
@@ -130,7 +130,7 @@
                     </Button>
                 {:else}
                     <Button variant="outline" type="submit" disabled={disableBackgroundSelectButton} onclick={() => addBackground(availableBackground)} class="w-fit m-auto mt-4">
-                        <h3>Select"</h3>
+                        <h3>Select</h3>
                     </Button>
                 {/if}
             </Card.Content>

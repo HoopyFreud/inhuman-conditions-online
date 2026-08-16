@@ -112,10 +112,10 @@
     <Card.Content class="mt-auto">
         {#if !invalidProfileDataError && profileObject.profile?.type === "human"}
             <h3>Module Verification Maze</h3>
-            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
         {:else if !invalidProfileDataError}
             <h3>Module Verification Sequence</h3>
-            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
             {#if profileObject.profile?.type === "patientRobot"}
                 <h3>Restriction</h3>
                 <p>{profileObject.profile.restriction}</p>
@@ -124,9 +124,11 @@
                 {/if}
             {:else if profileObject.profile?.type === "violentRobot"}
                 <h3>Requirements</h3>
-                {#each profileObject.profile.requirements as requirement}
-                    <p>{requirement}</p>
-                {/each}
+                <ul>
+                    {#each profileObject.profile.requirements as requirement}
+                        <li>{requirement}</li>
+                    {/each}
+                </ul>
             {/if}
         {/if}
     </Card.Content>
