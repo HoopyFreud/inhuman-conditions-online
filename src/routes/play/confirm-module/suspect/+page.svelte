@@ -68,7 +68,7 @@
     })
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "confirm-module") {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "confirm-module") {
             goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
         } else if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket");

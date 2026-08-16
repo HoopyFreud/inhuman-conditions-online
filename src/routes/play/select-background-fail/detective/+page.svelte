@@ -20,7 +20,7 @@
     let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null)
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "select-background-fail") {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-background-fail") {
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
         else if (invalidDataError) {

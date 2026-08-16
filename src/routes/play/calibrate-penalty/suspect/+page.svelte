@@ -16,7 +16,7 @@
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "calibrate-penalty") {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "calibrate-penalty") {
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
         else if (invalidDataError) {

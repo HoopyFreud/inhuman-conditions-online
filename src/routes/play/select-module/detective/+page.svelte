@@ -31,7 +31,7 @@
   afterNavigate(() => availableModules = moduleData as IHCModule[]);
 
   $effect(() => {
-    if (clientStateObject.state.gameState !== "select-module") {
+    if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-module") {
       goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
     } else if (invalidDataError) {
       console.log("Bad penalty data, closing websocket");

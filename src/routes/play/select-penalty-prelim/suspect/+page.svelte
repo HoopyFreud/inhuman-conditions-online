@@ -10,7 +10,7 @@
     let roleError = $derived(clientRoleObject.role !== "suspect")
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "select-penalty-prelim") {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-penalty-prelim") {
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })

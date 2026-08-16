@@ -30,7 +30,7 @@
     })
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "select-penalty-final") {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-penalty-final") {
             goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
         } else if (invalidDataError) {
             console.log("Bad penalty data, closing websocket");

@@ -6,7 +6,7 @@
 	import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "#lib/stateHandler.svelte.js"
 
     $effect(() => {
-        if (clientStateObject.state.gameState !== "game-setup") {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "game-setup") {
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     })
