@@ -23,6 +23,7 @@
             // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
             availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
         }
+        console.log(availablePenalties)
         invalidDataError = availablePenalties.length === 0
     })
 
@@ -38,7 +39,6 @@
 </script>
 
 <h2>Waiting for suspect to select penalty</h2>
-<Ellipsis />
 {#if permanentPenalty !== null}
 <p>
     The permanent penalty will be enforced in addition to the selected penalty.
@@ -60,6 +60,7 @@
         </Card.Root>
     {/each}
 </div>
+<Ellipsis />
 
 {#if roleError}
 <Alert.Root variant="destructive">

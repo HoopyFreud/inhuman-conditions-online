@@ -14,7 +14,11 @@
 
     import moduleData from "$lib/gameData/modules/modules.json"
 
-    const preloadUrls = moduleData.flatMap((module) => [module.lightIcon,module.darkIcon])
+    const headerImages = new Map(moduleData.map((module) => {
+        const iLightIcon = import(module.lightIcon)
+        const iDarkIcon = import(module.darkIcon)
+        return [module.id,[iLightIcon,iDarkIcon]]
+    }))
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
@@ -38,12 +42,6 @@
         }
     })
 </script>
-
-<svelte:head>
-	{#each preloadUrls as image}
-        <link rel="preload" as="image" href={image} />
-    {/each}
-</svelte:head>
 
 {#if multiplePenalties}
 <h2>Penalties</h2>
@@ -73,7 +71,7 @@
                     <Card.Title><h3>{availableModule.name}</h3></Card.Title>
                 </Card.Header>
                 <Card.Content class="mt-auto">
-                    <img src={availableModule.darkIcon} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                    <img src={headerImages.get(availableModule.id)} alt={availableModule.name} class="w-1/2 mx-auto"/>
                     <p class="my-2">Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>
                     <Accordion.Root type="single" class="w-full">
