@@ -20,8 +20,8 @@
 	data-slot="carousel-next"
 	{variant}
 	{size}
-	aria-disabled={!emblaCtx.canScrollNext}
-	disabled={!emblaCtx.canScrollNext}
+	aria-disabled={!emblaCtx.canGoToNext}
+	disabled={!emblaCtx.canGoToNext}
 	class={cn(
 		"rounded-full absolute touch-manipulation",
 		emblaCtx.orientation === "horizontal"
@@ -29,7 +29,7 @@
 			: "start-1/2 -bottom-12 -translate-x-1/2 rotate-90",
 		className
 	)}
-	onclick={emblaCtx.scrollNext}
+	onclick={emblaCtx.goToNext}
 	onkeydown={emblaCtx.handleKeyDown}
 	bind:ref
 	{...restProps}

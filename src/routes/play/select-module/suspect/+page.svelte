@@ -5,6 +5,7 @@
   import * as Alert from "#lib/components/ui/alert/index.js";
   import * as Card from "#lib/components/ui/card/index.js";
   import * as Carousel from "#lib/components/ui/carousel/index.js";
+  import AutoHeight from 'embla-carousel-auto-height'
   import { Button } from "#lib/components/ui/button/index.js";
   import { Separator } from '#lib/components/ui/separator/index.js';
   import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
@@ -61,11 +62,7 @@
     }
   }
 
-  afterNavigate(({ shallow }) => {
-    if (shallow) return;
-
-    availableModules = moduleData as IHCModule[];
-  });
+  afterNavigate(() => availableModules = moduleData as IHCModule[]);
 
   $effect(() => {
     if (invalidDataError) {
@@ -74,48 +71,50 @@
     }
     })
 </script>
-
-{#if multiplePenalties}
-<h2>Penalties</h2>
-{:else}
-<h2>Penalty</h2>
-{/if}
-<div class="flex flex-row justify-around gap-2 mx-2">
+<div class="flex flex-row justify-evenly gap-2">
     {#each gamePenalties.currentPenalties as activePenalty}
         <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
             <Card.Header>
-                <Card.Title>{activePenalty.text}</Card.Title>
+                <Card.Title>
+                    <h3>Penalty</h3>
+                </Card.Title>
             </Card.Header>
+            <Card.Content>
+                <p>{activePenalty.text}</p>
+            </Card.Content>
         </Card.Root>
     {/each}
 </div>
-<Separator class="w-3/4! my-2 mx-auto"/>
-<h2>Select Module</h2>
-<p>
-    Choose a module to play. You may consult with the detective player, but you have final authority over this decision.
-</p>
-<Carousel.Root class="w-3/4 mx-auto my-2" opts={{align: "center", loop: true}}>
-  <Carousel.Content>
+<Separator class="w-3/4! my-4 mx-auto"/>
+<h2 class="max-w-3/4 mx-auto">Module Selection</h2>
+<div class="flex flex-col gap-2 w-3/4 text-left mx-auto">
+    <p>
+        Choose a module to play. You may consult with the detective player, but you have final authority over this decision.
+    </p>
+</div>
+<Carousel.Root class="w-3/4 mx-auto my-4" opts={{align: "center", loop: true}} plugins={[AutoHeight()]}>
+  <Carousel.Content class="items-start">
     {#each availableModules as availableModule}
         <Carousel.Item>
             <Card.Root class="w-5/6 mx-auto {selectedModule === availableModule.id? 'light' : ''}">
                 <Card.Header>
-                    <Card.Title><h3>{availableModule.name}</h3></Card.Title>
+                    <Card.Title><h2>{availableModule.name}</h2></Card.Title>
                 </Card.Header>
-                <Card.Content class="mt-auto">
+                <Card.Content class="flex flex-col h-full gap-2 justify-between">
                     {#if selectedModule === availableModule.id}
-                        <img src={headerImages.get(availableModule.id)?.[0]} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                        <img src={headerImages.get(availableModule.id)?.[0]} alt={availableModule.name} class="w-1/4 mx-auto"/>
                     {:else}
-                        <img src={headerImages.get(availableModule.id)?.[1]} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                        <img src={headerImages.get(availableModule.id)?.[1]} alt={availableModule.name} class="w-1/4 mx-auto"/>
                     {/if}
-                    <p class="my-2">Difficulty: {availableModule.difficulty}</p>
+                    <p>Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>
                     <Accordion.Root type="single" class="w-full">
                         {#each availableModule.primaryPrompts as prompt, index}
                             <Accordion.Item value={"item-" + index.toString()}>
                                 <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
-                                <Accordion.Content class="flex flex-col gap-4 text-balance">
-                                <ul>
+                                <Accordion.Content class="ml-4 text-left">
+                                <p>Examples:</p>
+                                <ul style="list-style-type: disc; list-style-position: inside;">
                                     {#each prompt.samplePrompts as sample}
                                         <li>
                                             {sample}
@@ -131,8 +130,9 @@
                         {#each availableModule.secondaryPrompts as prompt, index}
                             <Accordion.Item value={"item-" + index.toString()}>
                                 <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
-                                <Accordion.Content class="flex flex-col gap-4 text-balance">
-                                <ul>
+                                <Accordion.Content class="ml-4 text-left">
+                                <p>Examples:</p>
+                                <ul style="list-style-type: disc; list-style-position: inside;">
                                     {#each prompt.samplePrompts as sample}
                                         <li>
                                             {sample}
@@ -144,11 +144,11 @@
                         {/each}
                     </Accordion.Root>
                     {#if selectedModule === availableModule.id}
-                        <Button variant="outline" type="submit" disabled={disableModuleDeselectButton} onclick={() => removeModule()} class="w-fit m-auto mt-4">
+                        <Button variant="outline" type="submit" disabled={disableModuleDeselectButton} onclick={() => removeModule()} class="w-fit mx-auto">
                             <h3>Deselect</h3>
                         </Button>
                     {:else}
-                        <Button variant="outline" type="submit" onclick={() => addModule(availableModule)} class="w-fit m-auto mt-4">
+                        <Button variant="outline" type="submit" onclick={() => addModule(availableModule)} class="w-fit mx-auto">
                             <h3>Select</h3>
                         </Button>
                     {/if}
@@ -160,7 +160,7 @@
   <Carousel.Previous />
   <Carousel.Next />
 </Carousel.Root>
-<Button disabled={disableSelectModule} variant="outline" type="submit" onclick={async () => await submitModule()} class="w-fit m-auto mb-2"><h3>Select Module</h3></Button>
+<Button disabled={disableSelectModule} variant="outline" type="submit" onclick={async () => await submitModule()} class="w-fit m-auto"><h3>Select Module</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

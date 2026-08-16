@@ -26,7 +26,7 @@
 		},
 		plugins: emblaCtx.plugins,
 	}}
-	onemblaInit={emblaCtx.onInit}
+	onemblainit={emblaCtx.onInit}
 >
 	<div
 		bind:this={ref}

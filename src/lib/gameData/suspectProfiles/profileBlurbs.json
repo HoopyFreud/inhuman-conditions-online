@@ -1,5 +1,21 @@
 {
-    "human": "You may respond however you like during the interrogation. Keep in mind that performing the penalty will seem suspicious to the detective. You win if you survive the interrogation.",
-    "patientRobot": "You are restricted in how you can respond during the interrogation. If you violate your restriction, you must make up for that violation by performing a penalty at least once for each time you violated it. You cannot \"bank up\" penalties ahead of time. You win if you survive the interrogation. You lose if you fail to perform enough penalties to make up for your violations by the end of the interrogation.",
-    "violentRobot": "You may respond however you like during the interrogation. You must complete at least two of the three requirements listed below during the interrogation. Once you do, you immediately kill the detective and win. You lose if the interrogation ends without you completing at least two of your requirements."
+    "human": [
+        "You may respond however you like during the interrogation.",
+        "Keep in mind that performing the penalty will seem suspicious to the detective.",
+        "You and the detective both win if you survive the interrogation.",
+        "You and the detective both lose if the detective kills you."
+    ],
+    "patientRobot": [
+        "You are restricted in how you can respond during the interrogation.",
+        "If you violate your restriction, you must make up for that violation by performing a penalty at least once for each time you violated it.",
+        "You cannot \"bank\" penalties ahead of time. A penalty must be performed after your restriction was violated to count.",
+        "You win if you survive until the end of the interrogation.",
+        "You lose if the detective kills you, or if you fail to perform enough penalties to make up for your violations by the end of the interrogation."
+    ],
+    "violentRobot": [
+        "You may respond however you like during the interrogation.",
+        "You must complete at least two of the requirements listed below during the interrogation.",
+        "Once you do, you immediately kill the detective and win.",
+        "You lose if the detective kills you, or if the interrogation ends before you complete at least two of your requirements."
+    ]
 }

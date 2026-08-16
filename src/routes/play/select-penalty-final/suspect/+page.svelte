@@ -46,9 +46,7 @@
         }
     }
 
-    afterNavigate(({ shallow }) => {
-        if (shallow) return;
-
+    afterNavigate(() => {
         if (Array.isArray(clientStateObject.state.penaltyCardID)) {
             // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
             availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
@@ -57,24 +55,24 @@
     })
 </script>
 
-<h2>Select Penalty</h2>
-<p>
-    Choose one the penalties shown below to play with this round.
-</p>
-{#if permanentPenalty !== null}
-<p>
-    The permanent penalty will be enforced in addition to the selected penalty.
-</p>
-{/if}
+<h2 class="max-w-3/4 mx-auto">Penalty Selection</h2>
+<div class="w-3/4 text-left mx-auto">
+    <p>
+        Choose one of the penalties shown below to play with this round.
+    </p>
+    {#if permanentPenalty !== null}
+    <p>
+        The permanent penalty will be enforced in addition to the selected penalty.
+    </p>
+    {/if}
+</div>
 
-<div class="flex flex-row justify-around gap-2 mx-2 my-2">
+<div class="flex flex-row justify-evenly gap-2 my-4">
     {#if permanentPenalty !== null}
         <Card.Root class="w-1/4 light">
-            <Card.Header>
-                <Card.Title>Permanent penalty: {permanentPenalty.text}</Card.Title>
-            </Card.Header>
-            <Card.Content class="mt-auto">
-                <Button variant="outline" type="submit" disabled={true} class="w-fit m-auto mt-4">
+            <Card.Content class="flex flex-col h-full gap-2 justify-between">
+                <p>Permanent penalty: {permanentPenalty.text}</p>
+                <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto">
                     <h3>Cannot be deselected</h3>
                 </Button>
             </Card.Content>
@@ -82,16 +80,14 @@
     {/if}
     {#each availablePenalties as availablePenalty}
         <Card.Root class="{permanentPenalty !== null ? 'w-1/4' : 'w-1/3'} {selectedPenalty === availablePenalty.id ? 'light' : ''}">
-            <Card.Header>
-                <Card.Title>{availablePenalty.text}</Card.Title>
-            </Card.Header>
-            <Card.Content class="mt-auto">
+            <Card.Content class="flex flex-col h-full gap-2 justify-between">
+                <p>{availablePenalty.text}</p>
                 {#if selectedPenalty === availablePenalty.id}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty()} class="w-fit m-auto mt-4">
+                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty()} class="w-fit mx-auto">
                         <h3>Deselect</h3>
                     </Button>
                 {:else}
-                    <Button variant="outline" type="submit" onclick={() => addPenalty(availablePenalty)} class="w-fit m-auto mt-4">
+                    <Button variant="outline" type="submit" onclick={() => addPenalty(availablePenalty)} class="w-fit mx-auto">
                         <h3>Select</h3>
                     </Button>
                 {/if}
@@ -99,7 +95,7 @@
         </Card.Root>
     {/each}
 </div>
-<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalty()} class="w-fit m-auto mb-2"><h3>Select Penalty</h3></Button>
+<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalty()} class="w-fit m-auto"><h3>Select Penalty</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

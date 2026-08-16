@@ -64,11 +64,7 @@
         }
     }
 
-    afterNavigate(({ shallow }) => {
-        if (shallow) return;
-
-        availableBackgrounds = knuthShuffle(backgroundData).slice(0, 3);
-    });
+    afterNavigate(() => availableBackgrounds = knuthShuffle(backgroundData).slice(0, 3));
 
     $effect(() => {
         if (invalidDataError) {

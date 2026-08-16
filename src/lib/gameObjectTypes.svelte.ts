@@ -36,7 +36,7 @@ export interface IHCHumanProfile {
 export interface IHCPatientRobotProfile {
 	id: number
 	type: "patientRobot"
-	restriction: string
+	restriction: string | string[]
 	explainerText: string
 }
 

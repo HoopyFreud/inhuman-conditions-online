@@ -21,14 +21,11 @@
     let roleError = $derived(clientRoleObject.role !== "detective");
     let invalidDataError = $state(false);
 
-    afterNavigate(({ shallow }) => {
-        if (shallow) return;
-
+    afterNavigate(() => {
         if (Array.isArray(clientStateObject.state.penaltyCardID)) {
             // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
             availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
         }
-        console.log(availablePenalties)
         invalidDataError = availablePenalties.length === 0
     })
 
@@ -42,25 +39,27 @@
     });
 </script>
 
-<h2>Waiting for suspect to select penalty</h2>
-{#if permanentPenalty !== null}
-<p>
-    The permanent penalty will be enforced in addition to the selected penalty.
-</p>
-{/if}
-<div class="flex flex-row justify-around gap-2 mx-2 my-2">
+<h2 class="max-w-3/4 mx-auto">Wait for Penalty Selection</h2>
+<div class="w-3/4 text-left mx-auto">
+    {#if permanentPenalty !== null}
+    <p>
+        The permanent penalty will be enforced in addition to the selected penalty.
+    </p>
+    {/if}
+</div>
+<div class="flex flex-row justify-evenly gap-2 my-4">
     {#if permanentPenalty !== null}
         <Card.Root class="w-1/4 light">
-            <Card.Header>
-                <Card.Title>Permanent penalty: {permanentPenalty.text}</Card.Title>
-            </Card.Header>
+            <Card.Content>
+                <p>Permanent penalty: {permanentPenalty.text}</p>
+            </Card.Content>
         </Card.Root>
     {/if}
     {#each availablePenalties as availablePenalty}
         <Card.Root class={permanentPenalty !== null ? 'w-1/4' : 'w-1/3'}>
-            <Card.Header>
-                <Card.Title>{availablePenalty.text}</Card.Title>
-            </Card.Header>
+            <Card.Content>
+                <p>{availablePenalty.text}</p>
+            </Card.Content>
         </Card.Root>
     {/each}
 </div>

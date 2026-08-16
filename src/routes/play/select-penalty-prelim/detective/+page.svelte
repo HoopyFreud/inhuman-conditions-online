@@ -56,9 +56,7 @@
         }
     }
 
-    afterNavigate(({ shallow }) => {
-        if (shallow) return;
-
+    afterNavigate(() => {
         if (clientStateObject.state.permanentPenalty) {
             permanentPenalty = penaltyData[0];
             availablePenalties = penaltyData.slice(1);
@@ -70,46 +68,42 @@
             availablePenalties = availablePenalties.filter((penalty) => penalty.digitalSafe)
         }
         availablePenalties = knuthShuffle(availablePenalties).slice(0,3)
-        console.log(penaltyData)
-        console.log(availablePenalties)
     })
 </script>
 
-<h2>Select Penalties</h2>
-<p>
-    Choose two of the penalties shown below to give to the suspect. The suspect will choose the penalty for this round from among them.
-</p>
-{#if permanentPenalty !== null}
-<p>
-    The permanent penalty will be enforced in addition to the one the suspect selects.
-</p>
-{/if}
-
-<div class="flex flex-row justify-around gap-2 mx-2 my-2">
+<h2 class="max-w-3/4 mx-auto">Penalty Selection</h2>
+<div class="w-3/4 text-left mx-auto">
+    <p>
+        Choose two of the penalties shown below to give to the suspect. The suspect will choose the penalty for this round from among them.
+    </p>
     {#if permanentPenalty !== null}
-        <Card.Root class="w-1/4 light">
-            <Card.Header>
-                <Card.Title>Permanent penalty: {permanentPenalty.text}</Card.Title>
-            </Card.Header>
-            <Card.Content class="mt-auto">
-                <Button variant="outline" type="submit" disabled={true} class="w-fit m-auto mt-4">
+    <p>
+        The permanent penalty will be enforced in addition to the one the suspect selects.
+    </p>
+    {/if}
+</div>
+
+<div class="flex flex-row justify-evenly gap-2 my-4">
+    {#if permanentPenalty !== null}
+        <Card.Root class="w-1/5 light">
+            <Card.Content class="flex flex-col h-full gap-2 justify-between">
+                <p>Permanent penalty: {permanentPenalty.text}</p>
+                <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto">
                     <h3>Cannot be deselected</h3>
                 </Button>
             </Card.Content>
         </Card.Root>
     {/if}
     {#each availablePenalties as availablePenalty}
-        <Card.Root class="{permanentPenalty !== null ? 'w-1/4' : 'w-1/3'} {selectedPenalties.includes(availablePenalty.id)? 'light' : ''}">
-            <Card.Header>
-                <Card.Title>{availablePenalty.text}</Card.Title>
-            </Card.Header>
-            <Card.Content class="mt-auto">
+        <Card.Root class="{permanentPenalty !== null ? 'w-1/5' : 'w-1/4'} {selectedPenalties.includes(availablePenalty.id)? 'light' : ''}">
+            <Card.Content class="flex flex-col h-full gap-2 justify-between">
+                <p>{availablePenalty.text}</p>
                 {#if selectedPenalties.includes(availablePenalty.id)}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty(availablePenalty)} class="w-fit m-auto mt-4">
+                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty(availablePenalty)} class="w-fit mx-auto">
                         <h3>Deselect</h3>
                     </Button>
                 {:else}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit m-auto mt-4">
+                    <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit mx-auto">
                         <h3>Select</h3>
                     </Button>
                 {/if}
@@ -117,7 +111,7 @@
         </Card.Root>
     {/each}
 </div>
-<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto mb-2"><h3>Select Penalties</h3></Button>
+<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto"><h3>Select Penalties</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

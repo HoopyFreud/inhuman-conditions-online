@@ -1,19 +1,16 @@
 import { getContext, hasContext, setContext } from "svelte";
 import type { WithElementRef } from "#lib/utils.js";
-import type {
-	EmblaCarouselSvelteType,
-	default as emblaCarouselSvelte,
-} from "embla-carousel-svelte";
+import type { UseEmblaCarouselType, default as useEmblaCarousel } from "embla-carousel-svelte";
 import type { HTMLAttributes } from "svelte/elements";
 
 export type CarouselAPI =
-	NonNullable<NonNullable<EmblaCarouselSvelteType["$$_attributes"]>["on:emblaInit"]> extends (
+	NonNullable<NonNullable<UseEmblaCarouselType["$$_attributes"]>["on:emblainit"]> extends (
 		evt: CustomEvent<infer CarouselAPI>
 	) => void
 		? CarouselAPI
 		: never;
 
-type EmblaCarouselConfig = NonNullable<Parameters<typeof emblaCarouselSvelte>[1]>;
+type EmblaCarouselConfig = NonNullable<Parameters<typeof useEmblaCarousel>[0]>;
 
 export type CarouselOptions = EmblaCarouselConfig["options"];
 export type CarouselPlugins = EmblaCarouselConfig["plugins"];
@@ -32,15 +29,15 @@ const EMBLA_CAROUSEL_CONTEXT = Symbol("EMBLA_CAROUSEL_CONTEXT");
 export type EmblaContext = {
 	api: CarouselAPI | undefined;
 	orientation: "horizontal" | "vertical";
-	scrollNext: () => void;
-	scrollPrev: () => void;
-	canScrollNext: boolean;
-	canScrollPrev: boolean;
+	goToNext: () => void;
+	goToPrev: () => void;
+	canGoToNext: boolean;
+	canGoToPrev: boolean;
 	handleKeyDown: (e: KeyboardEvent) => void;
 	options: CarouselOptions;
 	plugins: CarouselPlugins;
 	onInit: (e: CustomEvent<CarouselAPI>) => void;
-	scrollTo: (index: number, jump?: boolean) => void;
+	goTo: (index: number, instant?: boolean) => void;
 	scrollSnaps: number[];
 	selectedIndex: number;
 };

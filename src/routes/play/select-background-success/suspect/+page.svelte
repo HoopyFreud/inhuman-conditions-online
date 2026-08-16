@@ -1,11 +1,10 @@
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
     
+    import * as Accordion from "#lib/components/ui/accordion/index.js";
 	import * as Alert from "#lib/components/ui/alert/index.js";
     import * as Card from "#lib/components/ui/card/index.js";
 	import { Button } from "#lib/components/ui/button/index.js";
-    import { ModuleCycle } from "#lib/components/ui/moduleCycle/index.js"
-    import { ModuleMaze } from "#lib/components/ui/moduleMaze/index.js"
     import { Separator } from "#lib/components/ui/separator//index.js";
     import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
     import { knuthShuffle } from 'knuth-shuffle';
@@ -64,11 +63,7 @@
         }
     }
 
-    afterNavigate(({ shallow }) => {
-        if (shallow) return;
-
-        availableBackgrounds = knuthShuffle(backgroundData).slice(0, 3);
-    });
+    afterNavigate(() => availableBackgrounds = knuthShuffle(backgroundData).slice(0, 3));
 
     $effect(() => {
         if (invalidDataError) {
@@ -77,55 +72,67 @@
         }
     })
 </script>
-{#if multiplePenalties}
-<h2>Penalties</h2>
-{:else}
-<h2>Penalty</h2>
-{/if}
-<div class="flex flex-row justify-around gap-2 mx-2">
+<div class="flex flex-row justify-evenly gap-2">
     {#each gamePenalties.currentPenalties as activePenalty}
         <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
             <Card.Header>
-                <Card.Title>{activePenalty.text}</Card.Title>
+                <Card.Title>
+                    <h3>Penalty</h3>
+                </Card.Title>
             </Card.Header>
+            <Card.Content>
+                <p>{activePenalty.text}</p>
+            </Card.Content>
         </Card.Root>
     {/each}
+    <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Header>
+            <Card.Title><h3>Identity: {profileString}</h3></Card.Title>
+        </Card.Header>
+        <Card.Content>
+            {#if profileObject.profile?.type === "patientRobot"}
+                <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
+                    <Accordion.Item>
+                        <Accordion.Trigger><h3>Restriction</h3></Accordion.Trigger>
+                        <Accordion.Content class="w-full text-left">
+                            <p class="text-base">{profileObject.profile.restriction}</p>
+                            {#if profileObject.profile.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {profileObject.profile.explainerText}</p>
+                            {/if}
+                        </Accordion.Content>
+                    </Accordion.Item>
+                </Accordion.Root>
+            {:else if profileObject.profile?.type === "violentRobot"}
+                <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
+                    <Accordion.Item>
+                        <Accordion.Trigger><h3>Requirements</h3></Accordion.Trigger>
+                        <Accordion.Content class="w-full text-left">
+                            <ul class="justify-items-start" style="list-style-type: upper-alpha">
+                                {#each profileObject.profile.requirements as requirement}
+                                    <Separator class="my-2 mx-auto"/>
+                                    <li>{requirement}</li>
+                                {/each}
+                            </ul>
+                        </Accordion.Content>
+                    </Accordion.Item>
+                </Accordion.Root>
+            {/if}
+        </Card.Content>
+    </Card.Root>
 </div>
 <Separator class="w-3/4! my-2 mx-auto"/>
-<h2>Module</h2>
-<Card.Root class="w-3/4 mx-auto my-2">
-    <Card.Header>
-        <Card.Title>
-            <h3>You are a {profileString}</h3>
-        </Card.Title>
-    </Card.Header>
-    <Card.Content class="mt-auto">
-        {#if !invalidDataError && profileObject.profile?.type === "human"}
-            <h3>Module Verification Maze</h3>
-            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
-        {:else if !invalidDataError}
-            <h3>Module Verification Sequence</h3>
-            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
-            {#if profileObject.profile?.type === "patientRobot"}
-                <h3>Restriction</h3>
-                <p>{profileObject.profile.restriction}</p>
-                {#if profileObject.profile.explainerText !== ""}
-                    <p>{profileObject.profile.explainerText}</p>
-                {/if}
-            {:else if profileObject.profile?.type === "violentRobot"}
-                <h3>Requirements</h3>
-                {#each profileObject.profile.requirements as requirement}
-                    <p>{requirement}</p>
-                {/each}
-            {/if}
-        {/if}
-    </Card.Content>
-</Card.Root>
-<h2>Select Role</h2>
-<p>
-    Prepare to take on the provided role. Because you failed validation, you may not choose a different one. Click the button when you are ready to proceed.
-</p>
-<div class="flex flex-row justify-around gap-2 mx-2 my-2">
+<h2 class="max-w-3/4 mx-auto">Role Selection</h2>
+<div class="flex flex-col gap-2 w-3/4 text-left mx-auto">
+    <p>
+        Prepare to take on the provided role.</p>
+    <p>
+        Because you failed validation, you may not choose a different one.
+    </p>
+    <p>
+        Click the button when you are ready to proceed.
+    </p>
+</div>
+<div class="flex flex-row justify-evenly gap-2 my-4">
     {#each availableBackgrounds as availableBackground}
         <Card.Root class="w-1/4 {selectedBackground === availableBackground.id? 'light' : ''}">
             <Card.Header>
@@ -145,7 +152,7 @@
         </Card.Root>
     {/each}
 </div>
-<Button disabled={disableSelectBackground} variant="outline" type="submit" onclick={async () => await submitBackground()} class="w-fit m-auto mb-2"><h3>Ready for interrogation</h3></Button>
+<Button disabled={disableSelectBackground} variant="outline" type="submit" onclick={async () => await submitBackground()} class="w-fit m-auto"><h3>Ready for interrogation</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

@@ -12,6 +12,6 @@
     })
 </script>
 
-<h2>Waiting for game setup</h2>
+<h2 class="max-w-3/4 mx-auto">Wait for Game Setup</h2>
 
 <Ellipsis />

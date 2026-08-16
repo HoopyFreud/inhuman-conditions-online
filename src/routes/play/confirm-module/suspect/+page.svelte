@@ -13,7 +13,6 @@
     import { knuthShuffle } from 'knuth-shuffle';
 
     import type {
-        IHCProfile,
         IHCHumanProfile,
         IHCPatientRobotProfile,
         IHCViolentRobotProfile
@@ -42,9 +41,7 @@
     let invalidProfileDataError = $state(false);
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null || invalidProfileDataError);
 
-    afterNavigate(({ shallow }) => {
-        if (shallow) return;
-
+    afterNavigate(() => {
         const randomIndex = Math.floor(Math.random() * 3);
 
         switch (randomIndex) {
@@ -79,69 +76,97 @@
         }
     });
 </script>
-
-{#if multiplePenalties}
-<h2>Penalties</h2>
-{:else}
-<h2>Penalty</h2>
-{/if}
-<div class="flex flex-row justify-around gap-2 mx-2">
+<div class="flex flex-row justify-evenly gap-2">
     {#each gamePenalties.currentPenalties as activePenalty}
         <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
             <Card.Header>
-                <Card.Title>{activePenalty.text}</Card.Title>
+                <Card.Title>
+                    <h3>Penalty</h3>
+                </Card.Title>
             </Card.Header>
+            <Card.Content>
+                <p>{activePenalty.text}</p>
+            </Card.Content>
         </Card.Root>
     {/each}
 </div>
-<Separator class="w-3/4! my-2 mx-auto"/>
-
-<h2>Module validation</h2>
-{#if !clientStateObject.state.continuousCatalyzation}
-<p>
-    The detective will now ask you a question about the module sequence shown below, such as "what letters come between D and A?" or "what letter follows B?"
-</p>
-{:else}
-<p>
-    The detective will now ask you a question about the module sequence shown below with a single answer, such as "what letter is between D and A?" or "what letter follows B?" but not "what two letters are between E and C?"
-</p>
-{/if}
-<p>
-    Note that there is no beginning or end to this sequence of letters; it is cyclical. If you are human, it may take you some time to figure out the answer to the question. If you are a robot, the answer is provided for you. Take some time to study your restrictions and obligations.
-</p>
-{#if !clientStateObject.state.sealedFile}
-<p>
-    If you answer the detective's question correctly on the first try, you will be allowed to pick between several backgrounds before the interrogation starts. Otherwise, one will be provided for you.
-</p>
-{/if}
-<Card.Root class="w-3/4 mx-auto my-2">
+<Separator class="w-3/4! my-4 mx-auto"/>
+<h2 class="max-w-3/4 mx-auto">Module validation</h2>
+<div class="flex flex-col gap-2 w-3/4 text-left mx-auto">
+    {#if !clientStateObject.state.continuousCatalyzation}
+        <p>
+            The detective will now ask you a question about the module sequence shown below, such as "what letters come between D and A?" or "what letter follows B?"
+        </p>
+    {:else}
+        <p>
+            The detective will now ask you a question about the module sequence shown below with a single answer, such as "what letter is between D and A?" or "what letter follows B?" but not "what two letters are between E and C?"
+        </p>
+    {/if}
+    <p>
+        Note that there is no beginning or end to this sequence of letters; it is cyclical.
+    </p>
+    {#if profileObject.profile?.type === "human"}
+        <p>
+            Because you are a human, you will need to solve the maze below to answer this question.
+        </p>
+    {:else}
+        <p>
+            Because you are a robot, you will not need to solve a maze to answer this question. Take some time to study your restrictions and obligations, as a human would need to solve a maze to obtain the answer.
+        </p>
+    {/if}
+    {#if !clientStateObject.state.sealedFile}
+        <p>
+            If you answer the detective's question correctly on the first try, you will be allowed to pick between several backgrounds before the interrogation starts. Otherwise, one will be provided for you.
+        </p>
+    {/if}
+</div>
+<Card.Root class="w-3/4 mx-auto mt-4">
     <Card.Header>
         <Card.Title>
-            <h3>You are a {profileString}</h3>
-            <p>{profileBlurb}</p>
+            <h2>You are a {profileString}</h2>
+            <div class="flex flex-col gap-2 max-w-3/4 w-fit mx-auto text-left">
+                {#each profileBlurb as blurbLine}
+                    <p class="text-base">{blurbLine}</p>
+                {/each}
+            </div>
         </Card.Title>
     </Card.Header>
-    <Card.Content class="mt-auto">
+    <Card.Content>
         {#if !invalidProfileDataError && profileObject.profile?.type === "human"}
             <h3>Module Verification Maze</h3>
             <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
         {:else if !invalidProfileDataError}
-            <h3>Module Verification Sequence</h3>
-            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
             {#if profileObject.profile?.type === "patientRobot"}
-                <h3>Restriction</h3>
-                <p>{profileObject.profile.restriction}</p>
-                {#if profileObject.profile.explainerText !== ""}
-                    <p>{profileObject.profile.explainerText}</p>
+                {#if typeof profileObject.profile.restriction === "string"}
+                    <h3>Restriction</h3>
+                    <div class="max-w-3/4 w-fit mx-auto text-left">
+                        <p class="text-base">{profileObject.profile.restriction}</p>
+                        {#if profileObject.profile.explainerText !== ""}
+                            <p class="text-base text-muted-foreground">Note: {profileObject.profile.explainerText}</p>
+                        {/if}
+                    </div>
+                {:else}
+                    <h3>Restriction — Choose One</h3>
+                    <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
+                        {#each profileObject.profile.restriction as restriction}
+                            <Separator class="my-2 mx-auto"/>
+                            <li class="text-base">{restriction}</li>
+                        {/each}
+                        <Separator class="my-2 mx-auto"/>
+                    </ul>
                 {/if}
             {:else if profileObject.profile?.type === "violentRobot"}
                 <h3>Requirements</h3>
-                <ul>
+                <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
                     {#each profileObject.profile.requirements as requirement}
-                        <li>{requirement}</li>
+                        <Separator class="my-2 mx-auto"/>
+                        <li class="text-base">{requirement}</li>
                     {/each}
+                    <Separator class="my-2 mx-auto"/>
                 </ul>
             {/if}
+            <h3 class="mt-3">Module Verification Sequence</h3>
+            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
         {/if}
     </Card.Content>
 </Card.Root>

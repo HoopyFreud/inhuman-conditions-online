@@ -4,7 +4,7 @@
 	let { children } = $props();
 </script>
 
-<div id="app" class="relative h-dvh">
+<div id="app" class="relative min-h-dvh">
 	<main>{@render children()}</main>
 
 	<footer class="bottom-0 mt-auto">

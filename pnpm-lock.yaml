@@ -47,9 +47,12 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      embla-carousel-auto-height:
+        specifier: 9.0.0-rc02
+        version: 9.0.0-rc02(embla-carousel@9.0.0-rc02)
       embla-carousel-svelte:
-        specifier: ^8.6.0
-        version: 8.6.0(svelte@5.56.9)
+        specifier: 9.0.0-rc02
+        version: 9.0.0-rc02(svelte@5.56.9)
       knuth-shuffle:
         specifier: ^1.0.8
         version: 1.0.8
@@ -824,18 +827,23 @@ packages:
   devalue@5.9.0:
     resolution: {integrity: sha512-RWrqdArjvPbsATEhOPUo6Wndc/iWnkWKlhIrdlF3zMMYo/c3CVtoaVAyLtWxz5h8nSlkHzxnzV2uLydPXmtF+A==}
 
-  embla-carousel-reactive-utils@8.6.0:
-    resolution: {integrity: sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==}
+  embla-carousel-auto-height@9.0.0-rc02:
+    resolution: {integrity: sha512-BfYtpxPMJN+KjYdyWwlkPzo5IQvM4SZvw3Yvb+K1EZ1OOddiqAW8DmP8301XlQ1/2e+kyUS8kw9AnqImU5RsUw==}
     peerDependencies:
-      embla-carousel: 8.6.0
+      embla-carousel: 9.0.0-rc02
 
-  embla-carousel-svelte@8.6.0:
-    resolution: {integrity: sha512-ZDsKk8Sdv+AUTygMYcwZjfRd1DTh+JSUzxkOo8b9iKAkYjg+39mzbY/lwHsE3jXSpKxdKWS69hPSNuzlOGtR2Q==}
+  embla-carousel-reactive-utils@9.0.0-rc02:
+    resolution: {integrity: sha512-H1c+yUbcVST9eJoGU+05L1vSDyBs0hf/Gf1OadHYIJ3asBfyvn6oaGCs2wXq1D8/f09y0wwCxeRxT9UZU/TxJA==}
+    peerDependencies:
+      embla-carousel: 9.0.0-rc02
+
+  embla-carousel-svelte@9.0.0-rc02:
+    resolution: {integrity: sha512-iTRISQ1Gsvs09afcEbaZC5n0n9sFSPVBrqKlk/Clck3v+nRyHPoOw+AdiqpqSDTKLxfTyaxbn6Xt4Seu7KqjFA==}
     peerDependencies:
       svelte: ^3.49.0 || ^4.0.0 || ^5.0.0
 
-  embla-carousel@8.6.0:
-    resolution: {integrity: sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==}
+  embla-carousel@9.0.0-rc02:
+    resolution: {integrity: sha512-GOQBX6v5cNk/ptfuHUoHhW9rvl5KeSGsBoppaUqtihu2kDmQAyzvnH/95r3TaSScFSJTj68V9AM6E5nq3jUVcQ==}
 
   enhanced-resolve@5.24.5:
     resolution: {integrity: sha512-L1l8TNvomm6UVW5B253AGxQagSQr+vGwhMlrrfRS2qmhx46AMpMVJKQYLvWYbysTMY8VoicOvzHzoHMbyzB+4A==}
@@ -1799,17 +1807,21 @@ snapshots:
 
   devalue@5.9.0: {}
 
-  embla-carousel-reactive-utils@8.6.0(embla-carousel@8.6.0):
+  embla-carousel-auto-height@9.0.0-rc02(embla-carousel@9.0.0-rc02):
     dependencies:
-      embla-carousel: 8.6.0
+      embla-carousel: 9.0.0-rc02
 
-  embla-carousel-svelte@8.6.0(svelte@5.56.9):
+  embla-carousel-reactive-utils@9.0.0-rc02(embla-carousel@9.0.0-rc02):
     dependencies:
-      embla-carousel: 8.6.0
-      embla-carousel-reactive-utils: 8.6.0(embla-carousel@8.6.0)
+      embla-carousel: 9.0.0-rc02
+
+  embla-carousel-svelte@9.0.0-rc02(svelte@5.56.9):
+    dependencies:
+      embla-carousel: 9.0.0-rc02
+      embla-carousel-reactive-utils: 9.0.0-rc02(embla-carousel@9.0.0-rc02)
       svelte: 5.56.9
 
-  embla-carousel@8.6.0: {}
+  embla-carousel@9.0.0-rc02: {}
 
   enhanced-resolve@5.24.5:
     dependencies:

@@ -16,7 +16,7 @@
     })
 </script>
 
-<h2>Waiting for detective to select penalties</h2>
+<h2 class="max-w-3/4 mx-auto">Wait for Penalty Selection</h2>
 
 <Ellipsis />
 

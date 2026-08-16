@@ -21,48 +21,48 @@
 	// svelte-ignore state_referenced_locally
 	let carouselState = $state<EmblaContext>({
 		api: undefined,
-		scrollPrev,
-		scrollNext,
+		goToPrev,
+		goToNext,
 		orientation,
-		canScrollNext: false,
-		canScrollPrev: false,
+		canGoToNext: false,
+		canGoToPrev: false,
 		handleKeyDown,
 		options: opts,
 		plugins,
 		onInit,
 		scrollSnaps: [],
 		selectedIndex: 0,
-		scrollTo,
+		goTo,
 	});
 
 	setEmblaContext(carouselState);
 
-	function scrollPrev() {
-		carouselState.api?.scrollPrev();
+	function goToPrev() {
+		carouselState.api?.goToPrev();
 	}
 
-	function scrollNext() {
-		carouselState.api?.scrollNext();
+	function goToNext() {
+		carouselState.api?.goToNext();
 	}
 
-	function scrollTo(index: number, jump?: boolean) {
-		carouselState.api?.scrollTo(index, jump);
+	function goTo(index: number, instant?: boolean) {
+		carouselState.api?.goTo(index, instant);
 	}
 
 	function onSelect() {
 		if (!carouselState.api) return;
-		carouselState.selectedIndex = carouselState.api.selectedScrollSnap();
-		carouselState.canScrollNext = carouselState.api.canScrollNext();
-		carouselState.canScrollPrev = carouselState.api.canScrollPrev();
+		carouselState.selectedIndex = carouselState.api.selectedSnap();
+		carouselState.canGoToNext = carouselState.api.canGoToNext();
+		carouselState.canGoToPrev = carouselState.api.canGoToPrev();
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
 		if (e.key === "ArrowLeft") {
 			e.preventDefault();
-			scrollPrev();
+			goToPrev();
 		} else if (e.key === "ArrowRight") {
 			e.preventDefault();
-			scrollNext();
+			goToNext();
 		}
 	}
 
@@ -70,7 +70,7 @@
 		carouselState.api = event.detail;
 		setApi(carouselState.api);
 
-		carouselState.scrollSnaps = carouselState.api.scrollSnapList();
+		carouselState.scrollSnaps = carouselState.api.snapList();
 		carouselState.api.on("select", onSelect);
 		onSelect();
 	}

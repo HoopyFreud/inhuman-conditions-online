@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     
     import * as Accordion from "#lib/components/ui/accordion/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
 	import * as ToggleGroup from "#lib/components/ui/toggle-group/index.js";
 	import { Button } from "#lib/components/ui/button/index.js";
     import { Checkbox } from "#lib/components/ui/checkbox/index.js";
@@ -47,73 +48,82 @@
     }
 </script>
 
-<h2>Game Setup</h2>
-<h2>Select Role</h2>
-<ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto"
-    bind:value={
-    () => clientRoleObject.role ?? "",
-    (v:IHCRole | "") => clientRoleObject.role = v || null
-}>
-    <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
-        <h3 class="m-0!">Detective</h3>
-    </ToggleGroup.Item>
-    <ToggleGroup.Item value="suspect" aria-label="Toggle Suspect">
-        <h3 class="m-0!">Suspect</h3>
-    </ToggleGroup.Item>
-</ToggleGroup.Root>
+<h2 class="max-w-3/4 mx-auto">Game Setup</h2>
+<Card.Root class="w-1/2 mx-auto mt-2">
+    <Card.Header>
+        <Card.Title><h2>Select Role</h2></Card.Title>
+    </Card.Header>
+    <Card.Content>
+        <ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto"
+            bind:value={
+            () => clientRoleObject.role ?? "",
+            (v:IHCRole | "") => clientRoleObject.role = v || null
+        }>
+            <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
+                <h3 class="m-0!">Detective</h3>
+            </ToggleGroup.Item>
+            <ToggleGroup.Item value="suspect" aria-label="Toggle Suspect">
+                <h3 class="m-0!">Suspect</h3>
+            </ToggleGroup.Item>
+        </ToggleGroup.Root>
+    </Card.Content>
+</Card.Root>
 
-<Accordion.Root type="single" class="gap-3 w-1/2 mt-3 mx-auto">
+<Accordion.Root type="single" class="w-3/4 mt-3 mx-auto">
     <Accordion.Item value="item-1">
         <Accordion.Trigger class="text-center"><h2>Optional rules</h2></Accordion.Trigger>
         <Accordion.Content class="w-full text-left">
-            <div class="flex gap-3 my-3 w-full">
-                <Checkbox id="permanentPenalty" checked={permanentPenaltyValue}/>
-                <div class="grid gap-2">
-                    <Label for="permanentPenalty"><h3>Enable permanent penalty</h3></Label>
-                    <p class="text-sm text-muted-foreground">
-                        The permanent penalty is an additional penalty that reads, "Answer 3 questions without referencing your Background."
-                    </p>
-                </div>
-            </div>
+            <Card.Root class="w-full">
+                <Card.Content>
+                    <div class="flex gap-3 w-full">
+                        <Checkbox id="permanentPenalty" checked={permanentPenaltyValue}/>
+                        <div class="grid gap-2">
+                            <Label for="permanentPenalty"><h3>Enable permanent penalty</h3></Label>
+                            <p class="text-sm text-muted-foreground">
+                                The permanent penalty is an additional penalty that reads, "Answer 3 questions without referencing your Background."
+                            </p>
+                        </div>
+                    </div>
 
-            <Separator />
+                    <Separator class="mt-2! mb-4!"/>
 
-            <div class="flex gap-3 my-3 w-full">
-                <Checkbox id="continuousCatalyzation" checked={continuousCatalyzationValue}/>
-                <div class="grid gap-2">
-                    <Label for="continuousCatalyzation"><h3>Enable continuous catalyzation</h3></Label>
-                    <p class="text-sm text-muted-foreground">
-                        Continuous catalyzation is an additional rule that requires the suspect to provide multiple calibration answers throughout the interrogation.
-                    </p>
-                </div>
-            </div>
+                    <div class="flex gap-3 w-full">
+                        <Checkbox id="continuousCatalyzation" checked={continuousCatalyzationValue}/>
+                        <div class="grid gap-2">
+                            <Label for="continuousCatalyzation"><h3>Enable continuous catalyzation</h3></Label>
+                            <p class="text-sm text-muted-foreground">
+                                Continuous catalyzation is an additional rule that requires the suspect to provide multiple calibration answers throughout the interrogation.
+                            </p>
+                        </div>
+                    </div>
 
-            <Separator />
+                    <Separator class="mt-2! mb-4!"/>
 
-            <div class="flex gap-3 my-3 w-full">
-                <Checkbox id="sealedFile" checked={sealedFileValue}/>
-                <div class="grid gap-2">
-                    <Label for="sealedFile"><h3>Enable sealed file</h3></Label>
-                    <p class="text-sm text-muted-foreground">
-                        Sealed file is an optional rule that allows suspects to use their real-life identity as a background.
-                    </p>
-                </div>
-            </div>
+                    <div class="flex gap-3 w-full">
+                        <Checkbox id="sealedFile" checked={sealedFileValue}/>
+                        <div class="grid gap-2">
+                            <Label for="sealedFile"><h3>Enable sealed file</h3></Label>
+                            <p class="text-sm text-muted-foreground">
+                                Sealed file is an optional rule that allows suspects to use their real-life identity as a background.
+                            </p>
+                        </div>
+                    </div>
 
-            <Separator />
+                    <Separator class="mt-2! mb-4!"/>
 
-            <div class="flex gap-3 my-3 w-full">
-                <Checkbox id="digitalGame" checked={digitalGameValue}/>
-                <div class="grid gap-2">
-                    <Label for="digitalGame"><h3>Digital-only game</h3></Label>
-                    <p class="text-sm text-muted-foreground">
-                        Excludes penalties that are impractical for a digital-only game.
-                    </p>
-                </div>
-            </div>
+                    <div class="flex gap-3 my-3 w-full">
+                        <Checkbox id="digitalGame" checked={digitalGameValue}/>
+                        <div class="grid gap-2">
+                            <Label for="digitalGame"><h3>Digital-only game</h3></Label>
+                            <p class="text-sm text-muted-foreground">
+                                Excludes penalties that are impractical for a digital-only game.
+                            </p>
+                        </div>
+                    </div>
+                </Card.Content>
+            </Card.Root>
         </Accordion.Content>
     </Accordion.Item>
-
 </Accordion.Root>
     
-<Button disabled={disableSetupSubmission} variant="outline" type="submit" onclick={async () => await performSetup()} class="w-fit mx-auto mb-2 "><h3>Set Up Room</h3></Button>
+<Button disabled={disableSetupSubmission} variant="outline" type="submit" onclick={async () => await performSetup()} class="w-fit mx-auto"><h3>Set Up Room</h3></Button>

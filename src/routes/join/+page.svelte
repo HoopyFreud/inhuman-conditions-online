@@ -22,9 +22,7 @@
     let websocketError = $derived(roomIsFullError || roomDoesNotExistError || joinGameError);
     let joinError = $derived(websocketError);
 
-    afterNavigate(async ({ shallow }) => {
-        if (shallow) return;
-
+    afterNavigate(async () => {
         if (urlSessionID !== null) {
             await joinGame(urlSessionID,"existing")
             sessionIDObject.ID = urlSessionID

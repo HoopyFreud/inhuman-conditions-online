@@ -20,8 +20,8 @@
 	data-slot="carousel-previous"
 	{variant}
 	{size}
-	aria-disabled={!emblaCtx.canScrollPrev}
-	disabled={!emblaCtx.canScrollPrev}
+	aria-disabled={!emblaCtx.canGoToPrev}
+	disabled={!emblaCtx.canGoToPrev}
 	class={cn(
 		"rounded-full absolute touch-manipulation",
 		emblaCtx.orientation === "horizontal"
@@ -29,7 +29,7 @@
 			: "start-1/2 -top-12 -translate-x-1/2 rotate-90",
 		className
 	)}
-	onclick={emblaCtx.scrollPrev}
+	onclick={emblaCtx.goToPrev}
 	onkeydown={emblaCtx.handleKeyDown}
 	{...restProps}
 	bind:ref
