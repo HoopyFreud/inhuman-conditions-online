@@ -57,8 +57,11 @@
             permanentPenalty = penaltyData[0]
             availablePenalties = penaltyData.slice(1)
         }
+        else {
+            availablePenalties = penaltyData
+        }
         if (clientStateObject.state.digitalGame) {
-            availablePenalties = penaltyData.filter((penalty) => penalty.digitalSafe)
+            availablePenalties = availablePenalties.filter((penalty) => penalty.digitalSafe)
         }
         availablePenalties = knuthShuffle(availablePenalties).slice(0,3)
         console.log(penaltyData)
