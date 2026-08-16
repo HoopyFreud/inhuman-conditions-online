@@ -37,6 +37,7 @@
         if (webSocketObject !== null) {
             retry = false
             const goUrl = "/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+urlSessionID
+            console.log(goUrl,page.url.pathname + page.url.search)
             if (goUrl !== page.url.pathname + page.url.search) {
                 await goto(goUrl)
             }
