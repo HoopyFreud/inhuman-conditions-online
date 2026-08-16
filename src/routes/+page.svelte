@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-    import { goto } from '$app/navigation';
+    import { afterNavigate, goto } from '$app/navigation';
 	
-	import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
+	import * as ButtonGroup from "#lib/components/ui/button-group/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 	import Shuffle from '@lucide/svelte/icons/shuffle';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-	import { joinGame, updateGameState, resetState } from "$lib/stateHandler.svelte";
+	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "#lib/stateHandler.svelte.js"
+	import { joinGame, updateGameState, resetState } from "#lib/stateHandler.svelte.js";
 
 	const characters = "01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -95,7 +94,7 @@
         }
 	}
 	
-	onMount(() => resetState())
+	afterNavigate(resetState)
 
 </script>
 

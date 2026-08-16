@@ -1,11 +1,11 @@
-import type { IHCCombinedResponse, IHCMessageData, IHCQuery, IHCResponse, IHCRole, IHCRoleData, IHCRoleUpdate, IHCStateData, IHCStateUpdate } from '$lib/stateHandlerTypes.svelte'
+import type { IHCCombinedResponse, IHCMessageData, IHCQuery, IHCResponse, IHCRole, IHCRoleData, IHCRoleUpdate, IHCStateData, IHCStateUpdate } from '#lib/stateHandlerTypes.svelte.js'
 import type { IHCModule, IHCBackground, IHCPenalty, IHCProfile } from './gameObjectTypes.svelte'
 
-import penaltyData from "$lib/gameData/penalties/penalties.json" 
-import moduleData from "$lib/gameData/modules/modules.json" 
-import backgroundData from "$lib/gameData/backgrounds/backgrounds.json"
+import penaltyData from "#lib/gameData/penalties/penalties.json" 
+import moduleData from "#lib/gameData/modules/modules.json" 
+import backgroundData from "#lib/gameData/backgrounds/backgrounds.json"
 
-export const moduleIconGlob = import.meta.glob("$lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
+export const moduleIconGlob = import.meta.glob("#lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
 
 export const clientErroredObject: {error: boolean} = $state({error: false})
 export const clientLastMessageObject: {message: string} = $state({message: ""})

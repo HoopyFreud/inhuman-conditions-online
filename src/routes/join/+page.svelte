@@ -2,23 +2,29 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { page } from '$app/state';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientLastStatusCode, clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-	import { joinGame } from "$lib/stateHandler.svelte"
+    import {
+        clientLastStatusCode,
+        clientStateObject,
+        clientRoleObject,
+        sessionIDObject,
+        webSocketObject
+    } from "#lib/stateHandler.svelte.js";
 
-    const urlSessionID = page.url.searchParams.get('room')
+    import { joinGame } from "#lib/stateHandler.svelte.js";
 
-	let roomIsFullError = $state(false)
-	let roomDoesNotExistError = $state(false)
-	let joinGameError = $state(false)
+    const urlSessionID = page.url.searchParams.get('room');
+    let roomIsFullError = $state(false);
+    let roomDoesNotExistError = $state(false);
+    let joinGameError = $state(false);
+    let websocketError = $derived(roomIsFullError || roomDoesNotExistError || joinGameError);
+    let joinError = $derived(websocketError);
 
-    let websocketError = $derived(roomIsFullError || roomDoesNotExistError || joinGameError)
+    afterNavigate(async ({ shallow }) => {
+        if (shallow) return;
 
-    let joinError = $derived(websocketError)
-
-    afterNavigate(async () => {
         if (urlSessionID !== null) {
             await joinGame(urlSessionID,"existing")
             sessionIDObject.ID = urlSessionID
@@ -42,14 +48,12 @@
         
         if (!joinError) {
             if (clientStateObject.state.gameState === "game-setup") {
-                goto("/play/game-setup/await?room="+sessionIDObject.ID)
-            }
-            else if (clientStateObject.state.gameState !== "init" && clientRoleObject.role !== null && sessionIDObject.ID !== ""){
-                goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
-            }
-            else {
-                console.log("No valid redirect, closing websocket")
-                webSocketObject.websocket?.close()
+                goto("/play/game-setup/await?room=" + sessionIDObject.ID);
+            } else if (clientStateObject.state.gameState !== "init" && clientRoleObject.role !== null && sessionIDObject.ID !== "") {
+                goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
+            } else {
+                console.log("No valid redirect, closing websocket");
+                webSocketObject.websocket?.close();
             }
         }
     })

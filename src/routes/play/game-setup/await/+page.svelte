@@ -1,9 +1,9 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
 
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
+    import { Ellipsis } from "#lib/components/ui/loading-page-ellipsis/index.js";
 
-	import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+	import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "#lib/stateHandler.svelte.js"
 
     $effect(() => {
         if (clientStateObject.state.gameState !== "game-setup") {

@@ -2,38 +2,51 @@
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
-    import { ModuleCycle } from "$lib/components/ui/moduleCycle"
-    import { ModuleMaze } from "$lib/components/ui/moduleMaze"
-    import { Separator } from '$lib/components/ui/separator';
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+    import { Ellipsis } from "#lib/components/ui/loading-page-ellipsis/index.js";
+    import { ModuleCycle } from "#lib/components/ui/moduleCycle/index.js"
+    import { ModuleMaze } from "#lib/components/ui/moduleMaze/index.js"
+    import { Separator } from '#lib/components/ui/separator/index.js';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
     import { knuthShuffle } from 'knuth-shuffle';
 
-	import type { IHCProfile, IHCHumanProfile, IHCPatientRobotProfile, IHCViolentRobotProfile } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, profileObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
+    import type {
+        IHCProfile,
+        IHCHumanProfile,
+        IHCPatientRobotProfile,
+        IHCViolentRobotProfile
+    } from "#lib/gameObjectTypes.svelte.js";
 
-    import humanData from "$lib/gameData/suspectProfiles/humanProfile.json" 
-    import patientRobotData from "$lib/gameData/suspectProfiles/patientRobotProfiles.json" 
-    import violentRobotData from "$lib/gameData/suspectProfiles/violentRobotProfiles.json"
-    import profileStrings from "$lib/gameData/suspectProfiles/profileStrings.json"
-    import profileBlurbs from "$lib/gameData/suspectProfiles/profileBlurbs.json"
-    
-    let profileString = $derived(profileObject.profile?.type ? profileStrings[profileObject.profile.type] : "")
-    let profileBlurb = $derived(profileObject.profile?.type ? profileBlurbs[profileObject.profile.type] : "")
-    
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+    import {
+        clientRoleObject,
+        clientStateObject,
+        profileObject,
+        sessionIDObject,
+        webSocketObject,
+        gameModule,
+        gamePenalties
+    } from "#lib/stateHandler.svelte.js";
 
-    let roleError = $derived(clientRoleObject.role !== "suspect")
+    import humanData from "#lib/gameData/suspectProfiles/humanProfile.json";
+    import patientRobotData from "#lib/gameData/suspectProfiles/patientRobotProfiles.json";
+    import violentRobotData from "#lib/gameData/suspectProfiles/violentRobotProfiles.json";
+    import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json";
+    import profileBlurbs from "#lib/gameData/suspectProfiles/profileBlurbs.json";
 
-    let invalidProfileDataError = $state(false)
+    let profileString = $derived(profileObject.profile?.type ? profileStrings[profileObject.profile.type] : "");
+    let profileBlurb = $derived(profileObject.profile?.type ? profileBlurbs[profileObject.profile.type] : "");
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
+    let roleError = $derived(clientRoleObject.role !== "suspect");
+    let invalidProfileDataError = $state(false);
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null || invalidProfileDataError);
 
-    let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null || invalidProfileDataError)
+    afterNavigate(({ shallow }) => {
+        if (shallow) return;
 
-    afterNavigate(() => {
-        const randomIndex = Math.floor(Math.random() * 3)
+        const randomIndex = Math.floor(Math.random() * 3);
+
         switch (randomIndex) {
             case 0:
                 profileObject.profile = humanData as IHCHumanProfile
@@ -59,13 +72,12 @@
 
     $effect(() => {
         if (clientStateObject.state.gameState !== "confirm-module") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+            goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
+        } else if (invalidDataError) {
+            console.log("Bad penalty or module data, closing websocket");
+            webSocketObject.websocket?.close();
         }
-        else if (invalidDataError) {
-            console.log("Bad penalty or module data, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-    })
+    });
 </script>
 
 {#if multiplePenalties}

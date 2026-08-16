@@ -19,8 +19,8 @@
 		"@internationalized/date": "^3.12.3",
 		"@lucide/svelte": "^1.31.0",
 		"@neoconfetti/svelte": "^2.2.2",
-		"@sveltejs/adapter-cloudflare": "^7.2.9",
-		"@sveltejs/kit": "^2.70.2",
+		"@sveltejs/adapter-cloudflare": "next",
+		"@sveltejs/kit": "next",
 		"@sveltejs/vite-plugin-svelte": "^7.3.0",
 		"@tailwindcss/vite": "^4.3.3",
 		"@types/knuth-shuffle": "^1.0.2",
@@ -38,5 +38,9 @@
 		"typescript": "^6.0.3",
 		"vite": "^8.2.1",
 		"wrangler": "^4.123.0"
+	},
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
 	}
 }

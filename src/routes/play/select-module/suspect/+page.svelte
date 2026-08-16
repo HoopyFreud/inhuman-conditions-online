@@ -1,21 +1,29 @@
 <script lang="ts">
-    import { afterNavigate, goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
     
-    import * as Accordion from "$lib/components/ui/accordion/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import * as Carousel from "$lib/components/ui/carousel/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-    import { Separator } from '$lib/components/ui/separator';
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+  import * as Accordion from "#lib/components/ui/accordion/index.js";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import * as Carousel from "#lib/components/ui/carousel/index.js";
+  import { Button } from "#lib/components/ui/button/index.js";
+  import { Separator } from '#lib/components/ui/separator/index.js';
+  import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+  import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
+  import type { IHCModule } from "#lib/gameObjectTypes.svelte.js";
 
-	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import type { IHCModule } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, moduleIconGlob, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+  import {
+    clientRoleObject,
+    clientStateObject,
+    moduleIconGlob,
+    sessionIDObject,
+    webSocketObject,
+    gamePenalties
+  } from "#lib/stateHandler.svelte.js";
 
-    import moduleData from "$lib/gameData/modules/modules.json"
+  import { updateGameState } from "#lib/stateHandler.svelte.js";
+  import { getErrorContext } from '#lib/errorContext.js';
+
+    import moduleData from "#lib/gameData/modules/modules.json"
 
     const headerImages: Map<number,[string,string]> = new Map(moduleData.map(
         (module) => [
@@ -27,50 +35,43 @@
         ]
     ))
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+  let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
+  const gameError = getErrorContext();
+  let selectedModule: number | null = $state(null);
+  let availableModules: IHCModule[] = $state([]);
+  let invalidModuleSelection = $derived(selectedModule === null);
+  let gameStateUpdate: Partial<IHCStateData> = $derived({ gameState: "confirm-module", moduleID: selectedModule });
+  let roleError = $derived(clientRoleObject.role !== "suspect");
+  let invalidDataError = $derived(gamePenalties.currentPenalties === null);
+  let disableModuleDeselectButton: boolean = $derived(selectedModule === null);
+  let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || gameError());
 
-    const gameError = getErrorContext()
-
-    let selectedModule: number | null = $state(null)
-    let availableModules: IHCModule[] = $state([])
-    let invalidModuleSelection = $derived(selectedModule === null)
-
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "confirm-module",
-        moduleID: selectedModule
-    })
-
-    let roleError = $derived(clientRoleObject.role !== "suspect")
-
-    let invalidDataError = $derived(gamePenalties.currentPenalties === null)
-
-    let disableModuleDeselectButton: boolean = $derived(selectedModule === null)
-    let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || gameError())
-
-    function removeModule() {
+  function removeModule() {
         selectedModule = null
-    }
+  }
 
-    function addModule(module: IHCModule) {
+  function addModule(module: IHCModule) {
         selectedModule = module.id
-    }
+  }
 
-    async function submitModule() {
+  async function submitModule() {
         if (!disableSelectModule){
             await updateGameState(gameStateUpdate)
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
-        }
     }
+  }
 
-    afterNavigate(() => {
-        availableModules = moduleData as IHCModule[]
-    })
+  afterNavigate(({ shallow }) => {
+    if (shallow) return;
 
-    $effect(() => {
-        if (invalidDataError) {
+    availableModules = moduleData as IHCModule[];
+  });
+
+  $effect(() => {
+    if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
-        }
+    }
     })
 </script>
 

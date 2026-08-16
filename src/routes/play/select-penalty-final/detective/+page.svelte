@@ -1,24 +1,29 @@
 <script lang="ts">
     import { afterNavigate, goto } from "$app/navigation";
 
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+    import { Ellipsis } from "#lib/components/ui/loading-page-ellipsis/index.js";
+    import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+    import type { IHCPenalty } from "#lib/gameObjectTypes.svelte.js";
 
-	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
+    import {
+        clientRoleObject,
+        clientStateObject,
+        sessionIDObject,
+        webSocketObject
+    } from "#lib/stateHandler.svelte.js";
 
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
+    import penaltyData from "#lib/gameData/penalties/penalties.json"
 
-    let availablePenalties: IHCPenalty[] = $state([])
-    let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
+    let availablePenalties: IHCPenalty[] = $state([]);
+    let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null);
+    let roleError = $derived(clientRoleObject.role !== "detective");
+    let invalidDataError = $state(false);
 
-    let roleError = $derived(clientRoleObject.role !== "detective")
+    afterNavigate(({ shallow }) => {
+        if (shallow) return;
 
-    let invalidDataError = $state(false)
-
-    afterNavigate(() => {
         if (Array.isArray(clientStateObject.state.penaltyCardID)) {
             // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
             availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
@@ -29,13 +34,12 @@
 
     $effect(() => {
         if (clientStateObject.state.gameState !== "select-penalty-final") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+            goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
+        } else if (invalidDataError) {
+            console.log("Bad penalty data, closing websocket");
+            webSocketObject.websocket?.close();
         }
-        else if (invalidDataError) {
-            console.log("Bad penalty data, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-    })
+    });
 </script>
 
 <h2>Waiting for suspect to select penalty</h2>

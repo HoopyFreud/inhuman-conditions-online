@@ -1,20 +1,25 @@
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+    import { Button } from "#lib/components/ui/button/index.js";
+    import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+    import { knuthShuffle } from 'knuth-shuffle';
+    import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
+    import type { IHCPenalty } from "#lib/gameObjectTypes.svelte.js";
 
-    import { knuthShuffle } from 'knuth-shuffle'
+    import {
+        clientRoleObject,
+        clientStateObject,
+        sessionIDObject,
+        webSocketObject
+    } from "#lib/stateHandler.svelte.js";
 
-	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+    import { updateGameState } from "#lib/stateHandler.svelte.js";
+    import { getErrorContext } from '#lib/errorContext.js';
 
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
+    import penaltyData from "#lib/gameData/penalties/penalties.json"
 
     const gameError = getErrorContext()
 
@@ -29,11 +34,10 @@
         penaltyCardID: invalidPenaltySelection ? null : selectedPenalties as [number, number]
     })
 
-    let roleError = $derived(clientRoleObject.role !== "detective")
-
-    let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2)
-    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0)
-    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || gameError())
+    let roleError = $derived(clientRoleObject.role !== "detective");
+    let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2);
+    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0);
+    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || gameError());
 
     function removePenalty(penalty: IHCPenalty) {
         selectedPenalties = selectedPenalties.filter((id) => id !== penalty.id)
@@ -52,14 +56,16 @@
         }
     }
 
-    afterNavigate(() => {
+    afterNavigate(({ shallow }) => {
+        if (shallow) return;
+
         if (clientStateObject.state.permanentPenalty) {
-            permanentPenalty = penaltyData[0]
-            availablePenalties = penaltyData.slice(1)
+            permanentPenalty = penaltyData[0];
+            availablePenalties = penaltyData.slice(1);
+        } else {
+            availablePenalties = penaltyData;
         }
-        else {
-            availablePenalties = penaltyData
-        }
+
         if (clientStateObject.state.digitalGame) {
             availablePenalties = availablePenalties.filter((penalty) => penalty.digitalSafe)
         }
@@ -110,7 +116,7 @@
             </Card.Content>
         </Card.Root>
     {/each}
-    </div>
+</div>
 <Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto mb-2"><h3>Select Penalties</h3></Button>
 
 {#if roleError}

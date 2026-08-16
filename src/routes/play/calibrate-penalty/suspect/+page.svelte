@@ -2,12 +2,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+    import { Ellipsis } from "#lib/components/ui/loading-page-ellipsis/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "#lib/stateHandler.svelte.js"
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 

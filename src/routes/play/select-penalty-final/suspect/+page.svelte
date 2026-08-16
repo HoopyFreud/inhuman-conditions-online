@@ -1,19 +1,19 @@
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import type { IHCPenalty } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+	import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js"
+	import type { IHCPenalty } from "#lib/gameObjectTypes.svelte.js"
+	import { clientRoleObject, clientStateObject, sessionIDObject } from "#lib/stateHandler.svelte.js"
+    import { updateGameState } from "#lib/stateHandler.svelte.js"
+    import { getErrorContext } from '#lib/errorContext.js';
 
-    import penaltyData from "$lib/gameData/penalties/penalties.json"
-    
+    import penaltyData from "#lib/gameData/penalties/penalties.json"
+
     const gameError = getErrorContext()
 
     let selectedPenalty: number | null = $state(null)
@@ -25,14 +25,11 @@
         penaltyCardID: selectedPenalty
     })
 
-    let invalidPenaltySelection = $derived(selectedPenalty === null)
-
-    let roleError = $derived(clientRoleObject.role !== "suspect")
-
-    let invalidDataError = $state(false)
-
-    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null)
-    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || gameError())
+    let invalidPenaltySelection = $derived(selectedPenalty === null);
+    let roleError = $derived(clientRoleObject.role !== "suspect");
+    let invalidDataError = $state(false);
+    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null);
+    let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || gameError());
 
     function removePenalty() {
         selectedPenalty = null
@@ -49,7 +46,9 @@
         }
     }
 
-    afterNavigate(() => {
+    afterNavigate(({ shallow }) => {
+        if (shallow) return;
+
         if (Array.isArray(clientStateObject.state.penaltyCardID)) {
             // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
             availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))

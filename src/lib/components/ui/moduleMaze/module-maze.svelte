@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 
-    import type { WithElementRef } from "$lib/utils.js";
+    import type { WithElementRef } from "#lib/utils.js";
     import type { HTMLAttributes } from "svelte/elements";
 
     import maze from "./maze.svg?url"

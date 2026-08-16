@@ -2,17 +2,17 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     
-    import * as Accordion from "$lib/components/ui/accordion/index.js";
-	import * as ToggleGroup from "$lib/components/ui/toggle-group/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-    import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { Separator } from "$lib/components/ui/separator"
+    import * as Accordion from "#lib/components/ui/accordion/index.js";
+	import * as ToggleGroup from "#lib/components/ui/toggle-group/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+    import { Checkbox } from "#lib/components/ui/checkbox/index.js";
+    import { Label } from "#lib/components/ui/label/index.js";
+    import { Separator } from "#lib/components/ui/separator/index.js"
 
-	import type { IHCStateData, IHCRole } from "$lib/stateHandlerTypes.svelte"
-	import { clientRoleObject, webSocketObject, clientStateObject, sessionIDObject } from "$lib/stateHandler.svelte"
-    import { updateGameState, assignRoles } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+	import type { IHCStateData, IHCRole } from "#lib/stateHandlerTypes.svelte.js"
+	import { clientRoleObject, webSocketObject, clientStateObject, sessionIDObject } from "#lib/stateHandler.svelte.js"
+    import { updateGameState, assignRoles } from "#lib/stateHandler.svelte.js"
+    import { getErrorContext } from '#lib/errorContext.js';
     
     const gameError = getErrorContext()
 

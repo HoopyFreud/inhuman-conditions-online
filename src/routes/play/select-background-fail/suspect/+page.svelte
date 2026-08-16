@@ -1,24 +1,32 @@
 <script lang="ts">
     import { afterNavigate, goto } from '$app/navigation';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-    import { ModuleCycle } from "$lib/components/ui/moduleCycle"
-    import { ModuleMaze } from "$lib/components/ui/moduleMaze"
-    import { Separator } from "$lib/components/ui/separator/";
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+    import { ModuleCycle } from "#lib/components/ui/moduleCycle/index.js"
+    import { ModuleMaze } from "#lib/components/ui/moduleMaze/index.js"
+    import { Separator } from "#lib/components/ui/separator//index.js";
+    import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+    import { knuthShuffle } from 'knuth-shuffle';
+    import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
+    import type { IHCBackground } from "#lib/gameObjectTypes.svelte.js";
 
-    import { knuthShuffle } from 'knuth-shuffle'
+    import {
+        clientRoleObject,
+        clientStateObject,
+        profileObject,
+        sessionIDObject,
+        webSocketObject,
+        gameModule,
+        gamePenalties
+    } from "#lib/stateHandler.svelte.js";
 
-	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import type { IHCBackground } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, profileObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+    import { updateGameState } from "#lib/stateHandler.svelte.js";
+    import { getErrorContext } from '#lib/errorContext.js';
 
-    import backgroundData from "$lib/gameData/backgrounds/backgrounds.json" 
-    import profileStrings from "$lib/gameData/suspectProfiles/profileStrings.json"
+    import backgroundData from "#lib/gameData/backgrounds/backgrounds.json" 
+    import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json"
 
     let profileString = $derived(profileObject.profile?.type ? profileStrings[profileObject.profile.type] : "")
 
@@ -35,11 +43,9 @@
         backgroundCardID: selectedBackground
     })
 
-    let roleError = $derived(clientRoleObject.role !== "suspect")
-
-    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null || profileObject.profile === null)
-
-    let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || gameError())
+    let roleError = $derived(clientRoleObject.role !== "suspect");
+    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null || profileObject.profile === null);
+    let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || gameError());
 
     async function submitBackground() {
         if (!disableSelectBackground){
@@ -48,9 +54,11 @@
         }
     }
 
-    afterNavigate(() => {
-        availableBackgrounds = knuthShuffle(backgroundData.slice(1)).slice(0,1)
-    })
+    afterNavigate(({ shallow }) => {
+        if (shallow) return;
+
+        availableBackgrounds = knuthShuffle(backgroundData.slice(1)).slice(0, 1);
+    });
 
     $effect(() => {
         if (invalidDataError) {

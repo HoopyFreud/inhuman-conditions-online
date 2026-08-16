@@ -2,18 +2,18 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     
-    import * as Accordion from "$lib/components/ui/accordion/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-    import { ModuleCycle } from "$lib/components/ui/moduleCycle"
-    import { Separator } from '$lib/components/ui/separator';
+    import * as Accordion from "#lib/components/ui/accordion/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+    import { ModuleCycle } from "#lib/components/ui/moduleCycle/index.js"
+    import { Separator } from '#lib/components/ui/separator/index.js';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+	import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "#lib/stateHandler.svelte.js"
+    import { updateGameState } from "#lib/stateHandler.svelte.js"
+    import { getErrorContext } from '#lib/errorContext.js';
     
     const gameError = getErrorContext()
 

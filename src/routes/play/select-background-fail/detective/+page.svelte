@@ -1,15 +1,15 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     
-    import * as Accordion from "$lib/components/ui/accordion/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
-    import { ModuleCycle } from "$lib/components/ui/moduleCycle"
-    import { Separator } from "$lib/components/ui/separator/";
+    import * as Accordion from "#lib/components/ui/accordion/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+    import { Ellipsis } from "#lib/components/ui/loading-page-ellipsis/index.js";
+    import { ModuleCycle } from "#lib/components/ui/moduleCycle/index.js"
+    import { Separator } from "#lib/components/ui/separator//index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gameModuleIcon, gamePenalties } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gameModuleIcon, gamePenalties } from "#lib/stateHandler.svelte.js"
 
     const moduleIcon = gameModuleIcon.currentModuleIcon
 

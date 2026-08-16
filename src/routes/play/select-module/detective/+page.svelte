@@ -1,47 +1,46 @@
 <script lang="ts">
-    import { afterNavigate, goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
 
-    import * as Accordion from "$lib/components/ui/accordion/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import * as Carousel from "$lib/components/ui/carousel/index.js";
-    import { Ellipsis } from "$lib/components/ui/loading-page-ellipsis";
-    import { Separator } from '$lib/components/ui/separator';
-	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+  import * as Accordion from "#lib/components/ui/accordion/index.js";
+  import * as Alert from "#lib/components/ui/alert/index.js";
+  import * as Card from "#lib/components/ui/card/index.js";
+  import * as Carousel from "#lib/components/ui/carousel/index.js";
+  import { Ellipsis } from "#lib/components/ui/loading-page-ellipsis/index.js";
+  import { Separator } from '#lib/components/ui/separator/index.js';
+  import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+  import type { IHCModule } from "#lib/gameObjectTypes.svelte.js";
 
-	import type { IHCModule } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, moduleIconGlob, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
+  import {
+    clientRoleObject,
+    clientStateObject,
+    moduleIconGlob,
+    sessionIDObject,
+    webSocketObject,
+    gamePenalties
+  } from "#lib/stateHandler.svelte.js";
 
-    import moduleData from "$lib/gameData/modules/modules.json"
+  import moduleData from "#lib/gameData/modules/modules.json";
 
-    const headerImages: Map<number,string> = new Map(moduleData.map(
-        (module) => [
-            module.id,
-            moduleIconGlob[module.lightIcon]
-        ]
-    ))
+  const headerImages: Map<number, string> = new Map(moduleData.map((module) => [module.id, moduleIconGlob[module.lightIcon]]));
+  let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
+  let availableModules: IHCModule[] = $state([]);
+  let roleError = $derived(clientRoleObject.role !== "detective");
+  let invalidDataError = $derived(gamePenalties.currentPenalties === null);
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+  afterNavigate(({ shallow }) => {
+    if (shallow) return;
 
-    let availableModules: IHCModule[] = $state([])
+    availableModules = moduleData as IHCModule[];
+  });
 
-    let roleError = $derived(clientRoleObject.role !== "detective")
-
-    let invalidDataError = $derived(gamePenalties.currentPenalties === null)
-
-    afterNavigate(() => {
-        availableModules = moduleData as IHCModule[]
-    })
-
-    $effect(() => {
-        if (clientStateObject.state.gameState !== "select-module") {
-            goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
-        }
-        else if (invalidDataError) {
-            console.log("Bad penalty data, closing websocket")
-            webSocketObject.websocket?.close()
-        }
-    })
+  $effect(() => {
+    if (clientStateObject.state.gameState !== "select-module") {
+      goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
+    } else if (invalidDataError) {
+      console.log("Bad penalty data, closing websocket");
+      webSocketObject.websocket?.close();
+    }
+  });
 </script>
 
 {#if multiplePenalties}

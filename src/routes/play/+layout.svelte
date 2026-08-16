@@ -3,16 +3,16 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
 
-	import * as Alert from "$lib/components/ui/alert/index.js";
-	import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
-	import { DisplayInput } from "$lib/components/ui/display-input/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+	import * as ButtonGroup from "#lib/components/ui/button-group/index.js";
+	import { DisplayInput } from "#lib/components/ui/display-input/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 	import Copy from '@lucide/svelte/icons/copy';
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-    import { setErrorContext } from '$lib/errorContext';
-    import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "$lib/stateHandler.svelte"
-    import { joinGame } from "$lib/stateHandler.svelte"
+    import { setErrorContext } from '#lib/errorContext.js';
+    import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "#lib/stateHandler.svelte.js"
+    import { joinGame } from "#lib/stateHandler.svelte.js"
 
     let retry = false
 
@@ -23,7 +23,7 @@
     let websocketError = $derived(webSocketObject.websocket === null)
 
     function newGame() {
-		goto("/", { invalidateAll: true })
+		goto("/")
 	}
 
     function copyRoomLink() {
@@ -56,10 +56,8 @@
     $effect(() => {
         if (sessionIDMismatchError) {
             console.log("Session ID mismatch")
-            if (webSocketObject.websocket !== null) {
-                webSocketObject.websocket?.close()
-                webSocketObject.websocket = null
-            }
+            webSocketObject.websocket?.close()
+            webSocketObject.websocket = null
         }
         if (websocketError) {
             console.log("Websocket failure")

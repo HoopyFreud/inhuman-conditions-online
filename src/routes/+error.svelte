@@ -2,7 +2,7 @@
     import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 
-    import { resetState } from '$lib/stateHandler.svelte';
+    import { resetState } from '#lib/stateHandler.svelte.js';
 
     afterNavigate(resetState)
 </script>

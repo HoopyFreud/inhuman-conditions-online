@@ -2,15 +2,15 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     
-	import * as Alert from "$lib/components/ui/alert/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
-    import { updateGameState } from "$lib/stateHandler.svelte"
-    import { getErrorContext } from '$lib/errorContext';
+	import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "#lib/stateHandler.svelte.js"
+    import { updateGameState } from "#lib/stateHandler.svelte.js"
+    import { getErrorContext } from '#lib/errorContext.js';
     
     const gameError = getErrorContext()
 
