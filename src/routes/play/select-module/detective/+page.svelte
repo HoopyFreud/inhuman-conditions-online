@@ -10,16 +10,14 @@
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
 	import type { IHCModule } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, moduleIconGlob, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
 
     import moduleData from "$lib/gameData/modules/modules.json"
-
-    const imageGlob = import.meta.glob("$lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
 
     const headerImages: Map<number,string> = new Map(moduleData.map(
         (module) => [
             module.id,
-            imageGlob[module.lightIcon]
+            moduleIconGlob[module.lightIcon]
         ]
     ))
 

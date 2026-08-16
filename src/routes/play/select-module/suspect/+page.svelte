@@ -11,20 +11,18 @@
 
 	import type { IHCStateData } from "$lib/stateHandlerTypes.svelte"
 	import type { IHCModule } from "$lib/gameObjectTypes.svelte"
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, moduleIconGlob, sessionIDObject, webSocketObject, gamePenalties } from "$lib/stateHandler.svelte"
     import { updateGameState } from "$lib/stateHandler.svelte"
     import { getErrorContext } from '$lib/errorContext';
 
-    import moduleData from "$lib/gameData/modules/modules.json" 
-
-    const imageGlob = import.meta.glob("$lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
+    import moduleData from "$lib/gameData/modules/modules.json"
 
     const headerImages: Map<number,[string,string]> = new Map(moduleData.map(
         (module) => [
             module.id,
             [
-                imageGlob[module.darkIcon],
-                imageGlob[module.lightIcon]
+                moduleIconGlob[module.darkIcon],
+                moduleIconGlob[module.lightIcon]
             ]
         ]
     ))

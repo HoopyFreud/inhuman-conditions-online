@@ -5,6 +5,8 @@ import penaltyData from "$lib/gameData/penalties/penalties.json"
 import moduleData from "$lib/gameData/modules/modules.json" 
 import backgroundData from "$lib/gameData/backgrounds/backgrounds.json"
 
+export const moduleIconGlob = import.meta.glob("$lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
+
 export const clientErroredObject: {error: boolean} = $state({error: false})
 export const clientLastMessageObject: {message: string} = $state({message: ""})
 export const clientLastStatusCode: {code: number | null} = $state({code: null})
@@ -43,6 +45,10 @@ export const gamePenalties = {
 const currentModule: IHCModule | null = $derived(moduleData.find((module) => module.id === clientStateObject.state.moduleID) as IHCModule ?? null)
 export const gameModule = {
 	get currentModule() { return currentModule; },
+}
+const currentModuleIcon: string | null = $derived(moduleIconGlob[currentModule?.lightIcon] ?? null)
+export const gameModuleIcon = {
+	get currentModuleIcon() { return currentModuleIcon; },
 }
 
 const currentBackground: IHCBackground | null = $derived(backgroundData.find((background) => background.id === clientStateObject.state.backgroundCardID) as IHCBackground ?? null)

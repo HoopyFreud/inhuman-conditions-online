@@ -9,9 +9,9 @@
     import { Separator } from "$lib/components/ui/separator/";
 	import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
-	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "$lib/stateHandler.svelte"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gameModuleIcon, gamePenalties } from "$lib/stateHandler.svelte"
 
-    const moduleIcon = await import(gameModule.currentModule.lightIcon+"?url")
+    const moduleIcon = gameModuleIcon.currentModuleIcon
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
