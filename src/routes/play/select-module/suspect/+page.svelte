@@ -17,7 +17,8 @@
 
     import moduleData from "$lib/gameData/modules/modules.json" 
 
-    const preloadUrls = moduleData.flatMap((module) => [module.lightIcon,module.darkIcon])
+    const headerImages: Map<IHCModule,[Promise<string>,Promise<string>]> = new Map(moduleData.map(
+        (module) => [module as IHCModule,[import(module.darkIcon),import(module.lightIcon)]]))
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
@@ -29,7 +30,7 @@
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
         gameState: "confirm-module",
-        penaltyCardID: selectedModule
+        moduleID: selectedModule
     })
 
     let roleError = $derived(clientRoleObject.role !== "suspect")
@@ -66,12 +67,6 @@
     })
 </script>
 
-<svelte:head>
-	{#each preloadUrls as image}
-        <link rel="preload" as="image" href={image} />
-    {/each}
-</svelte:head>
-
 {#if multiplePenalties}
 <h2>Penalties</h2>
 {:else}
@@ -101,9 +96,9 @@
                 </Card.Header>
                 <Card.Content class="mt-auto">
                     {#if selectedModule === availableModule.id}
-                        <img src={availableModule.darkIcon} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                        <img src={await (headerImages.get(availableModule)?.[0])} alt={availableModule.name} class="w-1/2 mx-auto"/>
                     {:else}
-                        <img src={availableModule.lightIcon} alt={availableModule.name} class="w-1/2 mx-auto"/>
+                        <img src={await (headerImages.get(availableModule)?.[1])} alt={availableModule.name} class="w-1/2 mx-auto"/>
                     {/if}
                     <p class="my-2">Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>
