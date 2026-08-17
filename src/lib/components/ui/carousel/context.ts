@@ -4,7 +4,7 @@ import type { UseEmblaCarouselType, default as useEmblaCarousel } from "embla-ca
 import type { HTMLAttributes } from "svelte/elements";
 
 export type CarouselAPI =
-	NonNullable<NonNullable<UseEmblaCarouselType["$$_attributes"]>["on:emblainit"]> extends (
+	NonNullable<NonNullable<UseEmblaCarouselType["$$_attributes"]>["onemblainit"]> extends (
 		evt: CustomEvent<infer CarouselAPI>
 	) => void
 		? CarouselAPI

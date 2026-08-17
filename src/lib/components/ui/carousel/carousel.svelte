@@ -50,6 +50,7 @@
 	}
 
 	function onSelect() {
+		console.log("fire select event", carouselState.api)
 		if (!carouselState.api) return;
 		carouselState.selectedIndex = carouselState.api.selectedSnap();
 		carouselState.canGoToNext = carouselState.api.canGoToNext();
