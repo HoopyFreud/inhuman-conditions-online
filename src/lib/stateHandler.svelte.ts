@@ -14,6 +14,7 @@ export const clientRoleObject: {role: IHCRole | null} = $state({role: null})
 export const clientStateObject: {state:IHCStateData} = $state({
     state: {
         gameState: "init",
+		interrogationState: "prelim",
         validatedSessions: 0,
         moduleID: null,
         penaltyCardID: null,
@@ -23,7 +24,7 @@ export const clientStateObject: {state:IHCStateData} = $state({
         digitalGame: false,
         sealedFile: false,
         endTime: null
-    } as IHCStateData
+    }
 })
 
 export const profileObject: {profile: IHCProfile | null} = $state({profile: null})
