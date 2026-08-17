@@ -111,8 +111,8 @@
         </Carousel.Item>
     {/each}
   </Carousel.Content>
-  <Carousel.Previous class="mt-45"/>
-  <Carousel.Next class="mt-45"/>
+  <Carousel.Previous class="mt-75"/>
+  <Carousel.Next class="mt-75"/>
 </Carousel.Root>
 
 <Ellipsis />

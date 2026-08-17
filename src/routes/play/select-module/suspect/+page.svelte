@@ -149,8 +149,8 @@
         </Carousel.Item>
     {/each}
   </Carousel.Content>
-  <Carousel.Previous class="mt-45"/>
-  <Carousel.Next class="mt-45"/>
+  <Carousel.Previous class="mt-75"/>
+  <Carousel.Next class="mt-75"/>
 </Carousel.Root>
 <Button disabled={disableSelectModule} variant="outline" type="submit" onclick={async () => await submitModule()} class="w-fit m-auto"><h3>Select Module</h3></Button>
 

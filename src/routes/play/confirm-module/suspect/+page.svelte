@@ -111,7 +111,7 @@
         </p>
     {:else}
         <p>
-            Because you are a robot, you will not need to solve a maze to answer this question. Take some time to study your restrictions and obligations, as a human would need to solve a maze to obtain the answer.
+            Because you are a robot, you will not need to solve a maze to answer this question. Take some time to study your {#if profileObject.profile?.type === "violentRobot"}requirements{:else if typeof profileObject.profile?.restriction === "string"}restriction{:else}restrictions{/if} while pretending to solve one.
         </p>
     {/if}
     {#if !clientStateObject.state.sealedFile}
