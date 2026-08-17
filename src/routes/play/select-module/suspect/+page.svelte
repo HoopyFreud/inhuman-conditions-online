@@ -1,74 +1,66 @@
 <script lang="ts">
-  import { afterNavigate, goto } from '$app/navigation';
-    
-  import * as Accordion from "#lib/components/ui/accordion/index.js";
-  import * as Alert from "#lib/components/ui/alert/index.js";
-  import * as Card from "#lib/components/ui/card/index.js";
-  import * as Carousel from "#lib/components/ui/carousel/index.js";
-  import { default as AutoHeight } from 'embla-carousel-auto-height'
-  import { Button } from "#lib/components/ui/button/index.js";
-  import { Separator } from '#lib/components/ui/separator/index.js';
-  import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
-  import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
-  import type { IHCModule } from "#lib/gameObjectTypes.svelte.js";
+    import { goto } from '$app/navigation';
 
-  import {
-    clientRoleObject,
-    clientStateObject,
-    moduleIconGlob,
-    sessionIDObject,
-    webSocketObject,
-    gamePenalties
-  } from "#lib/stateHandler.svelte.js";
+    import * as Accordion from "#lib/components/ui/accordion/index.js";
+    import * as Alert from "#lib/components/ui/alert/index.js";
+    import * as Card from "#lib/components/ui/card/index.js";
+    import * as Carousel from "#lib/components/ui/carousel/index.js";
+    import { default as AutoHeight } from 'embla-carousel-auto-height'
+    import { Button } from "#lib/components/ui/button/index.js";
+    import { Separator } from '#lib/components/ui/separator/index.js';
+    import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
+    import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
+    import type { IHCModule } from "#lib/gameObjectTypes.svelte.js";
 
-  import { updateGameState } from "#lib/stateHandler.svelte.js";
-  import { getErrorContext } from '#lib/errorContext.js';
+    import { clientRoleObject, clientStateObject, moduleIconGlob, sessionIDObject, webSocketObject, gamePenalties } from "#lib/stateHandler.svelte.js";
+
+    import { updateGameState } from "#lib/stateHandler.svelte.js";
+    import { getErrorContext } from '#lib/errorContext.js';
 
     import moduleData from "#lib/gameData/modules/modules.json"
 
+    const availableModules = moduleData as IHCModule[]
+
     const headerImages: Map<number,[string,string]> = new Map(moduleData.map(
-        (module) => [
-            module.id,
-            [
-                moduleIconGlob[module.darkIcon],
-                moduleIconGlob[module.lightIcon]
-            ]
+    (module) => [
+        module.id,
+        [
+            moduleIconGlob[module.darkIcon],
+            moduleIconGlob[module.lightIcon]
         ]
+    ]
     ))
 
-  let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
-  const gameError = getErrorContext();
-  let selectedModule: number | null = $state(null);
-  let availableModules: IHCModule[] = $state([]);
-  let invalidModuleSelection = $derived(selectedModule === null);
-  let gameStateUpdate: Partial<IHCStateData> = $derived({ gameState: "confirm-module", moduleID: selectedModule });
-  let roleError = $derived(clientRoleObject.role !== "suspect");
-  let invalidDataError = $derived(gamePenalties.currentPenalties === null);
-  let disableModuleDeselectButton: boolean = $derived(selectedModule === null);
-  let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || gameError());
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
+    const gameError = getErrorContext();
+    let selectedModule: number | null = $state(null);
+    let invalidModuleSelection = $derived(selectedModule === null);
+    let gameStateUpdate: Partial<IHCStateData> = $derived({ gameState: "confirm-module", moduleID: selectedModule });
+    let roleError = $derived(clientRoleObject.role !== "suspect");
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null);
+    let disableModuleDeselectButton: boolean = $derived(selectedModule === null);
+    let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || gameError());
 
-  function removeModule() {
+    function removeModule() {
         selectedModule = null
-  }
+    }
 
-  function addModule(module: IHCModule) {
+    function addModule(module: IHCModule) {
         selectedModule = module.id
-  }
+    }
 
-  async function submitModule() {
+    async function submitModule() {
         if (!disableSelectModule){
             await updateGameState(gameStateUpdate)
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
+        }
     }
-  }
 
-  afterNavigate(() => availableModules = moduleData as IHCModule[]);
-
-  $effect(() => {
-    if (invalidDataError) {
-            console.log("Bad penalty data, closing websocket")
-            webSocketObject.websocket?.close()
-    }
+    $effect(() => {
+        if (invalidDataError) {
+                console.log("Bad penalty data, closing websocket")
+                webSocketObject.websocket?.close()
+        }
     })
 </script>
 <div class="flex flex-row justify-evenly gap-2">

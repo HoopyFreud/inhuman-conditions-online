@@ -69,8 +69,6 @@
 	function onInit(event: CustomEvent<CarouselAPI>) {
 		carouselState.api = event.detail;
 		setApi(carouselState.api);
-		console.log(carouselState.api.snapList())
-		console.log(carouselState.api.canGoToNext())
 		carouselState.scrollSnaps = carouselState.api.snapList();
 		carouselState.api.on("select", onSelect);
 		onSelect();
