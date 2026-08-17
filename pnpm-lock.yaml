@@ -47,6 +47,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      embla-carousel:
+        specifier: 9.0.0-rc02
+        version: 9.0.0-rc02
       embla-carousel-auto-height:
         specifier: 9.0.0-rc02
         version: 9.0.0-rc02(embla-carousel@9.0.0-rc02)
