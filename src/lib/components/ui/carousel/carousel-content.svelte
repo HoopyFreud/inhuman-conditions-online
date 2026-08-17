@@ -1,5 +1,5 @@
 <script lang="ts">
-	import emblaCarouselSvelte from "embla-carousel-svelte";
+	import useEmblaCarousel from "embla-carousel-svelte";
 	import { cn, type WithElementRef } from "#lib/utils.js";
 	import { getEmblaContext } from "./context.js";
 	import type { HTMLAttributes } from "svelte/elements";
@@ -17,7 +17,7 @@
 <div
 	data-slot="carousel-content"
 	class="overflow-hidden"
-	use:emblaCarouselSvelte={{
+	use:useEmblaCarousel={{
 		options: {
 			container: "[data-embla-container]",
 			slides: "[data-embla-slide]",
