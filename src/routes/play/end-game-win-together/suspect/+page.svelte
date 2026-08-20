@@ -8,7 +8,7 @@
 	import { clientRoleObject, clientStateObject, webSocketObject } from "#lib/stateHandler.svelte.js"
     import { resetGameSession } from "#lib/stateHandler.svelte.js"
 
-    let roleError = $derived(clientRoleObject.role !== "detective")
+    let roleError = $derived(clientRoleObject.role !== "suspect")
 
     async function restartGame() {
         await resetGameSession()
