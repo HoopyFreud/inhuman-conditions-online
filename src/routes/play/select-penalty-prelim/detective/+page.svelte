@@ -83,9 +83,9 @@
     {/if}
 </div>
 
-<div class="flex flex-row justify-evenly gap-2 my-4">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#if permanentPenalty !== null}
-        <Card.Root class="w-1/5 light">
+        <Card.Root class="light w-full">
             <Card.Content class="flex flex-col h-full gap-2 justify-between">
                 <p>Permanent penalty: {permanentPenalty.text}</p>
                 <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto">
@@ -95,7 +95,7 @@
         </Card.Root>
     {/if}
     {#each availablePenalties as availablePenalty}
-        <Card.Root class="{permanentPenalty !== null ? 'w-1/5' : 'w-1/4'} {selectedPenalties.includes(availablePenalty.id)? 'light' : ''}">
+        <Card.Root class="w-full {selectedPenalties.includes(availablePenalty.id)? 'light' : ''}">
             <Card.Content class="flex flex-col h-full gap-2 justify-between">
                 <p>{availablePenalty.text}</p>
                 {#if selectedPenalties.includes(availablePenalty.id)}

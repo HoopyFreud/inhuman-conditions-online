@@ -29,13 +29,11 @@
 		class: className,
 		size = "default",
 		spacing = 0,
-		orientation = "horizontal",
 		variant = "default",
 		...restProps
 	}: ToggleGroupPrimitive.RootProps &
 		ToggleVariants & {
 			spacing?: number;
-			orientation?: "horizontal" | "vertical";
 		} = $props();
 
 	setToggleGroupCtx({
@@ -47,10 +45,7 @@
 		},
 		get spacing() {
 			return spacing;
-		},
-		get orientation() {
-			return orientation;
-		},
+		}
 	});
 </script>
 
@@ -61,14 +56,13 @@ get along, so we shut typescript up by casting `value` to `never`.
 <ToggleGroupPrimitive.Root
 	bind:value={value as never}
 	bind:ref
-	{orientation}
 	data-slot="toggle-group"
 	data-variant={variant}
 	data-size={size}
 	data-spacing={spacing}
 	style={`--gap: ${spacing}`}
 	class={cn(
-		"rounded-md data-[spacing=0]:data-[variant=outline]:shadow-xs group/toggle-group flex w-fit flex-row items-center gap-[--spacing(var(--gap))] data-vertical:flex-col data-vertical:items-stretch",
+		"rounded-md data-[spacing=0]:data-[variant=outline]:shadow-xs group/toggle-group flex w-fit gap-[--spacing(var(--gap))] flex-col items-stretch md:flex-row md:items-center",
 		className
 	)}
 	{...restProps}

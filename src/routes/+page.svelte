@@ -107,9 +107,9 @@
 	Identity Crisis
 </h1>
 <section class="game-area">
-	<h2 class="m-10!">Begin Interrogation</h2>
-	<h2>Room Number</h2>
-	<div class="w-1/2">
+	<h2 class="m-10! w-3/4! text-wrap">Begin Interrogation</h2>
+	<h2 class="w-3/4! text-wrap">Room Number</h2>
+	<div class="min-w-50 w-1/2">
 		<ButtonGroup.Root class="justify-center w-full">
 			<Input type="text" bind:value={sessionIDObject.ID} oninput={() => validateRoomNumber()}/>
 			<Button variant="outline" size="icon" aria-label="Random" title="Random" onclick={() => randomizeRoom()}>
@@ -171,9 +171,9 @@
 		</Alert.Root>
 		{/if}
 	</div>
-	<div class="flex flex-row justify-evenly w-3/4 mt-4">
-		<Button variant="outline" type="submit" onclick={async () => await getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
-		<Button variant="outline" type="submit" onclick={async() => await getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
+	<div class="flex w-3/4 mt-4 gap-2 flex-col justify-center-safe md:flex-row md:justify-evenly ">
+		<Button class="w-fit mx-auto" variant="outline" type="submit" onclick={async () => await getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
+		<Button class="w-fit mx-auto" variant="outline" type="submit" onclick={async() => await getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
 	</div>
 </section>
 

@@ -61,9 +61,9 @@
     <Card.Content>
         <ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto"
             bind:value={
-            () => clientRoleObject.role ?? "",
-            (v:IHCRole | "") => clientRoleObject.role = v || null
-        }>
+                () => clientRoleObject.role ?? "",
+                (v:IHCRole | "") => clientRoleObject.role = v || null
+            }>
             <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
                 <h3 class="m-0!">Detective</h3>
             </ToggleGroup.Item>

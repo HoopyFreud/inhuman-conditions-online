@@ -16,18 +16,11 @@
 
     import penaltyData from "#lib/gameData/penalties/penalties.json"
 
-    let availablePenalties: IHCPenalty[] = $state([]);
+    // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
+    let availablePenalties = $derived(Array.isArray(clientStateObject.state?.penaltyCardID) ? penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID?.includes(penalty.id)) as IHCPenalty[] : [])
     let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null);
     let roleError = $derived(clientRoleObject.role !== "detective");
-    let invalidDataError = $state(false);
-
-    afterNavigate(() => {
-        if (Array.isArray(clientStateObject.state.penaltyCardID)) {
-            // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
-            availablePenalties = penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID.includes(penalty.id))
-        }
-        invalidDataError = availablePenalties.length === 0
-    })
+    let invalidDataError = $derived(availablePenalties.length === 0 && clientStateObject.state.gameState === "select-penalty-final");
 
     $effect(() => {
         if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-penalty-final") {
@@ -47,16 +40,16 @@
     </p>
     {/if}
 </div>
-<div class="flex flex-row justify-evenly gap-2 my-4">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#if permanentPenalty !== null}
-        <Card.Root class="w-1/4 light">
+        <Card.Root class="w-full light">
             <Card.Content>
                 <p>Permanent penalty: {permanentPenalty.text}</p>
             </Card.Content>
         </Card.Root>
     {/if}
     {#each availablePenalties as availablePenalty}
-        <Card.Root class={permanentPenalty !== null ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Content>
                 <p>{availablePenalty.text}</p>
             </Card.Content>

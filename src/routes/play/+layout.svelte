@@ -77,13 +77,13 @@
 </h1>
 
 <section class="game-area">
-    <div class="flex flex-row m-3 justify-between">
+    <div class="flex flex-row gap-2 m-3 justify-between items-stretch">
         <div class="w-fit">
-            <Button variant="outline" aria-label="New Game" title="New Game" onclick={() => newGame()}>
+            <Button class="h-full md:h-9" variant="outline" aria-label="New Game" title="New Game" onclick={() => newGame()}>
                 <h2 class="m-0! align-middle">New Game</h2>
             </Button>
         </div>
-        <div class="w-fit">
+        <div class="w-fit my-auto">
             <h3>Room Number</h3>
             <ButtonGroup.Root>
                 <DisplayInput id="room" aria-label="Room Number" value={sessionID}/>
