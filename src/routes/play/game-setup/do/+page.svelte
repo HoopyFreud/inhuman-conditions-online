@@ -4,7 +4,7 @@
     
     import * as Accordion from "#lib/components/ui/accordion/index.js";
     import * as Card from "#lib/components/ui/card/index.js";
-	import * as ToggleGroup from "#lib/components/ui/toggle-group/index.js";
+	import * as ResizableToggleGroup from "#lib/components/ui/resizable-toggle-group/index.js";
 	import { Button } from "#lib/components/ui/button/index.js";
     import { Checkbox } from "#lib/components/ui/checkbox/index.js";
     import { Label } from "#lib/components/ui/label/index.js";
@@ -59,18 +59,18 @@
         <Card.Title><h2>Select Role</h2></Card.Title>
     </Card.Header>
     <Card.Content>
-        <ToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto"
+        <ResizableToggleGroup.Root size="lg" variant="outline" type="single" class="flex place-center m-auto"
             bind:value={
                 () => clientRoleObject.role ?? "",
                 (v:IHCRole | "") => clientRoleObject.role = v || null
             }>
-            <ToggleGroup.Item value="detective" aria-label="Toggle Detective">
+            <ResizableToggleGroup.Item value="detective" aria-label="Toggle Detective">
                 <h3 class="m-0!">Detective</h3>
-            </ToggleGroup.Item>
-            <ToggleGroup.Item value="suspect" aria-label="Toggle Suspect">
+            </ResizableToggleGroup.Item>
+            <ResizableToggleGroup.Item value="suspect" aria-label="Toggle Suspect">
                 <h3 class="m-0!">Suspect</h3>
-            </ToggleGroup.Item>
-        </ToggleGroup.Root>
+            </ResizableToggleGroup.Item>
+        </ResizableToggleGroup.Root>
     </Card.Content>
 </Card.Root>
 
