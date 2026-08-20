@@ -85,7 +85,6 @@
             clearInterval(countdownInterval)
         }
         else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "ongoing") {
-            console.log("timer refresh")
             clearInterval(countdownInterval)
             timerTime = endTime - Date.now()
             countdownInterval = setInterval(() => {
@@ -94,6 +93,10 @@
                 }
             },20)
         }
+        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "last-question") {
+            clearInterval(countdownInterval)
+            timerTime = 0
+        }
         else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "kill-attempt") {
             clearInterval(countdownInterval)
             if (gameProfile.currentProfile?.type === "human") {
@@ -101,6 +104,15 @@
             }
             else {
                 updateOverallGameState("end-game-win-detective")
+            }
+        }
+        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "spare") {
+            clearInterval(countdownInterval)
+            if (gameProfile.currentProfile?.type === "human") {
+                updateOverallGameState("end-game-win-together")
+            }
+            else {
+                updateOverallGameState("end-game-win-robot")
             }
         }
         else if (invalidDataError) {

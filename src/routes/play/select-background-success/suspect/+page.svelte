@@ -16,8 +16,7 @@
     import { updateGameState } from "#lib/stateHandler.svelte.js";
     import { getErrorContext } from '#lib/errorContext.js';
 
-    import backgroundData from "#lib/gameData/backgrounds/backgrounds.json" 
-    import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json"
+    import backgroundData from "#lib/gameData/backgrounds/backgrounds.json"
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
@@ -78,7 +77,7 @@
     {/each}
     <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
         <Card.Header>
-            <Card.Title><h3>Identity: {gameProfileString}</h3></Card.Title>
+            <Card.Title><h3>Identity: {gameProfileString.currentProfileString}</h3></Card.Title>
         </Card.Header>
         <Card.Content>
             {#if gameProfile.currentProfile?.type === "patientRobot"}
@@ -86,9 +85,19 @@
                     <Accordion.Item>
                         <Accordion.Trigger><h3>Restriction</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
-                            <p class="text-base">{gameProfile.currentProfile.restriction}</p>
-                            {#if gameProfile.currentProfile.explainerText !== ""}
-                                <p class="text-base text-muted-foreground">Note: {gameProfile.currentProfile.explainerText}</p>
+                            {#if typeof gameProfile.currentProfile?.restriction === "string"}
+                                <p class="text-base">{gameProfile.currentProfile?.restriction}</p>
+                            {:else}
+                                <p class="text-base">Choose one:</p>
+                                <ul style="list-style-type: upper-alpha; list-style-position: inside;">
+                                    {#each gameProfile.currentProfile?.restriction as restriction}
+                                        <Separator class="my-2 mx-auto"/>
+                                        <li class="text-base">{restriction}</li>
+                                    {/each}
+                                </ul>
+                            {/if}
+                            {#if gameProfile.currentProfile?.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {gameProfile.currentProfile?.explainerText}</p>
                             {/if}
                         </Accordion.Content>
                     </Accordion.Item>
@@ -99,7 +108,7 @@
                         <Accordion.Trigger><h3>Requirements</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
                             <ul class="justify-items-start" style="list-style-type: upper-alpha">
-                                {#each gameProfile.currentProfile.requirements as requirement}
+                                {#each gameProfile.currentProfile?.requirements as requirement}
                                     <Separator class="my-2 mx-auto"/>
                                     <li>{requirement}</li>
                                 {/each}
@@ -115,12 +124,10 @@
 <h2 class="max-w-3/4 mx-auto">Role Selection</h2>
 <div class="flex flex-col gap-2 w-3/4 text-left mx-auto">
     <p>
-        Prepare to take on the provided role.</p>
-    <p>
-        Because you failed validation, you may not choose a different one.
+        Prepare to take on one of the roles below.
     </p>
     <p>
-        Click the button when you are ready to proceed.
+        Because you succeeded at validation, you may choose from three options.
     </p>
 </div>
 <div class="flex flex-row justify-evenly gap-2 my-4">

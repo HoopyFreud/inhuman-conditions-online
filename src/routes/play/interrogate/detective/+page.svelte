@@ -41,7 +41,7 @@
     let disableNonResumeUI = $derived(disableStateUpdate || clientStateObject.state.interrogationState !== "ongoing")
 
     async function updateInterrogationState(newState:IHCStateData["interrogationState"]) {
-        if (!disableStateUpdate && !(newState === "last-question")){
+        if (!disableStateUpdate){
             const gameStateUpdate: Partial<IHCStateData> = {
                 interrogationState: newState
             }
@@ -76,7 +76,6 @@
             clearTimeout(lastQuestionTimeout)
         }
         else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "ongoing") {
-            console.log("timer refresh")
             clearInterval(countdownInterval)
             clearTimeout(lastQuestionTimeout)
             timerTime = endTime - Date.now()
@@ -87,7 +86,12 @@
             },20)
             lastQuestionTimeout = setTimeout(() => {
                 updateInterrogationState("last-question")
-            },endTime)
+            },timerTime)
+        }
+        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "last-question") {
+            clearInterval(countdownInterval)
+            clearTimeout(lastQuestionTimeout)
+            timerTime = 0
         }
         else if (invalidDataError) {
             console.log("Bad penalty, background, profile, or module data, closing websocket")
@@ -168,7 +172,7 @@
                 {:else}
                     <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto"><h3>Kill</h3></Button>
                 {/if}
-                <Button disabled={clientStateObject.state.interrogationState !== "last-question"} type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto"><h3>Let the suspect go</h3></Button>
+                <Button disabled={clientStateObject.state.interrogationState !== "last-question"} type="submit" onclick={async () => await updateInterrogationState("spare")} class="w-fit mx-auto"><h3>Let the suspect go</h3></Button>
         </Card.Content>
     </Card.Root>
     {#each gamePenalties.currentPenalties as activePenalty}

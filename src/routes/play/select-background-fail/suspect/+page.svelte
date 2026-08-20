@@ -104,7 +104,13 @@
 <h2 class="max-w-3/4 mx-auto">Role Selection</h2>
 <div class="flex flex-col gap-2 w-3/4 text-left mx-auto">
     <p>
-        Prepare to take on the provided role. Because you failed validation, you may not choose a different one. Click the button when you are ready to proceed.
+        Prepare to take on the provided role.
+    </p>
+    <p>
+        Because you failed validation, you may not choose a different one.
+    </p>
+    <p>
+        Click the button when you are ready to proceed.
     </p>
 </div>
 <div class="flex flex-row justify-evenly gap-2 my-4">
