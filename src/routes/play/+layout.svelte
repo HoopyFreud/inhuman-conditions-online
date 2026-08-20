@@ -32,7 +32,7 @@
 	}
 
     async function retryJoin() {
-        await joinGame(urlSessionID ?? "","existing")
+        await joinGame(urlSessionID!,"existing")
         if (webSocketObject !== null) {
             retry = false
             const goUrl = "/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+urlSessionID
