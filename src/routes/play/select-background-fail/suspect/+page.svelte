@@ -11,15 +11,12 @@
     import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
     import type { IHCBackground } from "#lib/gameObjectTypes.svelte.js";
 
-    import { clientRoleObject, clientStateObject, persistedProfileObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "#lib/stateHandler.svelte.js";
+    import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameModule, gamePenalties, gameProfile, gameProfileString } from "#lib/stateHandler.svelte.js";
 
     import { updateGameState } from "#lib/stateHandler.svelte.js";
     import { getErrorContext } from '#lib/errorContext.js';
 
     import backgroundData from "#lib/gameData/backgrounds/backgrounds.json" 
-    import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json"
-
-    let profileString = $derived(persistedProfileObject.current.profile?.type ? profileStrings[persistedProfileObject.current.profile.type] : "")
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties?.length > 1)
 
@@ -31,11 +28,12 @@
 
     let gameStateUpdate: Partial<IHCStateData> = $derived({
         gameState: "interrogate",
+        interrogationState: "prelim",
         backgroundCardID: selectedBackground
     })
 
     let roleError = $derived(clientRoleObject.role !== "suspect");
-    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null || persistedProfileObject.current.profile === null);
+    let invalidDataError = $derived(gameModule.currentModule === null || gamePenalties.currentPenalties === null || gameProfile.currentProfile === null);
     let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || gameError());
 
     async function submitBackground() {
@@ -69,28 +67,28 @@
     {/each}
     <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
         <Card.Header>
-            <Card.Title><h3>Identity: {profileString}</h3></Card.Title>
+            <Card.Title><h3>Identity: {gameProfileString.currentProfileString}</h3></Card.Title>
         </Card.Header>
         <Card.Content>
-            {#if persistedProfileObject.current.profile?.type === "patientRobot"}
+            {#if gameProfile.currentProfile?.type === "patientRobot"}
                 <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
                     <Accordion.Item>
                         <Accordion.Trigger><h3>Restriction</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
-                            <p class="text-base">{persistedProfileObject.current.profile?.restriction}</p>
-                            {#if persistedProfileObject.current.profile?.explainerText !== ""}
-                                <p class="text-base text-muted-foreground">Note: {persistedProfileObject.current.profile?.explainerText}</p>
+                            <p class="text-base">{gameProfile.currentProfile?.restriction}</p>
+                            {#if gameProfile.currentProfile?.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {gameProfile.currentProfile?.explainerText}</p>
                             {/if}
                         </Accordion.Content>
                     </Accordion.Item>
                 </Accordion.Root>
-            {:else if persistedProfileObject.current.profile?.type === "violentRobot"}
+            {:else if gameProfile.currentProfile?.type === "violentRobot"}
                 <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
                     <Accordion.Item>
                         <Accordion.Trigger><h3>Requirements</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
                             <ul class="justify-items-start" style="list-style-type: upper-alpha">
-                                {#each persistedProfileObject.current.profile?.requirements as requirement}
+                                {#each gameProfile.currentProfile?.requirements as requirement}
                                     <Separator class="my-2 mx-auto"/>
                                     <li>{requirement}</li>
                                 {/each}

@@ -1,12 +1,15 @@
 
-import { PersistedState } from "runed";
-
-import type { IHCCombinedResponse, IHCMessageData, IHCQuery, IHCResponse, IHCRole, IHCRoleData, IHCRoleUpdate, IHCStateData, IHCStateUpdate } from '#lib/stateHandlerTypes.svelte.js'
-import type { IHCModule, IHCBackground, IHCPenalty, IHCProfile } from './gameObjectTypes.svelte'
+import type { IHCCombinedResponse, IHCMessageData, IHCQuery, IHCResponse, IHCRole, IHCRoleData, IHCRoleUpdate, IHCStateData, IHCStateUpdate, IHCResetSession } from '#lib/stateHandlerTypes.svelte.js'
+import type { IHCModule, IHCBackground, IHCPenalty, IHCProfile, IHCHumanProfile, IHCPatientRobotProfile, IHCViolentRobotProfile } from './gameObjectTypes.svelte'
 
 import penaltyData from "#lib/gameData/penalties/penalties.json" 
 import moduleData from "#lib/gameData/modules/modules.json" 
 import backgroundData from "#lib/gameData/backgrounds/backgrounds.json"
+import humanData from "#lib/gameData/suspectProfiles/humanProfile.json";
+import patientRobotData from "#lib/gameData/suspectProfiles/patientRobotProfiles.json";
+import violentRobotData from "#lib/gameData/suspectProfiles/violentRobotProfiles.json";
+import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json";
+import profileBlurbs from "#lib/gameData/suspectProfiles/profileBlurbs.json";
 
 export const moduleIconGlob = import.meta.glob("#lib/gameData/icons/*.svg", {eager: true, query: "?url", import: "default"})
 
@@ -22,6 +25,8 @@ export const clientStateObject: {state:IHCStateData} = $state({
         moduleID: null,
         penaltyCardID: null,
         backgroundCardID: null,
+		suspectProfileType: null,
+		suspectProfileID: null,
         permanentPenalty: false,
         continuousCatalyzation: false,
         digitalGame: false,
@@ -30,18 +35,22 @@ export const clientStateObject: {state:IHCStateData} = $state({
     }
 })
 
-export const persistedProfileObject: PersistedState<{profile: IHCProfile | null}> = new PersistedState("persistedProfileObject", {profile: null}, {storage: "session", syncTabs: false})
 export const sessionIDObject: {ID: string} = $state(({ID: ""}))
 export const webSocketObject: {websocket: WebSocket | null} = $state({websocket: null})
 
-let currentPenalties: IHCPenalty[] = $derived(
-	typeof clientStateObject.state.penaltyCardID === "number" ?
-		clientStateObject.state.permanentPenalty ? 
-			penaltyData.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID) :
-			penaltyData.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
-		:
-		[]
-)
+let currentPenalties: IHCPenalty[] = $derived.by(() => {
+	if (typeof clientStateObject.state.penaltyCardID === "number") {
+		if (clientStateObject.state.permanentPenalty) {
+			return penaltyData.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID)
+		}
+		else {
+			return penaltyData.filter((penalty) => penalty.id === clientStateObject.state.penaltyCardID)
+		}
+	}
+	else {
+		return []
+	}
+})
 export let gamePenalties = {
 	get currentPenalties() { return currentPenalties; },
 }
@@ -60,6 +69,34 @@ export let gameBackground = {
 	get currentBackground() { return currentBackground; },
 }
 
+let currentProfile: IHCProfile | null = $derived.by(() => {
+	if (clientStateObject.state.suspectProfileType === "human") {
+		return humanData as IHCHumanProfile
+	}
+	else if (clientStateObject.state.suspectProfileType === "patientRobot") {
+		return patientRobotData.find((profile) => profile.id === clientStateObject.state.suspectProfileID)  as IHCPatientRobotProfile
+	}
+	else if (clientStateObject.state.suspectProfileType === "violentRobot") {
+		return violentRobotData.find((profile) => profile.id === clientStateObject.state.suspectProfileID) as IHCViolentRobotProfile
+	}
+	else {
+		return null
+	}
+})
+export let gameProfile = {
+	get currentProfile() { return currentProfile; },
+}
+
+let currentProfileString = $derived(currentProfile?.type ? profileStrings[currentProfile.type] : "")
+export let gameProfileString = {
+	get currentProfileString() { return currentProfileString; },
+}
+
+let currentProfileBlurb = $derived(currentProfile?.type ? profileBlurbs[currentProfile.type] : [])
+export let gameProfileBlurb = {
+	get currentProfileBlurb() { return currentProfileBlurb; },
+}
+
 export function resetState() {
 	console.log("resetting state")
 	clientErroredObject.error = false
@@ -73,13 +110,14 @@ export function resetState() {
 		moduleID: null,
 		penaltyCardID: null,
 		backgroundCardID: null,
+		suspectProfileType: null,
+		suspectProfileID: null,
 		permanentPenalty: false,
 		continuousCatalyzation: false,
         digitalGame: false,
 		sealedFile: false,
 		endTime: null
 	}
-	persistedProfileObject.current.profile = null
 	sessionIDObject.ID = ""
 	webSocketObject.websocket?.close()
 	webSocketObject.websocket = null
@@ -102,14 +140,14 @@ export async function joinGame(sessionID:string, joinType:string) {
 }
 
 export async function queryGameState() {
-	if (webSocketObject.websocket) {
+	if (webSocketObject.websocket !== null) {
 		const query: IHCQuery = {type: "query", data: null}
 		await sendMessageAndAwaitResponse(query, "query")
 	}
 }
 
 export async function updateGameState(stateUpdateData: Partial<IHCStateData>) {
-	if (webSocketObject.websocket) {
+	if (webSocketObject.websocket !== null) {
 		clientStateObject.state = {...clientStateObject.state,...stateUpdateData}
 		const stateUpdate: IHCStateUpdate = {type: "state-update", data: stateUpdateData}
 		await sendMessageAndAwaitResponse(stateUpdate, "state-update")
@@ -117,10 +155,17 @@ export async function updateGameState(stateUpdateData: Partial<IHCStateData>) {
 }
 
 export async function assignRoles(roleData: IHCRoleData) {
-	if (webSocketObject.websocket) {
+	if (webSocketObject.websocket !== null) {
 		clientRoleObject.role = roleData.self
 		const roleUpdate: IHCRoleUpdate = {type: "role-update", data: roleData}
 		await sendMessageAndAwaitResponse(roleUpdate, "role-update")
+	}
+}
+
+export async function resetGameSession() {
+	if (webSocketObject.websocket !== null) {
+		const resetMessage: IHCResetSession = {type: "reset-session", data: null}
+		await sendMessageAndAwaitResponse(resetMessage, "reset-session")
 	}
 }
 
@@ -210,7 +255,7 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 	})
 }
 
-async function sendMessageAndAwaitResponse(message: IHCMessageData, messageType: "query" | "state-update" | "role-update") {
+async function sendMessageAndAwaitResponse(message: IHCMessageData, messageType: "query" | "state-update" | "role-update" | "reset-session") {
 	return new Promise((resolve) => {
 		if (webSocketObject.websocket) {
 			const timeoutID = setTimeout(() => {
@@ -224,7 +269,8 @@ async function sendMessageAndAwaitResponse(message: IHCMessageData, messageType:
 				if (
 					(messageType === "query" && response.string === "confirm" && response.type === "combined-response") ||
 					(messageType === "state-update" && response.string === "confirm" && response.type === "state-response") ||
-					(messageType === "role-update" && response.string === "confirm" && response.type === "role-response")
+					(messageType === "role-update" && response.string === "confirm" && response.type === "role-response") ||
+					(messageType === "reset-session" && response.string === "confirm" && response.type === "combined-response")
 				) {
 					clearTimeout(timeoutID)
 					resolve(null)

@@ -121,6 +121,10 @@
         {#if clientStateObject.state.continuousCatalyzation}
             <Separator class="w-3/4! my-2 mx-auto"/>
         {/if}
+    {:else if clientStateObject.state.interrogationState === "last-question"}
+        <p>
+            You may ask the suspect one final question. Once they have answered, you must either kill them or let them go.
+        </p>
     {/if}
     {#if clientStateObject.state.continuousCatalyzation}
         <p>
@@ -164,6 +168,7 @@
                 {:else}
                     <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto"><h3>Kill</h3></Button>
                 {/if}
+                <Button disabled={clientStateObject.state.interrogationState !== "last-question"} type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto"><h3>Let the suspect go</h3></Button>
         </Card.Content>
     </Card.Root>
     {#each gamePenalties.currentPenalties as activePenalty}

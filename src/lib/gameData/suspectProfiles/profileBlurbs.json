@@ -15,7 +15,7 @@
     "violentRobot": [
         "You may respond however you like during the interrogation.",
         "You must complete at least two of the requirements listed below during the interrogation.",
-        "Once you do, you immediately kill the detective and win.",
+        "Once you do, you must wait at least ten seconds. Once those ten seconds have passed, you can kill the detective and win.",
         "You lose if the detective kills you, or if the interrogation ends before you complete at least two of your requirements."
     ]
 }

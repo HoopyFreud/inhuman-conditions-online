@@ -13,16 +13,10 @@
     import AlertCircleIcon from "@lucide/svelte/icons/alert-circle";
 
     import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
-    import { clientRoleObject, clientStateObject, persistedProfileObject, sessionIDObject, webSocketObject, gameBackground, gameModule, gamePenalties } from "#lib/stateHandler.svelte.js";
+    import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gameBackground, gameModule, gamePenalties, gameProfile, gameProfileBlurb, gameProfileString } from "#lib/stateHandler.svelte.js";
 
     import { updateGameState } from "#lib/stateHandler.svelte.js";
     import { getErrorContext } from '#lib/errorContext.js';
-
-    import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json"
-    import profileBlurbs from "#lib/gameData/suspectProfiles/profileBlurbs.json";
-
-    let profileString = $derived(persistedProfileObject.current.profile?.type ? profileStrings[persistedProfileObject.current.profile.type] : "")
-    let profileBlurb = $derived(persistedProfileObject.current.profile?.type ? profileBlurbs[persistedProfileObject.current.profile.type] : "")
 
     let endTime = $derived(clientStateObject.state.endTime?.getTime() ?? Infinity)
 
@@ -40,7 +34,7 @@
 
     const gameError = getErrorContext()
     let roleError = $derived(clientRoleObject.role !== "suspect");
-    let invalidDataError = $derived(gameBackground.currentBackground === null || gameModule.currentModule === null || gamePenalties.currentPenalties === null || persistedProfileObject.current.profile === null);
+    let invalidDataError = $derived(gameBackground.currentBackground === null || gameModule.currentModule === null || gamePenalties.currentPenalties === null || gameProfile.currentProfile === null);
 
     let disableStateUpdate = $derived(invalidDataError || gameError())
     let disableNonResumeUI = $derived(invalidDataError || clientStateObject.state.interrogationState === "pause")
@@ -70,7 +64,7 @@
     }
 
     afterNavigate(() => {
-        switch (persistedProfileObject.current.profile?.type) {
+        switch (gameProfile.currentProfile?.type) {
             case "patientRobot":
                 accordionUISection = ["restriction"]
                 break
@@ -102,7 +96,7 @@
         }
         else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "kill-attempt") {
             clearInterval(countdownInterval)
-            if (persistedProfileObject.current.profile?.type === "human") {
+            if (gameProfile.currentProfile?.type === "human") {
                 updateOverallGameState("end-game-lose-together")
             }
             else {
@@ -127,6 +121,19 @@
         </p>
         {#if clientStateObject.state.continuousCatalyzation}
             <Separator class="w-3/4! my-2 mx-auto"/>
+        {/if}
+    {:else if clientStateObject.state.interrogationState === "last-question"}
+        <p>
+            The detective will ask you one last question. Once you have answered, they will either kill you or let you go.
+        </p>
+        {#if gameProfile.currentProfile?.type === "patientRobot"}
+        <p>
+            If you have not performed the penalty enough times to make up for your restriction violations yet, you may not answer the detective's final question until you do.
+        </p>
+        {:else if gameProfile.currentProfile?.type === "violentRobot"}
+        <p>
+            If you have not fulfilled at least two of your requirements yet, you may not answer the detective's final question until you do.
+        </p>
         {/if}
     {/if}
     {#if clientStateObject.state.continuousCatalyzation}
@@ -161,7 +168,7 @@
             </div>
         </Card.Content>
     </Card.Root>
-    {#if persistedProfileObject.current.profile?.type === "violentRobot"}
+    {#if gameProfile.currentProfile?.type === "violentRobot"}
     <Card.Root class="w-full">
         <Card.Header>
             <Card.Title>
@@ -185,7 +192,7 @@
     <Card.Root class="w-full">
         <Card.Header>
             <Card.Title>
-                <h3>Identity: {profileString}</h3>
+                <h3>Identity: {gameProfileString.currentProfileString}</h3>
             </Card.Title>
         </Card.Header>
         <Card.Content>
@@ -193,27 +200,27 @@
                 <Accordion.Item value="rules">
                     <Accordion.Trigger><h3 class="text-center">Rules</h3></Accordion.Trigger>
                     <Accordion.Content class="w-full text-left">
-                        {#each profileBlurb as blurbLine}
+                        {#each gameProfileBlurb.currentProfileBlurb as blurbLine}
                             <p class="text-base">{blurbLine}</p>
                         {/each}
                     </Accordion.Content>
                 </Accordion.Item>
-                {#if persistedProfileObject.current.profile?.type === "patientRobot"}
+                {#if gameProfile.currentProfile?.type === "patientRobot"}
                     <Accordion.Item value="restriction">
                         <Accordion.Trigger><h3 class="text-center">Restriction</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
-                            <p class="text-base">{persistedProfileObject.current.profile?.restriction}</p>
-                            {#if persistedProfileObject.current.profile?.explainerText !== ""}
-                                <p class="text-base text-muted-foreground">Note: {persistedProfileObject.current.profile?.explainerText}</p>
+                            <p class="text-base">{gameProfile.currentProfile?.restriction}</p>
+                            {#if gameProfile.currentProfile?.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {gameProfile.currentProfile?.explainerText}</p>
                             {/if}
                         </Accordion.Content>
                     </Accordion.Item>
-                {:else if persistedProfileObject.current.profile?.type === "violentRobot"}
+                {:else if gameProfile.currentProfile?.type === "violentRobot"}
                     <Accordion.Item value="requirements">
                         <Accordion.Trigger><h3>Requirements</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
                             <ul class="justify-items-start" style="list-style-type: upper-alpha">
-                                {#each persistedProfileObject.current.profile?.requirements as requirement}
+                                {#each gameProfile.currentProfile?.requirements as requirement}
                                     <Separator class="my-2 mx-auto"/>
                                     <li>{requirement}</li>
                                 {/each}
@@ -225,7 +232,7 @@
                     <Accordion.Item value="item-verification">
                         <Accordion.Trigger><h3 class="text-center">Verification sequence</h3></Accordion.Trigger>
                         <Accordion.Content>
-                            {#if persistedProfileObject.current.profile?.type === "human" && !disableNonResumeUI}
+                            {#if gameProfile.currentProfile?.type === "human" && !disableNonResumeUI}
                                 <ModuleMaze class="mx-auto w-1/2" sequence={gameModule.currentModule?.mazePoints ?? []}/>
                             {:else if !disableNonResumeUI}
                                 <ModuleCycle class="mx-auto w-1/2" sequence={gameModule.currentModule?.mazePoints ?? []}/>

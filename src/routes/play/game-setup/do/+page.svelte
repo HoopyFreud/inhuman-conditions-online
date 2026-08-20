@@ -11,11 +11,16 @@
     import { Separator } from "#lib/components/ui/separator/index.js"
 
 	import type { IHCStateData, IHCRole } from "#lib/stateHandlerTypes.svelte.js"
-	import { clientRoleObject, webSocketObject, clientStateObject, sessionIDObject } from "#lib/stateHandler.svelte.js"
+	import { clientRoleObject, clientStateObject, sessionIDObject } from "#lib/stateHandler.svelte.js"
     import { updateGameState, assignRoles } from "#lib/stateHandler.svelte.js"
     import { getErrorContext } from '#lib/errorContext.js';
     
     const gameError = getErrorContext()
+
+    let accordionValue = $derived(
+        (clientStateObject.state.continuousCatalyzation || clientStateObject.state.permanentPenalty || clientStateObject.state.sealedFile) ?
+        "rules-drawer" : undefined
+    )
 
     let permanentPenaltyValue: boolean = $state(false)
     let continuousCatalyzationValue: boolean = $state(false)
@@ -69,8 +74,8 @@
     </Card.Content>
 </Card.Root>
 
-<Accordion.Root type="single" class="w-3/4 mt-3 mx-auto">
-    <Accordion.Item value="item-1">
+<Accordion.Root type="single" class="w-3/4 mt-3 mx-auto" value={accordionValue}>
+    <Accordion.Item value="rules-drawer">
         <Accordion.Trigger class="text-center"><h2>Optional rules</h2></Accordion.Trigger>
         <Accordion.Content class="w-full text-left">
             <Card.Root class="w-full">
