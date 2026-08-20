@@ -12,15 +12,7 @@
     import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js";
     import type { IHCBackground } from "#lib/gameObjectTypes.svelte.js";
 
-    import {
-        clientRoleObject,
-        clientStateObject,
-        profileObject,
-        sessionIDObject,
-        webSocketObject,
-        gameModule,
-        gamePenalties
-    } from "#lib/stateHandler.svelte.js";
+    import { clientRoleObject, clientStateObject, persistedProfileObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "#lib/stateHandler.svelte.js";
 
     import { updateGameState } from "#lib/stateHandler.svelte.js";
     import { getErrorContext } from '#lib/errorContext.js';
@@ -28,7 +20,7 @@
     import backgroundData from "#lib/gameData/backgrounds/backgrounds.json" 
     import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json"
 
-    let profileString = $derived(profileObject.profile?.type ? profileStrings[profileObject.profile.type] : "")
+    let profileString = $derived(persistedProfileObject.current.profile?.type ? profileStrings[persistedProfileObject.current.profile.type] : "")
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
@@ -44,7 +36,7 @@
     })
 
     let roleError = $derived(clientRoleObject.role !== "suspect");
-    let invalidDataError = $derived(!clientStateObject.state.sealedFile || gameModule.currentModule === null || gamePenalties.currentPenalties === null || profileObject.profile === null);
+    let invalidDataError = $derived(!clientStateObject.state.sealedFile || gameModule.currentModule === null || gamePenalties.currentPenalties === null || persistedProfileObject.current.profile === null);
     let disableSelectBackground: boolean = $derived(invalidBackgroundSelection || roleError || invalidDataError || gameError());
 
     async function submitBackground() {
@@ -81,25 +73,25 @@
             <Card.Title><h3>Identity: {profileString}</h3></Card.Title>
         </Card.Header>
         <Card.Content>
-            {#if profileObject.profile?.type === "patientRobot"}
+            {#if persistedProfileObject.current.profile?.type === "patientRobot"}
                 <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
                     <Accordion.Item>
                         <Accordion.Trigger><h3>Restriction</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
-                            <p class="text-base">{profileObject.profile.restriction}</p>
-                            {#if profileObject.profile.explainerText !== ""}
-                                <p class="text-base text-muted-foreground">Note: {profileObject.profile.explainerText}</p>
+                            <p class="text-base">{persistedProfileObject.current.profile.restriction}</p>
+                            {#if persistedProfileObject.current.profile.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {persistedProfileObject.current.profile.explainerText}</p>
                             {/if}
                         </Accordion.Content>
                     </Accordion.Item>
                 </Accordion.Root>
-            {:else if profileObject.profile?.type === "violentRobot"}
+            {:else if persistedProfileObject.current.profile?.type === "violentRobot"}
                 <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
                     <Accordion.Item>
                         <Accordion.Trigger><h3>Requirements</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
                             <ul class="justify-items-start" style="list-style-type: upper-alpha">
-                                {#each profileObject.profile.requirements as requirement}
+                                {#each persistedProfileObject.current.profile.requirements as requirement}
                                     <Separator class="my-2 mx-auto"/>
                                     <li>{requirement}</li>
                                 {/each}

@@ -1,3 +1,6 @@
+
+import { PersistedState } from "runed";
+
 import type { IHCCombinedResponse, IHCMessageData, IHCQuery, IHCResponse, IHCRole, IHCRoleData, IHCRoleUpdate, IHCStateData, IHCStateUpdate } from '#lib/stateHandlerTypes.svelte.js'
 import type { IHCModule, IHCBackground, IHCPenalty, IHCProfile } from './gameObjectTypes.svelte'
 
@@ -27,11 +30,11 @@ export const clientStateObject: {state:IHCStateData} = $state({
     }
 })
 
-export const profileObject: {profile: IHCProfile | null} = $state({profile: null})
+export const persistedProfileObject: PersistedState<{profile: IHCProfile | null}> = new PersistedState("persistedProfileObject", {profile: null}, {storage: "session", syncTabs: false})
 export const sessionIDObject: {ID: string} = $state(({ID: ""}))
 export const webSocketObject: {websocket: WebSocket | null} = $state({websocket: null})
 
-const currentPenalties: IHCPenalty[] = $derived(
+let currentPenalties: IHCPenalty[] = $derived(
 	typeof clientStateObject.state.penaltyCardID === "number" ?
 		clientStateObject.state.permanentPenalty ? 
 			penaltyData.filter((penalty) => penalty.id === 0 || penalty.id === clientStateObject.state.penaltyCardID) :
@@ -39,21 +42,21 @@ const currentPenalties: IHCPenalty[] = $derived(
 		:
 		[]
 )
-export const gamePenalties = {
+export let gamePenalties = {
 	get currentPenalties() { return currentPenalties; },
 }
 
-const currentModule: IHCModule | null = $derived(moduleData.find((module) => module.id === clientStateObject.state.moduleID) as IHCModule ?? null)
-export const gameModule = {
+let currentModule: IHCModule | null = $derived(moduleData.find((module) => module.id === clientStateObject.state.moduleID) as IHCModule ?? null)
+export let gameModule = {
 	get currentModule() { return currentModule; },
 }
-const currentModuleIcon: string | null = $derived(moduleIconGlob[currentModule?.lightIcon] ?? null)
-export const gameModuleIcon = {
+let currentModuleIcon: string | null = $derived(moduleIconGlob[currentModule?.lightIcon] ?? null)
+export let gameModuleIcon = {
 	get currentModuleIcon() { return currentModuleIcon; },
 }
 
-const currentBackground: IHCBackground | null = $derived(backgroundData.find((background) => background.id === clientStateObject.state.backgroundCardID) as IHCBackground ?? null)
-export const gameBackground = {
+let currentBackground: IHCBackground | null = $derived(backgroundData.find((background) => background.id === clientStateObject.state.backgroundCardID) as IHCBackground ?? null)
+export let gameBackground = {
 	get currentBackground() { return currentBackground; },
 }
 
@@ -76,7 +79,7 @@ export function resetState() {
 		sealedFile: false,
 		endTime: null
 	}
-	profileObject.profile = null
+	persistedProfileObject.current.profile = null
 	sessionIDObject.ID = ""
 	webSocketObject.websocket?.close()
 	webSocketObject.websocket = null
@@ -148,7 +151,7 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 		});
 
 		socket.addEventListener("message", (event) => {
-			const response: IHCCombinedResponse = JSON.parse(event.data)
+			const response: IHCCombinedResponse = JSON.parse(event.data,(key,value) => key === "endTime" && value !== null ? new Date(value) : value)
 			console.log("recieved update:",response.type,response.state,response.role,response.string)
 			if (response.string === "confirm") {
 				clearTimeout(timeoutID)
@@ -158,7 +161,7 @@ async function sendAndRecieveIntroduction(socket: WebSocket, introMessage: IHCMe
 
 				// add the ongoing event listener
 				socket.addEventListener("message", (event) => {
-					const response: IHCResponse = JSON.parse(event.data)
+					const response: IHCResponse = JSON.parse(event.data,(key,value) => key === "endTime" && value !== null ? new Date(value) : value)
 					console.log("recieved update:",response.type,response.state,response.role,response.string)
 					if (response.type == "state-response" || response.type == "combined-response") {
 						clientStateObject.state = {...clientStateObject.state, ...response.state};
@@ -217,7 +220,7 @@ async function sendMessageAndAwaitResponse(message: IHCMessageData, messageType:
 			},5000)
 
 			webSocketObject.websocket.addEventListener("message", (event) => {
-				const response: IHCResponse = JSON.parse(event.data)
+				const response: IHCResponse = JSON.parse(event.data,(key,value) => key === "endTime" && value !== null ? new Date(value) : value)
 				if (
 					(messageType === "query" && response.string === "confirm" && response.type === "combined-response") ||
 					(messageType === "state-update" && response.string === "confirm" && response.type === "state-response") ||

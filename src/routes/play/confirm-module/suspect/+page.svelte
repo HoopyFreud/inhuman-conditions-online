@@ -12,21 +12,9 @@
 
     import { knuthShuffle } from 'knuth-shuffle';
 
-    import type {
-        IHCHumanProfile,
-        IHCPatientRobotProfile,
-        IHCViolentRobotProfile
-    } from "#lib/gameObjectTypes.svelte.js";
+    import type { IHCHumanProfile, IHCPatientRobotProfile, IHCViolentRobotProfile } from "#lib/gameObjectTypes.svelte.js";
 
-    import {
-        clientRoleObject,
-        clientStateObject,
-        profileObject,
-        sessionIDObject,
-        webSocketObject,
-        gameModule,
-        gamePenalties
-    } from "#lib/stateHandler.svelte.js";
+    import { clientRoleObject, clientStateObject, persistedProfileObject, sessionIDObject, webSocketObject, gameModule, gamePenalties } from "#lib/stateHandler.svelte.js";
 
     import humanData from "#lib/gameData/suspectProfiles/humanProfile.json";
     import patientRobotData from "#lib/gameData/suspectProfiles/patientRobotProfiles.json";
@@ -34,9 +22,9 @@
     import profileStrings from "#lib/gameData/suspectProfiles/profileStrings.json";
     import profileBlurbs from "#lib/gameData/suspectProfiles/profileBlurbs.json";
 
-    let profileString = $derived(profileObject.profile?.type ? profileStrings[profileObject.profile.type] : "");
-    let profileBlurb = $derived(profileObject.profile?.type ? profileBlurbs[profileObject.profile.type] : "");
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
+    let profileString = $derived(persistedProfileObject.current.profile?.type ? profileStrings[persistedProfileObject.current.profile.type] : "");
+    let profileBlurb = $derived(persistedProfileObject.current.profile?.type ? profileBlurbs[persistedProfileObject.current.profile.type] : "");
+    let multiplePenalties = $derived(gamePenalties.currentPenalties?.length > 1);
     let roleError = $derived(clientRoleObject.role !== "suspect");
     let invalidProfileDataError = $state(false);
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null || invalidProfileDataError);
@@ -46,22 +34,22 @@
 
         switch (randomIndex) {
             case 0:
-                profileObject.profile = humanData as IHCHumanProfile
+                persistedProfileObject.current.profile = humanData as IHCHumanProfile
                 break
             case 1:
-                profileObject.profile = knuthShuffle(
+                persistedProfileObject.current.profile = knuthShuffle(
                     patientRobotData.filter((robotData) => 
-                    gameModule.currentModule.patientRobotProfiles.includes(robotData.id))
+                    gameModule.currentModule?.patientRobotProfiles.includes(robotData.id))
                 )[0] as IHCPatientRobotProfile
                 break
             case 2:
-                profileObject.profile = knuthShuffle(
+                persistedProfileObject.current.profile = knuthShuffle(
                     violentRobotData.filter((robotData) => 
-                    gameModule.currentModule.violentRobotProfiles.includes(robotData.id))
+                    gameModule.currentModule?.violentRobotProfiles.includes(robotData.id))
                 )[0] as IHCViolentRobotProfile
                 break
         }
-        if (profileObject.profile === null) {
+        if (persistedProfileObject.current.profile === null) {
             invalidProfileDataError = true
         }
 
@@ -105,13 +93,13 @@
     <p>
         Note that there is no beginning or end to this sequence of letters; it is cyclical.
     </p>
-    {#if profileObject.profile?.type === "human"}
+    {#if persistedProfileObject.current.profile?.type === "human"}
         <p>
             Because you are a human, you will need to solve the maze below to answer this question.
         </p>
     {:else}
         <p>
-            Because you are a robot, you will not need to solve a maze to answer this question. Take some time to study your {#if profileObject.profile?.type === "violentRobot"}requirements{:else if typeof profileObject.profile?.restriction === "string"}restriction{:else}restrictions{/if} while pretending to solve one.
+            Because you are a robot, you will not need to solve a maze to answer this question. Take some time to study your {#if persistedProfileObject.current.profile?.type === "violentRobot"}requirements{:else if typeof persistedProfileObject.current.profile?.restriction === "string"}restriction{:else}restrictions{/if} while pretending to solve one.
         </p>
     {/if}
     {#if !clientStateObject.state.sealedFile}
@@ -132,33 +120,33 @@
         </Card.Title>
     </Card.Header>
     <Card.Content>
-        {#if !invalidProfileDataError && profileObject.profile?.type === "human"}
+        {#if !invalidProfileDataError && persistedProfileObject.current.profile?.type === "human"}
             <h3>Module Verification Maze</h3>
-            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
         {:else if !invalidProfileDataError}
-            {#if profileObject.profile?.type === "patientRobot"}
-                {#if typeof profileObject.profile.restriction === "string"}
+            {#if persistedProfileObject.current.profile?.type === "patientRobot"}
+                {#if typeof persistedProfileObject.current.profile.restriction === "string"}
                     <h3>Restriction</h3>
                     <div class="max-w-3/4 w-fit mx-auto text-left">
-                        <p class="text-base">{profileObject.profile.restriction}</p>
-                        {#if profileObject.profile.explainerText !== ""}
-                            <p class="text-base text-muted-foreground">Note: {profileObject.profile.explainerText}</p>
+                        <p class="text-base">{persistedProfileObject.current.profile.restriction}</p>
+                        {#if persistedProfileObject.current.profile.explainerText !== ""}
+                            <p class="text-base text-muted-foreground">Note: {persistedProfileObject.current.profile.explainerText}</p>
                         {/if}
                     </div>
                 {:else}
                     <h3>Restriction — Choose One</h3>
                     <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
-                        {#each profileObject.profile.restriction as restriction}
+                        {#each persistedProfileObject.current.profile.restriction as restriction}
                             <Separator class="my-2 mx-auto"/>
                             <li class="text-base">{restriction}</li>
                         {/each}
                         <Separator class="my-2 mx-auto"/>
                     </ul>
                 {/if}
-            {:else if profileObject.profile?.type === "violentRobot"}
+            {:else if persistedProfileObject.current.profile?.type === "violentRobot"}
                 <h3>Requirements</h3>
                 <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
-                    {#each profileObject.profile.requirements as requirement}
+                    {#each persistedProfileObject.current.profile.requirements as requirement}
                         <Separator class="my-2 mx-auto"/>
                         <li class="text-base">{requirement}</li>
                     {/each}
@@ -166,7 +154,7 @@
                 </ul>
             {/if}
             <h3 class="mt-3">Module Verification Sequence</h3>
-            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
         {/if}
     </Card.Content>
 </Card.Root>

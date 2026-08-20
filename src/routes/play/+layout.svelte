@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { untrack } from 'svelte';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
 
@@ -14,10 +14,11 @@
     import { clientStateObject, clientRoleObject, sessionIDObject, webSocketObject } from "#lib/stateHandler.svelte.js"
     import { joinGame } from "#lib/stateHandler.svelte.js"
 
-    let retry = false
+    const urlSessionID = page.url.searchParams.get('room')
 
     let sessionID = $derived(sessionIDObject.ID)
-    const urlSessionID = page.url.searchParams.get('room')
+
+    let retry = false
     
     let sessionIDMismatchError = $derived(urlSessionID !== sessionID)
     let websocketError = $derived(webSocketObject.websocket === null)
@@ -31,13 +32,12 @@
 	}
 
     async function retryJoin() {
-        if (urlSessionID !== null) {
-            await joinGame(urlSessionID,"existing")
-        }
+        await joinGame(urlSessionID ?? "","existing")
         if (webSocketObject !== null) {
             retry = false
             const goUrl = "/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+urlSessionID
             if (goUrl !== page.url.pathname + page.url.search) {
+                console.log("Redirecting to " + goUrl)
                 await goto(goUrl)
             }
         }
@@ -45,26 +45,21 @@
 
     setErrorContext(() => sessionIDMismatchError || websocketError)
 
-    onMount(async () => {
-        if (urlSessionID !== null && webSocketObject.websocket === null) {
-            console.log("trying to establish websocket")
-            sessionIDObject.ID = urlSessionID
-            await joinGame(urlSessionID,"existing")
-        }
-    })
-
     $effect(() => {
         if (sessionIDMismatchError) {
             console.log("Session ID mismatch")
             webSocketObject.websocket?.close()
             webSocketObject.websocket = null
         }
-        if (websocketError) {
+        if (websocketError && urlSessionID !== null) {
             console.log("Websocket failure")
             if (!retry) {
                 console.log("attempting to reconnect")
-                retry = true
-                retryJoin()
+                untrack(() => {
+                    retry = true
+                    sessionIDObject.ID = urlSessionID
+                    retryJoin()
+                })
             }
         }
     })

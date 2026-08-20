@@ -58,6 +58,7 @@
             context.fillStyle = "oklch(0.985 0 0)"
             context.strokeStyle = "oklch(0.985 0 0)"
             context.font = "50px Circuit"
+            context.lineWidth = 6
             draw()
         }
     })

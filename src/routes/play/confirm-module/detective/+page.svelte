@@ -16,9 +16,9 @@
     import { updateGameState } from "#lib/stateHandler.svelte.js"
     import { getErrorContext } from '#lib/errorContext.js';
     
-    const moduleIcon = gameModuleIcon.currentModuleIcon
-    
     const gameError = getErrorContext()
+    
+    let moduleIcon = $derived(gameModuleIcon.currentModuleIcon)
 
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
