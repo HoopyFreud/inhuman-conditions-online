@@ -169,13 +169,13 @@
     {#each gamePenalties.currentPenalties as activePenalty}
         <Card.Root class="w-full">
             <Card.Content>
-                    <h3>Penalty: {activePenalty.text}</h3>
+                    <h3 class="inline">Penalty:</h3> <span>{activePenalty.text}</span>
             </Card.Content>
         </Card.Root>
     {/each}
     <Card.Root class="w-full">
         <Card.Content>
-                <h3>Background: {gameBackground.currentBackground?.background}</h3>
+                <h3 class="inline">Background:</h3> <span>{gameBackground.currentBackground?.background}</span>
         </Card.Content>
     </Card.Root>
     <Card.Root>
