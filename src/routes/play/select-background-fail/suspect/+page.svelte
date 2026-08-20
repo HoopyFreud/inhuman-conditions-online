@@ -21,7 +21,7 @@
 
     let profileString = $derived(persistedProfileObject.current.profile?.type ? profileStrings[persistedProfileObject.current.profile.type] : "")
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+    let multiplePenalties = $derived(gamePenalties.currentPenalties?.length > 1)
 
     const gameError = getErrorContext()
 
@@ -77,9 +77,9 @@
                     <Accordion.Item>
                         <Accordion.Trigger><h3>Restriction</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
-                            <p class="text-base">{persistedProfileObject.current.profile.restriction}</p>
-                            {#if persistedProfileObject.current.profile.explainerText !== ""}
-                                <p class="text-base text-muted-foreground">Note: {persistedProfileObject.current.profile.explainerText}</p>
+                            <p class="text-base">{persistedProfileObject.current.profile?.restriction}</p>
+                            {#if persistedProfileObject.current.profile?.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {persistedProfileObject.current.profile?.explainerText}</p>
                             {/if}
                         </Accordion.Content>
                     </Accordion.Item>
@@ -90,7 +90,7 @@
                         <Accordion.Trigger><h3>Requirements</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
                             <ul class="justify-items-start" style="list-style-type: upper-alpha">
-                                {#each persistedProfileObject.current.profile.requirements as requirement}
+                                {#each persistedProfileObject.current.profile?.requirements as requirement}
                                     <Separator class="my-2 mx-auto"/>
                                     <li>{requirement}</li>
                                 {/each}

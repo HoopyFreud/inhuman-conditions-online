@@ -13,7 +13,7 @@
     
     let moduleIcon = $derived(gameModuleIcon.currentModuleIcon)
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+    let multiplePenalties = $derived(gamePenalties.currentPenalties?.length > 1)
 
     let roleError = $derived(clientRoleObject.role !== "detective")
 
@@ -55,16 +55,16 @@
 </div>
 <Card.Root class="w-3/4 mx-auto mt-4">
     <Card.Header>
-        <Card.Title><h2>{gameModule.currentModule.name}</h2></Card.Title>
+        <Card.Title><h2>{gameModule.currentModule?.name}</h2></Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col h-full gap-2 justify-between">
-        <img src={moduleIcon} alt={gameModule.currentModule.name} class="w-1/4 mx-auto"/>
-        <p>Difficulty: {gameModule.currentModule.difficulty}</p>
+        <img src={moduleIcon} alt={gameModule.currentModule?.name} class="w-1/4 mx-auto"/>
+        <p>Difficulty: {gameModule.currentModule?.difficulty}</p>
         <h3>Module verification sequence</h3>
-        <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule.mazePoints}/>
+        <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
         <h3>Primary prompts</h3>
         <Accordion.Root type="single" class="w-full">
-            {#each gameModule.currentModule.primaryPrompts as prompt, index}
+            {#each gameModule.currentModule?.primaryPrompts as prompt, index}
                 <Accordion.Item value={"item-" + index.toString()}>
                     <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
                     <Accordion.Content class="ml-4 text-left">
@@ -82,7 +82,7 @@
         </Accordion.Root>
         <h3>Secondary prompts</h3>
         <Accordion.Root type="single" class="w-full">
-            {#each gameModule.currentModule.secondaryPrompts as prompt, index}
+            {#each gameModule.currentModule?.secondaryPrompts as prompt, index}
                 <Accordion.Item value={"item-" + index.toString()}>
                     <Accordion.Trigger>{prompt.task}</Accordion.Trigger>
                     <Accordion.Content class="ml-4 text-left">
