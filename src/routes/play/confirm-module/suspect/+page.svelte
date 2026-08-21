@@ -42,9 +42,10 @@
         }
     })
 
+    let invalidProfileDataError = $derived(profile === null)
+
     let multiplePenalties = $derived(gamePenalties.currentPenalties?.length > 1);
     let roleError = $derived(clientRoleObject.role !== "suspect");
-    let invalidProfileDataError = $state(false);
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null || invalidProfileDataError);
 
     afterNavigate(async () => {
@@ -67,36 +68,42 @@
                 )[0] as IHCViolentRobotProfile
                 break
         }
-        if (profile === null) {
-            invalidProfileDataError = true
-        }
-        else if (profile.type === "human") {
-            const gameStateUpdate: Partial<IHCStateData> = {
-                suspectProfileType: "human"
+    })
+
+    $effect(() => {
+        if (!invalidProfileDataError) {
+            if (profile?.type === "human") {
+                const gameStateUpdate: Partial<IHCStateData> = {
+                    suspectProfileType: "human"
+                }
+                updateGameState(gameStateUpdate)
             }
-            await updateGameState(gameStateUpdate)
-        }
-        else {
-            const gameStateUpdate: Partial<IHCStateData> = {
-                suspectProfileType: profile.type,
-                suspectProfileID: profile.id
+            else {
+                const gameStateUpdate: Partial<IHCStateData> = {
+                    suspectProfileType: profile?.type,
+                    suspectProfileID: profile?.id
+                }
+                updateGameState(gameStateUpdate)
             }
-            await updateGameState(gameStateUpdate)
         }
     })
 
     $effect(() => {
         if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "confirm-module") {
             goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
-        } else if (invalidDataError) {
+        }
+    })
+
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty or module data, closing websocket");
             webSocketObject.websocket?.close();
         }
     });
 </script>
-<div class="flex flex-row justify-evenly gap-2">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each gamePenalties.currentPenalties as activePenalty}
-        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Header>
                 <Card.Title>
                     <h3>Penalty</h3>

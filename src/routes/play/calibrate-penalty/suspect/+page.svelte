@@ -42,9 +42,9 @@
     </p>
 </div>
 
-<div class="flex flex-row justify-evenly gap-2 my-4">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each gamePenalties.currentPenalties as activePenalty}
-        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Content>
                 <p>{activePenalty.text}</p>
             </Card.Content>

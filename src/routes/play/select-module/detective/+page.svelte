@@ -38,9 +38,9 @@
         }
     });
 </script>
-<div class="flex flex-row justify-evenly gap-2">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each gamePenalties.currentPenalties as activePenalty}
-        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Header>
                 <Card.Title>
                     <h3>Penalty</h3>
@@ -65,10 +65,10 @@
         <Carousel.Item>
             <Card.Root class="w-5/6 mx-auto">
                 <Card.Header>
-                    <Card.Title><h2>{availableModule.name}</h2></Card.Title>
+                    <Card.Title><h2 class="text-lg! md:text-xl!">{availableModule.name}</h2></Card.Title>
                 </Card.Header>
                 <Card.Content class="flex flex-col h-full gap-2 justify-between">
-                    <img src={headerImages.get(availableModule.id)} alt={availableModule.name} class="w-1/4 mx-auto"/>
+                    <img src={headerImages.get(availableModule.id)} alt={availableModule.name} class="w-1/4 min-w-20 mx-auto"/>
                     <p>Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>
                     <Accordion.Root type="single" class="w-full">

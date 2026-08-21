@@ -63,9 +63,9 @@
         }
     })
 </script>
-<div class="flex flex-row justify-evenly gap-2">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each gamePenalties.currentPenalties as activePenalty}
-        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Header>
                 <Card.Title>
                     <h3>Penalty</h3>
@@ -90,13 +90,13 @@
         <Carousel.Item>
             <Card.Root class="w-5/6 mx-auto {selectedModule === availableModule.id? 'light' : ''}">
                 <Card.Header>
-                    <Card.Title><h2>{availableModule.name}</h2></Card.Title>
+                    <Card.Title><h2 class="text-lg! md:text-xl!">{availableModule.name}</h2></Card.Title>
                 </Card.Header>
                 <Card.Content class="flex flex-col h-full gap-2 justify-between">
                     {#if selectedModule === availableModule.id}
-                        <img src={headerImages.get(availableModule.id)?.[0]} alt={availableModule.name} class="w-1/4 mx-auto"/>
+                        <img src={headerImages.get(availableModule.id)?.[0]} alt={availableModule.name} class="w-1/4 min-w-20 mx-auto"/>
                     {:else}
-                        <img src={headerImages.get(availableModule.id)?.[1]} alt={availableModule.name} class="w-1/4 mx-auto"/>
+                        <img src={headerImages.get(availableModule.id)?.[1]} alt={availableModule.name} class="w-1/4 min-w-20 mx-auto"/>
                     {/if}
                     <p>Difficulty: {availableModule.difficulty}</p>
                     <h3>Primary prompts</h3>
