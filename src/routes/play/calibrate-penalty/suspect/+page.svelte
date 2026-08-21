@@ -12,14 +12,16 @@
     let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
 
     let roleError = $derived(clientRoleObject.role !== "suspect")
-
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
     $effect(() => {
         if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "calibrate-penalty") {
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
-        else if (invalidDataError) {
+    })
+
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket")
             webSocketObject.websocket?.close()
         }

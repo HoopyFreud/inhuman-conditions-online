@@ -19,8 +19,6 @@
 
     import moduleData from "#lib/gameData/modules/modules.json"
 
-    const availableModules = moduleData as IHCModule[]
-
     const headerImages: Map<number,[string,string]> = new Map(moduleData.map(
     (module) => [
         module.id,
@@ -31,14 +29,14 @@
     ]
     ))
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
-    const gameError = getErrorContext();
     let selectedModule: number | null = $state(null);
-    let invalidModuleSelection = $derived(selectedModule === null);
-    let gameStateUpdate: Partial<IHCStateData> = $derived({ gameState: "confirm-module", moduleID: selectedModule });
+
+    const gameError = getErrorContext();
+
     let roleError = $derived(clientRoleObject.role !== "suspect");
     let invalidDataError = $derived(gamePenalties.currentPenalties === null);
-    let disableModuleDeselectButton: boolean = $derived(selectedModule === null);
+
+    let invalidModuleSelection = $derived(selectedModule === null);
     let disableSelectModule: boolean = $derived(invalidModuleSelection || roleError || invalidDataError || gameError());
 
     function removeModule() {
@@ -51,6 +49,10 @@
 
     async function submitModule() {
         if (!disableSelectModule){
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "confirm-module",
+                moduleID: $state.snapshot(selectedModule)
+            }
             await updateGameState(gameStateUpdate)
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
@@ -86,7 +88,7 @@
 </div>
 <Carousel.Root class="w-3/4 mx-auto my-4" opts={{align: "center", loop: true}} plugins={[AutoHeight()]}>
   <Carousel.Content class="items-start">
-    {#each availableModules as availableModule}
+    {#each moduleData as availableModule}
         <Carousel.Item>
             <Card.Root class="w-5/6 mx-auto {selectedModule === availableModule.id? 'light' : ''}">
                 <Card.Header>
@@ -136,13 +138,9 @@
                         {/each}
                     </Accordion.Root>
                     {#if selectedModule === availableModule.id}
-                        <Button variant="outline" type="submit" disabled={disableModuleDeselectButton} onclick={() => removeModule()} class="w-fit mx-auto">
-                            <h3>Deselect</h3>
-                        </Button>
+                        <Button variant="outline" type="submit" disabled={invalidModuleSelection} onclick={() => removeModule()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Deselect</h3></Button>
                     {:else}
-                        <Button variant="outline" type="submit" onclick={() => addModule(availableModule)} class="w-fit mx-auto">
-                            <h3>Select</h3>
-                        </Button>
+                        <Button variant="outline" type="submit" onclick={() => addModule(availableModule as IHCModule)} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Select</h3></Button>
                     {/if}
                 </Card.Content>
             </Card.Root>
@@ -152,7 +150,7 @@
   <Carousel.Previous class="mt-75"/>
   <Carousel.Next class="mt-75"/>
 </Carousel.Root>
-<Button disabled={disableSelectModule} variant="outline" type="submit" onclick={async () => await submitModule()} class="w-fit m-auto"><h3>Select Module</h3></Button>
+<Button disabled={disableSelectModule} type="submit" onclick={async () => await submitModule()} class="w-fit m-auto h-auto py-3"><h3 class="text-wrap">Select Module</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

@@ -17,7 +17,7 @@
     import { updateGameState } from "#lib/stateHandler.svelte.js";
     import { getErrorContext } from '#lib/errorContext.js';
 
- let moduleIcon = $derived(gameModuleIcon.currentModuleIcon)
+    let moduleIcon = $derived(gameModuleIcon.currentModuleIcon)
 
     let endTime = $derived(clientStateObject.state.endTime?.getTime() ?? Infinity)
 
@@ -64,18 +64,23 @@
         }
     }
 
-
     $effect(() => {
         if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "interrogate") {
             clearInterval(countdownInterval)
             clearTimeout(lastQuestionTimeout)
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "pause") {
+    })
+
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState === "interrogate" && clientStateObject.state.interrogationState === "pause") {
             clearInterval(countdownInterval)
             clearTimeout(lastQuestionTimeout)
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "ongoing") {
+    })
+
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState === "interrogate" && clientStateObject.state.interrogationState === "ongoing") {
             clearInterval(countdownInterval)
             clearTimeout(lastQuestionTimeout)
             timerTime = endTime - Date.now()
@@ -88,12 +93,18 @@
                 updateInterrogationState("last-question")
             },timerTime)
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "last-question") {
+    })
+
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.gameState === "interrogate" && clientStateObject.state.interrogationState === "last-question") {
             clearInterval(countdownInterval)
             clearTimeout(lastQuestionTimeout)
             timerTime = 0
         }
-        else if (invalidDataError) {
+    })
+
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty, background, profile, or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
@@ -142,18 +153,18 @@
         </p>
     {/if}
 </div>
-<div class="flex flex-col justify-between gap-2 w-3/4 mx-auto">
+<div class="flex flex-col justify-between gap-2 w-3/4 mx-auto mt-2">
     <Card.Root class="w-full">
-        <Card.Content class="flex flex-row gap-2 justify-center">
-            <h3 class="inline-block w-fit! my-auto text-right text-lg">
+        <Card.Content class="flex gap-2 justify-center flex-col lg:flex-row">
+            <h3 class="inline-block w-fit! my-auto mx-auto text-lg lg:text-right ">
                 Time remaining:
             </h3>
-            <h3 class="inline-block w-fit! my-auto">
+            <h3 class="inline-block w-fit! mx-auto lg:my-auto">
                 {#each timerText as c}
                     <span class="w-4 inline-block text-center text-lg">{c}</span>
                 {/each}
             </h3>
-            <div class="flex flex-row my-auto pl-4 justify-start">
+            <div class="flex flex-row my-auto mx-auto lg:justify-start lg:pl-4">
                 {#if clientStateObject.state.interrogationState === "pause"}
                     <Button disabled={disableStateUpdate} type="submit" onclick={async () => await updateInterrogationState("ongoing")} class="w-fit my-auto inline-block"><h3>Resume</h3></Button>
                 {:else if clientStateObject.state.interrogationState === "ongoing"}
@@ -167,12 +178,12 @@
     <Card.Root class="w-full">
         <Card.Content class="flex flex-col gap-4 justify-around">
                 {#if clientStateObject.state.continuousCatalyzation}
-                    <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto"><h3>Kill (On Suspicion of Being A Robot)</h3></Button>
-                    <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateOverallGameState("end-game-win-detective")} class="w-fit mx-auto"><h3>Kill (Repeated Verification Failure)</h3></Button>
+                    <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Kill (On Suspicion of Being A Robot)</h3></Button>
+                    <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateOverallGameState("end-game-win-detective")} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Kill (Repeated Verification Failure)</h3></Button>
                 {:else}
-                    <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto"><h3>Kill</h3></Button>
+                    <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateInterrogationState("kill-attempt")} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Kill The Suspect</h3></Button>
                 {/if}
-                <Button disabled={clientStateObject.state.interrogationState !== "last-question"} type="submit" onclick={async () => await updateInterrogationState("spare")} class="w-fit mx-auto"><h3>Let the suspect go</h3></Button>
+                <Button disabled={clientStateObject.state.interrogationState !== "last-question"} type="submit" onclick={async () => await updateInterrogationState("spare")} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Let the suspect go</h3></Button>
         </Card.Content>
     </Card.Root>
     {#each gamePenalties.currentPenalties as activePenalty}

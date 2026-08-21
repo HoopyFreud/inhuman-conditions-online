@@ -16,14 +16,11 @@
     import { updateGameState } from "#lib/stateHandler.svelte.js"
     import { getErrorContext } from '#lib/errorContext.js';
     
-    const gameError = getErrorContext()
-    
     let moduleIcon = $derived(gameModuleIcon.currentModuleIcon)
-
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
+    
+    const gameError = getErrorContext()
 
     let roleError = $derived(clientRoleObject.role !== "detective")
-
     let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null)
 
     let disableConfirmModule = $derived(roleError || invalidDataError || gameError())
@@ -135,10 +132,10 @@
 {#if !clientStateObject.state.sealedFile}
 <div class="flex flex-col gap-2 max-w-3/4 w-fit mx-auto">
     <Button class="w-full mx-auto h-auto py-3" variant="destructive" type="submit" onclick={async () => await validationOutcome("select-background-fail")} disabled={disableConfirmModule}><h3 class="text-wrap">Suspect failed validation</h3></Button>
-    <Button class="w-full mx-auto h-auto py-3" variant="outline" type="submit" onclick={async() => await validationOutcome("select-background-success")} disabled={disableConfirmModule}><h3 class="text-wrap">Suspect completed validation</h3></Button>
+    <Button class="w-full mx-auto h-auto py-3" type="submit" onclick={async() => await validationOutcome("select-background-success")} disabled={disableConfirmModule}><h3 class="text-wrap">Suspect completed validation</h3></Button>
 </div>
 {:else}
-<Button class="w-fit mx-auto" variant="outline" type="submit" onclick={async() => await validationOutcome("select-background-sealed")} disabled={disableConfirmModule}><h3>Suspect completed validation</h3></Button>
+<Button class="w-fit mx-auto h-auto py-3" type="submit" onclick={async() => await validationOutcome("select-background-sealed")} disabled={disableConfirmModule}><h3 class="text-wrap">Suspect completed validation</h3></Button>
 {/if}
 
 {#if roleError}

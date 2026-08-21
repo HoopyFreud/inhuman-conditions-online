@@ -14,8 +14,6 @@
 	import { clientRoleObject, clientStateObject, sessionIDObject } from "#lib/stateHandler.svelte.js"
     import { updateGameState, assignRoles } from "#lib/stateHandler.svelte.js"
     import { getErrorContext } from '#lib/errorContext.js';
-    
-    const gameError = getErrorContext()
 
     let accordionValue = $derived(
         (clientStateObject.state.continuousCatalyzation || clientStateObject.state.permanentPenalty || clientStateObject.state.sealedFile) ?
@@ -27,17 +25,9 @@
     let sealedFileValue: boolean = $state(false)
     let digitalGameValue: boolean = $state(false)
 
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "select-penalty-prelim",
-        permanentPenalty: permanentPenaltyValue,
-        continuousCatalyzation: continuousCatalyzationValue,
-        sealedFile: sealedFileValue,
-        digitalGame: digitalGameValue
-    })
+    const gameError = getErrorContext()
 
-    let noRoleSelected = $derived(clientRoleObject.role === null)
-
-    let disableSetupSubmission: boolean = $derived(noRoleSelected || gameError())
+    let disableSetupSubmission: boolean = $derived(clientRoleObject.role === null || gameError())
 
     async function performSetup() {
         if (!disableSetupSubmission) {
@@ -46,6 +36,13 @@
             }
             else if (clientRoleObject.role === "suspect") {
                 await assignRoles({self: "suspect", other: "detective"})
+            }
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "select-penalty-prelim",
+                permanentPenalty: $state.snapshot(permanentPenaltyValue),
+                continuousCatalyzation: $state.snapshot(continuousCatalyzationValue),
+                sealedFile: $state.snapshot(sealedFileValue),
+                digitalGame: $state.snapshot(digitalGameValue)
             }
             await updateGameState(gameStateUpdate)
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
@@ -131,4 +128,4 @@
     </Accordion.Item>
 </Accordion.Root>
     
-<Button disabled={disableSetupSubmission} variant="outline" type="submit" onclick={async () => await performSetup()} class="w-fit mx-auto"><h3>Set Up Room</h3></Button>
+<Button disabled={disableSetupSubmission} type="submit" onclick={async () => await performSetup()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Set Up Room</h3></Button>

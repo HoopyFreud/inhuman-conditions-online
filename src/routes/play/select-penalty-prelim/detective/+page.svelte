@@ -21,22 +21,17 @@
 
     import penaltyData from "#lib/gameData/penalties/penalties.json"
 
-    const gameError = getErrorContext()
-
     let selectedPenalties: number[] = $state([])
     let availablePenalties: IHCPenalty[] = $state([])
-    let invalidPenaltySelection = $derived(selectedPenalties.length !== 2)
-    
     let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "select-penalty-final",
-        penaltyCardID: invalidPenaltySelection ? null : selectedPenalties as [number, number]
-    })
-
+    const gameError = getErrorContext()
+    
     let roleError = $derived(clientRoleObject.role !== "detective");
+
     let disablePenaltyAddButton: boolean = $derived(selectedPenalties.length >= 2);
     let disablePenaltyRemoveButton: boolean = $derived(selectedPenalties.length === 0);
+    let invalidPenaltySelection = $derived(selectedPenalties.length !== 2)
     let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || gameError());
 
     function removePenalty(penalty: IHCPenalty) {
@@ -51,6 +46,10 @@
 
     async function submitPenalties() {
         if (!disableSelectPenalty){
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "select-penalty-final",
+                penaltyCardID: $state.snapshot(invalidPenaltySelection ? null : selectedPenalties as [number, number])
+            }
             await updateGameState(gameStateUpdate)
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
@@ -88,9 +87,7 @@
         <Card.Root class="light w-full">
             <Card.Content class="flex flex-col h-full gap-2 justify-between">
                 <p>Permanent penalty: {permanentPenalty.text}</p>
-                <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto">
-                    <h3>Cannot be deselected</h3>
-                </Button>
+                <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Cannot be deselected</h3></Button>
             </Card.Content>
         </Card.Root>
     {/if}
@@ -99,19 +96,15 @@
             <Card.Content class="flex flex-col h-full gap-2 justify-between">
                 <p>{availablePenalty.text}</p>
                 {#if selectedPenalties.includes(availablePenalty.id)}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty(availablePenalty)} class="w-fit mx-auto">
-                        <h3>Deselect</h3>
-                    </Button>
+                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty(availablePenalty)} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Deselect</h3></Button>
                 {:else}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit mx-auto">
-                        <h3>Select</h3>
-                    </Button>
+                    <Button variant="outline" type="submit" disabled={disablePenaltyAddButton} onclick={() => addPenalty(availablePenalty)} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Select</h3></Button>
                 {/if}
             </Card.Content>
         </Card.Root>
     {/each}
 </div>
-<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto"><h3>Select Penalties</h3></Button>
+<Button disabled={disableSelectPenalty} type="submit" onclick={async () => await submitPenalties()} class="w-fit m-auto h-auto py-3"><h3 class="text-wrap">Select Penalties</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

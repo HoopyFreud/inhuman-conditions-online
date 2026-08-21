@@ -160,18 +160,18 @@
         </p>
     {/if}
 </div>
-<div class="flex flex-col justify-between gap-2 w-3/4 mx-auto">
+<div class="flex flex-col justify-between gap-2 w-3/4 mx-auto mt-2">
     <Card.Root class="w-full">
-        <Card.Content class="flex flex-row gap-2 justify-center">
-            <h3 class="inline-block w-fit! my-auto text-right text-lg">
+        <Card.Content class="flex gap-2 justify-center flex-col lg:flex-row">
+            <h3 class="inline-block w-fit! my-auto mx-auto text-lg lg:text-right ">
                 Time remaining:
             </h3>
-            <h3 class="inline-block w-fit! my-auto">
+            <h3 class="inline-block w-fit! mx-auto lg:my-auto">
                 {#each timerText as c}
                     <span class="w-4 inline-block text-center text-lg">{c}</span>
                 {/each}
             </h3>
-            <div class="flex flex-row my-auto pl-4 justify-start">
+            <div class="flex flex-row my-auto mx-auto lg:justify-start lg:pl-4">
                 {#if clientStateObject.state.interrogationState === "pause"}
                     <Button disabled={disableStateUpdate} type="submit" onclick={async () => await updateInterrogationState("ongoing")} class="w-fit my-auto inline-block"><h3>Resume</h3></Button>
                 {:else if clientStateObject.state.interrogationState === "ongoing"}
@@ -184,7 +184,7 @@
     <Card.Root class="w-full">
         <Card.Header>
             <Card.Title>
-                <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateOverallGameState("end-game-win-robot")} class="w-fit mx-auto"><h3>Kill (Fulfilled two requirements)</h3></Button>
+                <Button disabled={disableNonResumeUI} variant="destructive" type="submit" onclick={async () => await updateOverallGameState("end-game-win-robot")} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Kill (Fulfilled two requirements)</h3></Button>
             </Card.Title>
         </Card.Header>
     </Card.Root>

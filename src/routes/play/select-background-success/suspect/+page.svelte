@@ -62,9 +62,9 @@
         }
     })
 </script>
-<div class="flex flex-row justify-evenly gap-2">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each gamePenalties.currentPenalties as activePenalty}
-        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Header>
                 <Card.Title>
                     <h3>Penalty</h3>
@@ -75,7 +75,7 @@
             </Card.Content>
         </Card.Root>
     {/each}
-    <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+    <Card.Root class="w-full">
         <Card.Header>
             <Card.Title><h3>Identity: {gameProfileString.currentProfileString}</h3></Card.Title>
         </Card.Header>
@@ -83,7 +83,7 @@
             {#if gameProfile.currentProfile?.type === "patientRobot"}
                 <Accordion.Root type="single" class="max-w-3/4 w-fit mx-auto ">
                     <Accordion.Item>
-                        <Accordion.Trigger><h3>Restriction</h3></Accordion.Trigger>
+                        <Accordion.Trigger><h3 class="text-center">Restriction</h3></Accordion.Trigger>
                         <Accordion.Content class="w-full text-left">
                             {#if typeof gameProfile.currentProfile?.restriction === "string"}
                                 <p class="text-base">{gameProfile.currentProfile?.restriction}</p>
@@ -130,27 +130,23 @@
         Because you succeeded at validation, you may choose from three options.
     </p>
 </div>
-<div class="flex flex-row justify-evenly gap-2 my-4">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each availableBackgrounds as availableBackground}
-        <Card.Root class="w-1/4 {selectedBackground === availableBackground.id? 'light' : ''}">
+        <Card.Root class="w-full {selectedBackground === availableBackground.id? 'light' : ''}">
             <Card.Header>
                 <Card.Title>{availableBackground.background}</Card.Title>
             </Card.Header>
             <Card.Content class="mt-auto">
                 {#if selectedBackground === availableBackground.id}
-                    <Button variant="outline" type="submit" disabled={disablebackgroundDeselectButton} onclick={() => removeBackground()} class="w-fit m-auto mt-4">
-                        <h3>Deselect</h3>
-                    </Button>
+                    <Button variant="outline" type="submit" disabled={disablebackgroundDeselectButton} onclick={() => removeBackground()} class="w-fit m-auto h-auto py-3"><h3 class="text-wrap">Deselect</h3></Button>
                 {:else}
-                    <Button variant="outline" type="submit" disabled={disableBackgroundSelectButton} onclick={() => addBackground(availableBackground)} class="w-fit m-auto mt-4">
-                        <h3>Select</h3>
-                    </Button>
+                    <Button variant="outline" type="submit" disabled={disableBackgroundSelectButton} onclick={() => addBackground(availableBackground)} class="w-fit m-auto h-auto py-3"><h3 class="text-wrap">Select</h3></Button>
                 {/if}
             </Card.Content>
         </Card.Root>
     {/each}
 </div>
-<Button disabled={disableSelectBackground} variant="outline" type="submit" onclick={async () => await submitBackground()} class="w-fit m-auto"><h3>Ready for interrogation</h3></Button>
+<Button disabled={disableSelectBackground} type="submit" onclick={async () => await submitBackground()} class="w-fit m-auto h-auto py-3"><h3 class="text-wrap">Ready for interrogation</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

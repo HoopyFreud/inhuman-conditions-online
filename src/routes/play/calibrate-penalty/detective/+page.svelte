@@ -11,13 +11,12 @@
 	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject, gamePenalties } from "#lib/stateHandler.svelte.js"
     import { updateGameState } from "#lib/stateHandler.svelte.js"
     import { getErrorContext } from '#lib/errorContext.js';
+
+    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
     
     const gameError = getErrorContext()
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1)
-
     let roleError = $derived(clientRoleObject.role !== "detective")
-
     let invalidDataError = $derived(gamePenalties.currentPenalties === null)
 
     let disableConfirmPenalty = $derived(roleError || invalidDataError || gameError())
@@ -66,7 +65,7 @@
     {/each}
 </div>
 
-<Button disabled={disableConfirmPenalty} variant="outline" type="submit" onclick={async () => await calibrationCompleted()} class="w-fit mx-auto"><h3>Calibration completed</h3></Button>
+<Button disabled={disableConfirmPenalty} type="submit" onclick={async () => await calibrationCompleted()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Calibration completed</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

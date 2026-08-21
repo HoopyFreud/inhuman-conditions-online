@@ -15,8 +15,6 @@
 
     import moduleData from "#lib/gameData/modules/modules.json";
 
-    const availableModules = moduleData as IHCModule[]
-
     const headerImages: Map<number, string> = new Map(moduleData.map(
         (module) => [
             module.id,
@@ -24,7 +22,6 @@
         ]
     ));
 
-    let multiplePenalties = $derived(gamePenalties.currentPenalties.length > 1);
     let roleError = $derived(clientRoleObject.role !== "detective");
     let invalidDataError = $derived(gamePenalties.currentPenalties === null);
 
@@ -32,7 +29,10 @@
         if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-module") {
             goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
         }
-        else if (invalidDataError) {
+    })
+
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket");
             webSocketObject.websocket?.close();
         }
@@ -61,7 +61,7 @@
 </div>
 <Carousel.Root class="w-3/4 mx-auto mt-4" opts={{align: "center", loop: true}} plugins={[AutoHeight()]}>
   <Carousel.Content class="items-start">
-    {#each availableModules as availableModule}
+    {#each moduleData as availableModule}
         <Carousel.Item>
             <Card.Root class="w-5/6 mx-auto">
                 <Card.Header>

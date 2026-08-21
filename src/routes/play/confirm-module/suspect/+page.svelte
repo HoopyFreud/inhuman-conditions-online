@@ -1,5 +1,6 @@
 
 <script lang="ts">
+    import { untrack } from 'svelte';
     import { afterNavigate, goto } from '$app/navigation';
     
 	import * as Alert from "#lib/components/ui/alert/index.js";
@@ -42,15 +43,12 @@
         }
     })
 
-    let invalidProfileDataError = $derived(profile === null)
-
-    let multiplePenalties = $derived(gamePenalties.currentPenalties?.length > 1);
+    let invalidProfileData = $derived(profile === null)
     let roleError = $derived(clientRoleObject.role !== "suspect");
-    let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null || invalidProfileDataError);
+    let invalidDataError = $derived(gamePenalties.currentPenalties === null || gameModule.currentModule === null);
 
-    afterNavigate(async () => {
+    afterNavigate(() => {
         const randomIndex = Math.floor(Math.random() * 3);
-
         switch (randomIndex) {
             case 0:
                 profile = humanData as IHCHumanProfile
@@ -71,19 +69,19 @@
     })
 
     $effect(() => {
-        if (!invalidProfileDataError) {
+        if (!invalidProfileData) {
             if (profile?.type === "human") {
                 const gameStateUpdate: Partial<IHCStateData> = {
                     suspectProfileType: "human"
                 }
-                updateGameState(gameStateUpdate)
+                untrack(() => updateGameState(gameStateUpdate))
             }
             else {
                 const gameStateUpdate: Partial<IHCStateData> = {
                     suspectProfileType: profile?.type,
                     suspectProfileID: profile?.id
                 }
-                updateGameState(gameStateUpdate)
+                untrack(() => updateGameState(gameStateUpdate))
             }
         }
     })
@@ -157,41 +155,43 @@
         </Card.Title>
     </Card.Header>
     <Card.Content>
-        {#if !invalidProfileDataError && profile?.type === "human"}
-            <h3>Module Verification Maze</h3>
-            <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
-        {:else if !invalidProfileDataError}
-            {#if profile?.type === "patientRobot"}
-                {#if typeof profile.restriction === "string"}
-                    <h3>Restriction</h3>
-                    <div class="max-w-3/4 w-fit mx-auto text-left">
-                        <p class="text-base">{profile.restriction}</p>
-                        {#if profile.explainerText !== ""}
-                            <p class="text-base text-muted-foreground">Note: {profile.explainerText}</p>
-                        {/if}
-                    </div>
-                {:else}
-                    <h3>Restriction — Choose One</h3>
-                    <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
-                        {#each profile.restriction as restriction}
+        {#if !invalidProfileData}
+            {#if profile?.type === "human"}
+                <h3>Module Verification Maze</h3>
+                <ModuleMaze class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
+            {:else}
+                {#if profile?.type === "patientRobot"}
+                    {#if typeof profile.restriction === "string"}
+                        <h3>Restriction</h3>
+                        <div class="max-w-3/4 w-fit mx-auto text-left">
+                            <p class="text-base">{profile.restriction}</p>
+                            {#if profile.explainerText !== ""}
+                                <p class="text-base text-muted-foreground">Note: {profile.explainerText}</p>
+                            {/if}
+                        </div>
+                    {:else}
+                        <h3>Restriction — Choose One</h3>
+                        <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
+                            {#each profile.restriction as restriction}
+                                <Separator class="my-2 mx-auto"/>
+                                <li class="text-base">{restriction}</li>
+                            {/each}
                             <Separator class="my-2 mx-auto"/>
-                            <li class="text-base">{restriction}</li>
+                        </ul>
+                    {/if}
+                {:else if profile?.type === "violentRobot"}
+                    <h3>Requirements</h3>
+                    <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
+                        {#each profile.requirements as requirement}
+                            <Separator class="my-2 mx-auto"/>
+                            <li class="text-base">{requirement}</li>
                         {/each}
                         <Separator class="my-2 mx-auto"/>
                     </ul>
                 {/if}
-            {:else if profile?.type === "violentRobot"}
-                <h3>Requirements</h3>
-                <ul class="max-w-3/4 w-fit mx-auto text-left" style="list-style-type: upper-alpha; list-style-position: inside;">
-                    {#each profile.requirements as requirement}
-                        <Separator class="my-2 mx-auto"/>
-                        <li class="text-base">{requirement}</li>
-                    {/each}
-                    <Separator class="my-2 mx-auto"/>
-                </ul>
+                <h3 class="mt-3">Module Verification Sequence</h3>
+                <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
             {/if}
-            <h3 class="mt-3">Module Verification Sequence</h3>
-            <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
         {/if}
     </Card.Content>
 </Card.Root>

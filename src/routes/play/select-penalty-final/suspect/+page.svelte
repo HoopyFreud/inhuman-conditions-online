@@ -8,29 +8,23 @@
 
 	import type { IHCStateData } from "#lib/stateHandlerTypes.svelte.js"
 	import type { IHCPenalty } from "#lib/gameObjectTypes.svelte.js"
-	import { clientRoleObject, clientStateObject, sessionIDObject } from "#lib/stateHandler.svelte.js"
+	import { clientRoleObject, clientStateObject, sessionIDObject, webSocketObject } from "#lib/stateHandler.svelte.js"
     import { updateGameState } from "#lib/stateHandler.svelte.js"
     import { getErrorContext } from '#lib/errorContext.js';
 
     import penaltyData from "#lib/gameData/penalties/penalties.json"
-
-
-    const gameError = getErrorContext()
 
     // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
     let availablePenalties = $derived(Array.isArray(clientStateObject.state?.penaltyCardID) ? penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID?.includes(penalty.id)) as IHCPenalty[] : [])
     let selectedPenalty: number | null = $state(null)
     let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null)
 
-    let gameStateUpdate: Partial<IHCStateData> = $derived({
-        gameState: "calibrate-penalty",
-        penaltyCardID: selectedPenalty
-    })
+    const gameError = getErrorContext()
 
-    let invalidPenaltySelection = $derived(selectedPenalty === null);
     let roleError = $derived(clientRoleObject.role !== "suspect");
     let invalidDataError = $derived(availablePenalties.length === 0 && clientStateObject.state.gameState === "select-penalty-final");
-    let disablePenaltyRemoveButton: boolean = $derived(selectedPenalty === null);
+
+    let invalidPenaltySelection = $derived(selectedPenalty === null);
     let disableSelectPenalty: boolean = $derived(invalidPenaltySelection || roleError || invalidDataError || gameError());
 
     function removePenalty() {
@@ -43,10 +37,21 @@
 
     async function submitPenalty() {
         if (!disableSelectPenalty) {
+            const gameStateUpdate: Partial<IHCStateData> = {
+                gameState: "calibrate-penalty",
+                penaltyCardID: $state.snapshot(selectedPenalty)
+            }
             await updateGameState(gameStateUpdate)
             await goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
     }
+
+    $effect(() => {
+        if (invalidDataError) {
+            console.log("Bad penalty data, closing websocket");
+            webSocketObject.websocket?.close();
+        }
+    });
 </script>
 
 <h2 class="max-w-3/4 mx-auto">Penalty Selection</h2>
@@ -66,9 +71,7 @@
         <Card.Root class="w-full light">
             <Card.Content class="flex flex-col h-full gap-2 justify-between">
                 <p>Permanent penalty: {permanentPenalty.text}</p>
-                <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto">
-                    <h3>Cannot be deselected</h3>
-                </Button>
+                <Button variant="outline" type="submit" disabled={true} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Cannot be deselected</h3></Button>
             </Card.Content>
         </Card.Root>
     {/if}
@@ -77,19 +80,15 @@
             <Card.Content class="flex flex-col h-full gap-2 justify-between">
                 <p>{availablePenalty.text}</p>
                 {#if selectedPenalty === availablePenalty.id}
-                    <Button variant="outline" type="submit" disabled={disablePenaltyRemoveButton} onclick={() => removePenalty()} class="w-fit mx-auto">
-                        <h3>Deselect</h3>
-                    </Button>
+                    <Button variant="outline" type="submit" disabled={invalidPenaltySelection} onclick={() => removePenalty()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Deselect</h3></Button>
                 {:else}
-                    <Button variant="outline" type="submit" onclick={() => addPenalty(availablePenalty)} class="w-fit mx-auto">
-                        <h3>Select</h3>
-                    </Button>
+                    <Button variant="outline" type="submit" onclick={() => addPenalty(availablePenalty)} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Select</h3></Button>
                 {/if}
             </Card.Content>
         </Card.Root>
     {/each}
 </div>
-<Button disabled={disableSelectPenalty} variant="outline" type="submit" onclick={async () => await submitPenalty()} class="w-fit m-auto"><h3>Select Penalty</h3></Button>
+<Button disabled={disableSelectPenalty} type="submit" onclick={async () => await submitPenalty()} class="w-fit m-auto h-auto py-3"><h3 class="text-wrap">Select Penalty</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

@@ -19,13 +19,18 @@
     // @ts-ignore - this is the isArray bug, clientStateObject.state.penaltyCardID can only be a [number, number] here
     let availablePenalties = $derived(Array.isArray(clientStateObject.state?.penaltyCardID) ? penaltyData.filter((penalty) => clientStateObject.state.penaltyCardID?.includes(penalty.id)) as IHCPenalty[] : [])
     let permanentPenalty: IHCPenalty | null = $derived(clientStateObject.state.permanentPenalty ? penaltyData[0] as IHCPenalty : null);
+    
     let roleError = $derived(clientRoleObject.role !== "detective");
     let invalidDataError = $derived(availablePenalties.length === 0 && clientStateObject.state.gameState === "select-penalty-final");
 
     $effect(() => {
         if (webSocketObject.websocket !== null && clientStateObject.state.gameState !== "select-penalty-final") {
             goto("/play/" + clientStateObject.state.gameState + "/" + clientRoleObject.role + "?room=" + sessionIDObject.ID);
-        } else if (invalidDataError) {
+        }
+     })
+
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty data, closing websocket");
             webSocketObject.websocket?.close();
         }

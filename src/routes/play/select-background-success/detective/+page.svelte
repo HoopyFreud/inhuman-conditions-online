@@ -29,9 +29,9 @@
         }
     })
 </script>
-<div class="flex flex-row justify-evenly gap-2">
+<div class="flex gap-2 my-4 mx-auto w-3/4 flex-col">
     {#each gamePenalties.currentPenalties as activePenalty}
-        <Card.Root class={multiplePenalties ? 'w-1/4' : 'w-1/3'}>
+        <Card.Root class="w-full">
             <Card.Header>
                 <Card.Title>
                     <h3>Penalty</h3>
@@ -55,10 +55,10 @@
 </div>
 <Card.Root class="w-3/4 mx-auto mt-4">
     <Card.Header>
-        <Card.Title><h2>{gameModule.currentModule?.name}</h2></Card.Title>
+        <Card.Title><h2 class="text-lg! md:text-xl!">{gameModule.currentModule?.name}</h2></Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col h-full gap-2 justify-between">
-        <img src={moduleIcon} alt={gameModule.currentModule?.name} class="w-1/4 mx-auto"/>
+        <img src={moduleIcon} alt={gameModule.currentModule?.name} class="w-1/4 min-w-20 mx-auto"/>
         <p>Difficulty: {gameModule.currentModule?.difficulty}</p>
         <h3>Module verification sequence</h3>
         <ModuleCycle class="w-3/4 mx-auto" sequence={gameModule.currentModule?.mazePoints ?? []}/>
