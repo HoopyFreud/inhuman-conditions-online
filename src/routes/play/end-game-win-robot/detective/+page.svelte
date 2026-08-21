@@ -26,7 +26,7 @@
         You weren't careful enough. Or fast enough. Or aggressive enough. Now you're dead. Next time, they're first.
     </p>
 </div>
-<Button variant="outline" type="submit" onclick={async () => await restartGame()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Play again</h3></Button>
+<Button type="submit" onclick={async () => await restartGame()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Play again</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

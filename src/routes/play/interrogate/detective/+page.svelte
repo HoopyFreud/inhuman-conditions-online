@@ -38,7 +38,7 @@
     let invalidDataError = $derived(gameBackground.currentBackground === null || gameModule.currentModule === null || gamePenalties.currentPenalties === null)
     
     let disableStateUpdate = $derived(invalidDataError || gameError())
-    let disableNonResumeUI = $derived(disableStateUpdate || clientStateObject.state.interrogationState !== "ongoing")
+    let disableNonResumeUI = $derived(disableStateUpdate || (clientStateObject.state.interrogationState !== "ongoing" && clientStateObject.state.interrogationState !== "last-question"))
 
     async function updateInterrogationState(newState:IHCStateData["interrogationState"]) {
         if (!disableStateUpdate){

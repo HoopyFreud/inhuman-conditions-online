@@ -172,8 +172,8 @@
 		{/if}
 	</div>
 	<div class="flex w-3/4 mt-4 gap-2 flex-col justify-center-safe md:flex-row md:justify-evenly ">
-		<Button class="w-fit mx-auto" variant="outline" type="submit" onclick={async () => await getSessionWebsocket("new")} disabled={disableRoomCreation}><h3>Set Up Room</h3></Button>
-		<Button class="w-fit mx-auto" variant="outline" type="submit" onclick={async() => await getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3>Join Room</h3></Button>
+		<Button class="w-fit mx-auto h-auto py-3" type="submit" onclick={async () => await getSessionWebsocket("new")} disabled={disableRoomCreation}><h3 class="text-wrap">Set Up Room</h3></Button>
+		<Button class="w-fit mx-auto h-auto py-3" variant="outline" type="submit" onclick={async() => await getSessionWebsocket("existing")} disabled={disableRoomCreation}><h3 class="text-wrap">Join Room</h3></Button>
 	</div>
 </section>
 

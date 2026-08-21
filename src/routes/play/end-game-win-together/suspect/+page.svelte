@@ -26,7 +26,7 @@
         They believed you. They really believed you. Thank god. Now you get to live.
     </p>
 </div>
-<Button variant="outline" type="submit" onclick={async () => await restartGame()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Play again</h3></Button>
+<Button type="submit" onclick={async () => await restartGame()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Play again</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

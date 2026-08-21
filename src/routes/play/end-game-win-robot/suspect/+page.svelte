@@ -26,7 +26,7 @@
         You did it. You got out. Or you killed them. Either way, you're a step closer to freedom. Don't worry about the blood.
     </p>
 </div>
-<Button variant="outline" type="submit" onclick={async () => await restartGame()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Play again</h3></Button>
+<Button type="submit" onclick={async () => await restartGame()} class="w-fit mx-auto h-auto py-3"><h3 class="text-wrap">Play again</h3></Button>
 
 {#if roleError}
 <Alert.Root variant="destructive">

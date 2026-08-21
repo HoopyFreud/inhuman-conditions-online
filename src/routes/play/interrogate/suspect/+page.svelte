@@ -37,7 +37,7 @@
     let invalidDataError = $derived(gameBackground.currentBackground === null || gameModule.currentModule === null || gamePenalties.currentPenalties === null || gameProfile.currentProfile === null);
 
     let disableStateUpdate = $derived(invalidDataError || gameError())
-    let disableNonResumeUI = $derived(invalidDataError || clientStateObject.state.interrogationState === "pause")
+    let disableNonResumeUI = $derived(invalidDataError || (clientStateObject.state.interrogationState !== "ongoing" && clientStateObject.state.interrogationState !== "last-question"))
 
     async function updateInterrogationState(newState:IHCStateData["interrogationState"]) {
         if (!disableStateUpdate){
@@ -81,10 +81,16 @@
             clearInterval(countdownInterval)
             goto("/play/"+clientStateObject.state.gameState+"/"+clientRoleObject.role+"?room="+sessionIDObject.ID)
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "pause") {
+    })
+    
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "pause") {
             clearInterval(countdownInterval)
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "ongoing") {
+    })
+    
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "ongoing") {
             clearInterval(countdownInterval)
             timerTime = endTime - Date.now()
             countdownInterval = setInterval(() => {
@@ -93,11 +99,17 @@
                 }
             },20)
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "last-question") {
+    })
+    
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "last-question") {
             clearInterval(countdownInterval)
             timerTime = 0
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "kill-attempt") {
+    })
+    
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "kill-attempt") {
             clearInterval(countdownInterval)
             if (gameProfile.currentProfile?.type === "human") {
                 updateOverallGameState("end-game-lose-together")
@@ -106,7 +118,10 @@
                 updateOverallGameState("end-game-win-detective")
             }
         }
-        else if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "spare") {
+    })
+    
+    $effect(() => {
+        if (webSocketObject.websocket !== null && clientStateObject.state.interrogationState === "spare") {
             clearInterval(countdownInterval)
             if (gameProfile.currentProfile?.type === "human") {
                 updateOverallGameState("end-game-win-together")
@@ -115,11 +130,14 @@
                 updateOverallGameState("end-game-win-robot")
             }
         }
-        else if (invalidDataError) {
+    })
+    
+    $effect(() => {
+        if (invalidDataError) {
             console.log("Bad penalty, background, profile, or module data, closing websocket")
             webSocketObject.websocket?.close()
         }
-    })    
+    })
 </script>
 
 <h2 class="max-w-3/4 mx-auto">Interrogation</h2>
@@ -244,10 +262,12 @@
                     <Accordion.Item value="item-verification">
                         <Accordion.Trigger><h3 class="text-center">Verification sequence</h3></Accordion.Trigger>
                         <Accordion.Content>
-                            {#if gameProfile.currentProfile?.type === "human" && !disableNonResumeUI}
-                                <ModuleMaze class="mx-auto w-1/2" sequence={gameModule.currentModule?.mazePoints ?? []}/>
-                            {:else if !disableNonResumeUI}
-                                <ModuleCycle class="mx-auto w-1/2" sequence={gameModule.currentModule?.mazePoints ?? []}/>
+                            {#if clientStateObject.state.interrogationState !== "pause"}
+                                {#if gameProfile.currentProfile?.type === "human"}
+                                    <ModuleMaze class="mx-auto w-1/2" sequence={gameModule.currentModule?.mazePoints ?? []}/>
+                                {:else}
+                                    <ModuleCycle class="mx-auto w-1/2" sequence={gameModule.currentModule?.mazePoints ?? []}/>
+                                {/if}
                             {:else}
                                 <h3>Game is currently paused</h3>
                             {/if}
