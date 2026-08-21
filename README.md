@@ -1,42 +1,9 @@
-# sv
+This is an online game based on Inhuman Conditions, available at https://robots.management/
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Inhuman Conditions is available for free under a Creative Commons license BY—NC—SA 4.0.
 
-## Creating a project
+You can share or change it all you want, but you must give credit, include this license, and you can't sell it.
 
-If you're seeing this, you've probably already done this step. Congrats!
+This entire repository is licensed under CC-BY-NC-SA 4.0. In addition, all non-game-assets - that is, everything except for the JSON and SVG files taken from robots.management's game - is licensed under the MIT license.
 
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-pnpm dlx sv@0.17.0 create --template demo --types ts --install pnpm inhuman-conditions-online
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Fun medium-sized project working with Sveltekit to do routing and communicate with a Cloudflare durable object for state management. The Cloudflare DO self-destructs when all clients disconnect, so it's very cheap to host. Gameserver code at https://github.com/HoopyFreud/IHCGameServer
