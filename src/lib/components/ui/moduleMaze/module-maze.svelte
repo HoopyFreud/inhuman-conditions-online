@@ -49,13 +49,13 @@
             document.fonts.ready.then(async (fontFaceSet) => {
                 // Any operation that needs to be done only after all used fonts
                 // have finished loading can go here.
-                await [...fontFaceSet].find((fontFace) => fontFace.family == '"Circuit"')?.load()
+                await [...fontFaceSet].find((fontFace) => fontFace.family == '"Xirod"')?.load()
                 //we just checked if context exists
                 context!.textAlign = "center"
                 context!.textBaseline = "middle"
                 context!.fillStyle = "oklch(0.985 0 0)"
                 context!.strokeStyle = "oklch(0.985 0 0)"
-                context!.font = "50px Circuit"
+                context!.font = "50px Xirod"
                 draw()
             })
         }

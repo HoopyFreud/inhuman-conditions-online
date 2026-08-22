@@ -57,7 +57,7 @@
             context.textBaseline = "middle"
             context.fillStyle = "oklch(0.985 0 0)"
             context.strokeStyle = "oklch(0.985 0 0)"
-            context.font = "50px Circuit"
+            context.font = "50px Xirod"
             context.lineWidth = 6
             draw()
         }
